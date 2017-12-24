@@ -17,7 +17,6 @@ namespace PSTParseApp
             sw.Start();
             var pstPath = "/Users/dbrant/Downloads/outlook1.pst";
             var logPath = "log.txt";
-            var pstSize = new FileInfo(pstPath).Length*1.0/1024/1024;
             using (var file = new PSTFile(pstPath))
             {
                 Console.WriteLine("Magic value: " + file.Header.DWMagic);
@@ -67,10 +66,7 @@ namespace PSTParseApp
                 }
                 sw.Stop();
                 Console.WriteLine("{0} messages total", totalCount);
-                Console.WriteLine("Parsed {0} ({2:0.00} MB) in {1} milliseconds", Path.GetFileName(pstPath),
-                                  sw.ElapsedMilliseconds, pstSize);
-                //file.Header.NodeBT.Root.GetOffset(1);
-                Console.Read();
+                Console.WriteLine("Parsed {0} in {1} ms", Path.GetFileName(pstPath), sw.ElapsedMilliseconds);
             }
         }
 
