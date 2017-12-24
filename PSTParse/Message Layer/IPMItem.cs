@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using PSTParse.LTP;
 
@@ -16,8 +14,9 @@ namespace PSTParse.Message_Layer
         {
             this._nid = nid;
             this.PC = new PropertyContext(nid, pst);
-            this.MessageClass = Encoding.Unicode.GetString(this.PC.Properties[0x1a].Data);
-
+            this.MessageClass = pst.Header.isUnicode
+                ? Encoding.Unicode.GetString(this.PC.Properties[0x1a].Data)
+                : Encoding.ASCII.GetString(this.PC.Properties[0x1a].Data);
         }
 
         protected IPMItem()

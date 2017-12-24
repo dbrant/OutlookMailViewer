@@ -49,17 +49,16 @@ namespace PSTParse.LTP
             
             foreach(var row in this.TableContext.RowIndexBTH.Properties)
             {
-                var rowIndex = BitConverter.ToUInt32(row.Value.Data, 0);
+                var rowIndex = TableContext.RowIndexBTH.GetDataValue(row.Value.Data);
 
                 var blockTrailerSize = 16;
                 var maxBlockSize = 8192 - blockTrailerSize;
                 var recordsPerBlock = maxBlockSize/rowSize;
 
-                var blockIndex = (int)rowIndex/recordsPerBlock;
-                var indexInBlock = rowIndex%recordsPerBlock;
-                var curRow = new TCRowMatrixData(this.TCRMData[blockIndex].Data, this.TableContext, heap,
-                                                 (int) indexInBlock*rowSize);
-                this.RowXREF.Add(BitConverter.ToUInt32(row.Key, 0), curRow);
+                var blockIndex = (int)rowIndex / recordsPerBlock;
+                var indexInBlock = rowIndex % recordsPerBlock;
+                var curRow = new TCRowMatrixData(this.TCRMData[blockIndex].Data, this.TableContext, heap, (int) indexInBlock*rowSize);
+                this.RowXREF.Add(TableContext.RowIndexBTH.GetKeyValue(row.Key), curRow);
                 this.Rows.Add(curRow);
             }
             /*

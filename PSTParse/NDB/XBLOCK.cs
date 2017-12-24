@@ -12,7 +12,7 @@ namespace PSTParse.NDB
 
         public ulong[] BIDEntries;
 
-        public XBLOCK(BlockDataDTO block)
+        public XBLOCK(bool unicode, BlockDataDTO block)
         {
             this.Block = block;
             this.BlockType = block.Data[0];
@@ -21,7 +21,9 @@ namespace PSTParse.NDB
             this.TotalBytes = BitConverter.ToUInt32(block.Data, 4);
             this.BIDEntries = new ulong[BIDEntryCount];
             for (int i = 0; i < BIDEntryCount; i++)
-                BIDEntries[i] = BitConverter.ToUInt64(block.Data, 8 + i*8);
+                BIDEntries[i] = unicode
+                    ? BitConverter.ToUInt64(block.Data, 8 + i * 8)
+                    : BitConverter.ToUInt32(block.Data, 8 + i * 4);
         }
     }
 }

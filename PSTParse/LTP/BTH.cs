@@ -45,6 +45,32 @@ namespace PSTParse.LTP
             return this.HeapNode.GetHIDBytes(hid);
         }
 
+        public UInt32 GetKeyValue(byte[] key)
+        {
+            if (key.Length == 4)
+            {
+                return BitConverter.ToUInt32(key, 0);
+            }
+            else if (key.Length == 2)
+            {
+                return BitConverter.ToUInt16(key, 0);
+            }
+            return 0;
+        }
+
+        public UInt32 GetDataValue(byte[] data)
+        {
+            if (data.Length == 4)
+            {
+                return BitConverter.ToUInt32(data, 0);
+            }
+            else if (data.Length == 2)
+            {
+                return BitConverter.ToUInt16(data, 0);
+            }
+            return 0;
+        }
+
         public Dictionary<ushort, ExchangeProperty> GetExchangeProperties()
         {
             var ret = new Dictionary<ushort, ExchangeProperty>();

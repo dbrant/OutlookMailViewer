@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PSTParse.NDB
 {
@@ -11,11 +8,11 @@ namespace PSTParse.NDB
         public ulong SubNodeBID;
         public ulong SubSubNodeBID;
 
-        public SLENTRY(byte[] bytes)
+        public SLENTRY(bool unicode, byte[] bytes)
         {
-            this.SubNodeNID = BitConverter.ToUInt64(bytes, 0);
-            this.SubNodeBID = BitConverter.ToUInt64(bytes, 8);
-            this.SubSubNodeBID = BitConverter.ToUInt64(bytes, 16);
+            this.SubNodeNID = unicode ? BitConverter.ToUInt64(bytes, 0) : BitConverter.ToUInt32(bytes, 0);
+            this.SubNodeBID = unicode ? BitConverter.ToUInt64(bytes, 8) : BitConverter.ToUInt32(bytes, 4);
+            this.SubSubNodeBID = unicode ? BitConverter.ToUInt64(bytes, 16) : BitConverter.ToUInt32(bytes, 8);
         }
     }
 }

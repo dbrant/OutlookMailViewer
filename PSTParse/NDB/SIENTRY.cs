@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PSTParse.NDB
 {
@@ -10,10 +7,10 @@ namespace PSTParse.NDB
         public ulong NextChildNID;
         public ulong SLBlockBID;
 
-        public SIENTRY(byte[] bytes)
+        public SIENTRY(bool unicode, byte[] bytes)
         {
-            this.NextChildNID = BitConverter.ToUInt64(bytes, 0);
-            this.SLBlockBID = BitConverter.ToUInt64(bytes, 8);
+            this.NextChildNID = unicode ? BitConverter.ToUInt64(bytes, 0) : BitConverter.ToUInt32(bytes, 0);
+            this.SLBlockBID = unicode ? BitConverter.ToUInt64(bytes, 8) : BitConverter.ToUInt32(bytes, 4);
         }
     }
 }

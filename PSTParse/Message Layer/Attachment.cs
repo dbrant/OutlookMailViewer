@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using PSTParse.LTP;
 
@@ -28,7 +26,7 @@ namespace PSTParse.Message_Layer
         public bool InvisibleInRTF;
         public bool RenderedInBody;
 
-        public Attachment(TCRowMatrixData row)
+        public Attachment(bool unicode, TCRowMatrixData row)
         {
             foreach (var exProp in row)
             {
@@ -39,7 +37,7 @@ namespace PSTParse.Message_Layer
                         break;
                     case 0x3704:
                         if (exProp.Data != null)
-                            this.Filename = Encoding.Unicode.GetString(exProp.Data);
+                            this.Filename = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
                     case 0x3705:
                         this.Method = (AttachmentMethod) BitConverter.ToUInt32(exProp.Data, 0);

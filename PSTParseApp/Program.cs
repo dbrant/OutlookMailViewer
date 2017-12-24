@@ -15,13 +15,13 @@ namespace PSTParseApp
         {
             var sw = new Stopwatch();
             sw.Start();
-            var pstPath = @"C:\test\dtmtcm@gmail.com.pst";
-            var logPath = @"C:\test\nidlog.txt";
+            var pstPath = "outlook.pst";
+            var logPath = "log.txt";
             var pstSize = new FileInfo(pstPath).Length*1.0/1024/1024;
             using (var file = new PSTFile(pstPath))
             {
                 Console.WriteLine("Magic value: " + file.Header.DWMagic);
-                Console.WriteLine("Is Ansi? " + file.Header.IsANSI);
+                Console.WriteLine("Is Ansi? " + !file.Header.isUnicode);
 
 
                 var stack = new Stack<MailFolder>();
@@ -50,18 +50,15 @@ namespace PSTParseApp
                                 Console.WriteLine(message.Imporance);
                                 Console.WriteLine("Sender Name: " + message.SenderName);
                                 if (message.From.Count > 0)
-                                    Console.WriteLine("From: {0}",
-                                                      String.Join("; ", message.From.Select(r => r.EmailAddress)));
+                                    Console.WriteLine("From: {0}", String.Join("; ", message.From.Select(r => r.EmailAddress)));
                                 if (message.To.Count > 0)
-                                    Console.WriteLine("To: {0}",
-                                                      String.Join("; ", message.To.Select(r => r.EmailAddress)));
+                                    Console.WriteLine("To: {0}", String.Join("; ", message.To.Select(r => r.EmailAddress)));
                                 if (message.CC.Count > 0)
-                                    Console.WriteLine("CC: {0}",
-                                                      String.Join("; ", message.CC.Select(r => r.EmailAddress)));
+                                    Console.WriteLine("CC: {0}", String.Join("; ", message.CC.Select(r => r.EmailAddress)));
                                 if (message.BCC.Count > 0)
-                                    Console.WriteLine("BCC: {0}",
-                                                      String.Join("; ", message.BCC.Select(r => r.EmailAddress)));
-                                
+                                    Console.WriteLine("BCC: {0}",  String.Join("; ", message.BCC.Select(r => r.EmailAddress)));
+
+                                Console.WriteLine("Body: " + message.BodyPlainText);
 
                                 writer.WriteLine(ByteArrayToString(BitConverter.GetBytes(message.NID)));
                             }

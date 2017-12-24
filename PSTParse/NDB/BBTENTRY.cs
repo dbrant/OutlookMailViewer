@@ -9,14 +9,20 @@ namespace PSTParse.NDB
         public UInt16 BlockByteCount;
         public UInt16 RefCount;
 
-        public BBTENTRY(byte[] bytes)
+        public BBTENTRY(bool unicode, byte[] bytes)
         {
-            this.BREF = new BREF(bytes);
-            /*this.BREF = new BREF_UNICODE
-                            {BID_raw = BitConverter.ToUInt64(bytes, 0), ByteIndex = BitConverter.ToUInt64(bytes, 8)};*/
-            this.Internal = this.BREF.IsInternal;
-            this.BlockByteCount = BitConverter.ToUInt16(bytes, 16);
-            this.RefCount = BitConverter.ToUInt16(bytes, 18);
+            BREF = new BREF(unicode, bytes);
+            Internal = BREF.IsInternal;
+            if (unicode)
+            {
+                BlockByteCount = BitConverter.ToUInt16(bytes, 16);
+                RefCount = BitConverter.ToUInt16(bytes, 18);
+            }
+            else
+            {
+                BlockByteCount = BitConverter.ToUInt16(bytes, 8);
+                RefCount = BitConverter.ToUInt16(bytes, 10);
+            }
         }
 
         public ulong Key

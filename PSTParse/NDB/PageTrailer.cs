@@ -19,10 +19,10 @@ namespace PSTParse.NDB
         public PageType PageType { get; set; }
         public ulong BID { get; set; }
 
-        public PageTrailer(byte[] trailer)
+        public PageTrailer(bool unicode, byte[] trailer)
         {
             this.PageType = (PageType) trailer[0];
-            this.BID = BitConverter.ToUInt64(trailer, 8);
+            this.BID = unicode ? BitConverter.ToUInt64(trailer, 8) : BitConverter.ToUInt32(trailer, 4);
         }
     }
 

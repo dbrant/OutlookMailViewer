@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using MiscParseUtilities;
 
 namespace PSTParse.NDB
@@ -12,27 +11,36 @@ namespace PSTParse.NDB
         private int _maxEntries;
         private int _cbEnt;
         private int _cLevel;
-        private bool _isNBT;
         private BREF _ref;
 
         public List<BTPAGEENTRY> Entries;
 
-        public List<BTPage> InternalChildren;
+        public List<BTPage> InternalChildren = new List<BTPage>();
 
         public bool IsNode { get { return this._trailer.PageType == PageType.NBT; } }
         public bool IsBlock { get { return this._trailer.PageType == PageType.BBT; } }
 
         public ulong BID { get { return this._trailer.BID; } }
 
-        public BTPage(byte[] pageData, BREF _ref, PSTFile pst)
+        public BTPage(bool unicode, byte[] pageData, BREF _ref, PSTFile pst)
         {
             this._ref = _ref;
-            this.InternalChildren = new List<BTPage>();
-            this._trailer = new PageTrailer(pageData.RangeSubset(496,16));
-            this._numEntries = pageData[488];
-            this._maxEntries = pageData[489];
-            this._cbEnt = pageData[490];
-            this._cLevel = pageData[491];
+            if (unicode)
+            {
+                _trailer = new PageTrailer(unicode, pageData.RangeSubset(496, 16));
+                _numEntries = pageData[488];
+                _maxEntries = pageData[489];
+                _cbEnt = pageData[490];
+                _cLevel = pageData[491];
+            }
+            else
+            {
+                _trailer = new PageTrailer(unicode, pageData.RangeSubset(500, 12));
+                _numEntries = pageData[496];
+                _maxEntries = pageData[497];
+                _cbEnt = pageData[498];
+                _cLevel = pageData[499];
+            }
 
             this.Entries = new List<BTPAGEENTRY>();
             for (var i = 0; i < this._numEntries; i++)
@@ -41,23 +49,20 @@ namespace PSTParse.NDB
                 if (this._cLevel == 0)
                 {
                     if (this._trailer.PageType == PageType.NBT)
-                        this.Entries.Add(new NBTENTRY(curEntryBytes));
+                        this.Entries.Add(new NBTENTRY(unicode, curEntryBytes));
                     else
-                    {
-                        var curEntry = new BBTENTRY(curEntryBytes);
-                        this.Entries.Add(curEntry);
-                    }
+                        this.Entries.Add(new BBTENTRY(unicode, curEntryBytes));
                 }
                 else
                 {
                     //btentries
-                    var entry = new BTENTRY(curEntryBytes);
+                    var entry = new BTENTRY(unicode, curEntryBytes);
                     this.Entries.Add(entry);
                     using (var view = pst.PSTMMF.CreateViewAccessor((long)entry.BREF.IB,512))
                     {
                         var bytes = new byte[512];
                         view.ReadArray(0, bytes, 0, 512);
-                        this.InternalChildren.Add(new BTPage(bytes, entry.BREF, pst));
+                        this.InternalChildren.Add(new BTPage(unicode, bytes, entry.BREF, pst));
                     }
                 }
             }

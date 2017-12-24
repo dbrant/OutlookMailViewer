@@ -7,7 +7,7 @@
 
         public NodeBTree(BREF root)
         {
-            this.RootLocation = root;
+            RootLocation = root;
         }
     }
 }

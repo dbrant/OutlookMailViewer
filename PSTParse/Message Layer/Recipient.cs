@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using PSTParse.LTP;
 
@@ -25,7 +23,7 @@ namespace PSTParse.Message_Layer
         public string EmailAddress;
         public string EmailAddressType;
 
-        public Recipient(TCRowMatrixData row)
+        public Recipient(bool unicode, TCRowMatrixData row)
         {
             foreach (var exProp in row)
             {
@@ -47,13 +45,13 @@ namespace PSTParse.Message_Layer
                         this.EntryID = new EntryID(exProp.Data);
                         break;
                     case 0x3001:
-                        this.DisplayName = Encoding.Unicode.GetString(exProp.Data);
+                        this.DisplayName = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
                     case 0x3002:
-                        this.EmailAddressType = Encoding.Unicode.GetString(exProp.Data);
+                        this.EmailAddressType = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
                     case 0x3003:
-                        this.EmailAddress = Encoding.Unicode.GetString(exProp.Data);
+                        this.EmailAddress = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
                     default:
                         break;

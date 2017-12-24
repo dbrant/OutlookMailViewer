@@ -9,12 +9,12 @@ namespace PSTParse.NDB
         public uint CRC { get; set; }
         public ulong BID_raw { get; set; }
 
-        public BlockTrailer(byte[] bytes, int offset)
+        public BlockTrailer(bool unicode, byte[] bytes, int offset)
         {
-            this.DataSize = BitConverter.ToUInt16(bytes, offset);
-            this.WSig = BitConverter.ToUInt16(bytes, 2 + offset);
-            this.CRC = BitConverter.ToUInt32(bytes, 4 + offset);
-            this.BID_raw = BitConverter.ToUInt64(bytes, 8 + offset);
+            DataSize = BitConverter.ToUInt16(bytes, offset);
+            WSig = BitConverter.ToUInt16(bytes, 2 + offset);
+            CRC = unicode ? BitConverter.ToUInt32(bytes, 4 + offset) : BitConverter.ToUInt32(bytes, 8 + offset);
+            BID_raw = unicode ? BitConverter.ToUInt64(bytes, 8 + offset) : BitConverter.ToUInt32(bytes, 4 + offset);
         }
     }
 }

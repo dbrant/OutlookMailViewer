@@ -8,17 +8,23 @@ namespace PSTParse.NDB
         private ulong _btkey;
         public BREF BREF;
 
-        public BTENTRY(byte[] bytes)
+        public BTENTRY(bool unicode, byte[] bytes)
         {
-            this._btkey = BitConverter.ToUInt64(bytes, 0);
-            this.BREF = new BREF(bytes.Skip(8).Take(16).ToArray());
-            /*this.BREF = new BREF_UNICODE
-                            {BID_raw = BitConverter.ToUInt64(bytes, 8), ByteIndex = BitConverter.ToUInt64(bytes, 16)};*/
+            if (unicode)
+            {
+                _btkey = BitConverter.ToUInt64(bytes, 0);
+                BREF = new BREF(unicode, bytes.Skip(8).Take(16).ToArray());
+            }
+            else
+            {
+                _btkey = BitConverter.ToUInt32(bytes, 0);
+                BREF = new BREF(unicode, bytes.Skip(4).Take(8).ToArray());
+            }
         }
 
         public ulong Key
         {
-            get { return this._btkey; }
+            get { return _btkey; }
         }
     }
 }

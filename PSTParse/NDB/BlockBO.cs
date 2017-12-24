@@ -27,10 +27,10 @@ namespace PSTParse.NDB
                 var cLevel = dataBlock.Data[1];
                 if (cLevel == 0) //SLBlock, no intermediate
                 {
-                    return BlockBO.GetSLBlockData(new SLBLOCK(dataBlock), pst);
+                    return BlockBO.GetSLBlockData(new SLBLOCK(pst.Header.isUnicode, dataBlock), pst);
                 } else //SIBlock
                 {
-                    return BlockBO.GetSIBlockData(new SIBLOCK(dataBlock), pst);
+                    return BlockBO.GetSIBlockData(new SIBLOCK(pst.Header.isUnicode, dataBlock), pst);
                 }
             } else
             {
@@ -45,7 +45,7 @@ namespace PSTParse.NDB
             foreach(var entry in siblock.Entries)
             {
                 var curSLBlockBBT = pst.GetBlockBBTEntry(entry.SLBlockBID);
-                var slblock = new SLBLOCK(BlockBO.GetBBTEntryData(curSLBlockBBT, pst)[0]);
+                var slblock = new SLBLOCK(pst.Header.isUnicode, BlockBO.GetBBTEntryData(curSLBlockBBT, pst)[0]);
                 var data = BlockBO.GetSLBlockData(slblock, pst);
                 foreach(var item in data)
                     ret.Add(item.Key, item.Value);
@@ -101,10 +101,12 @@ namespace PSTParse.NDB
         //this includes retrieving data trees via xblocks
         public static List<BlockDataDTO> GetBBTEntryData(BBTENTRY entry, PSTFile pst)
         {
+            int blockTrailerLen = pst.Header.isUnicode ? 16 : 12;
+
             var dataSize = entry.BlockByteCount;
-            var blockSize = entry.BlockByteCount + 16;
+            var blockSize = entry.BlockByteCount + blockTrailerLen;
             if (blockSize % 64 != 0)
-                blockSize += 64 - (blockSize%64);
+                blockSize += 64 - (blockSize % 64);
             List<BlockDataDTO> dataBlocks;
 
             /*if (isSubNode)
@@ -125,15 +127,15 @@ namespace PSTParse.NDB
                     var blockBytes = new byte[dataSize];
                     viewer.ReadArray(0, blockBytes, 0, dataSize);
 
-                    var trailerBytes = new byte[16];
-                    viewer.ReadArray(blockSize-16, trailerBytes, 0, 16);
-                    var trailer = new BlockTrailer(trailerBytes, 0);
+                    var trailerBytes = new byte[blockTrailerLen];
+                    viewer.ReadArray(blockSize - blockTrailerLen, trailerBytes, 0, blockTrailerLen);
+                    var trailer = new BlockTrailer(pst.Header.isUnicode, trailerBytes, 0);
                     
                     var dataBlockDTO = new BlockDataDTO
                                            {
                                                Data = blockBytes,
                                                PstOffset = entry.BREF.IB,
-                                               CRCOffset = (uint)((long)entry.BREF.IB + (blockSize - 12)),
+                                               CRCOffset = (uint)((long)entry.BREF.IB + (blockSize - (pst.Header.isUnicode ? 12 : 4))),
                                                BBTEntry = entry
                                            };
                     var type = blockBytes[0];
@@ -146,12 +148,12 @@ namespace PSTParse.NDB
                     {
                         if (blockBytes[1] == 0x01) //XBLOCK
                         {
-                            var xblock = new XBLOCK(dataBlockDTO);
+                            var xblock = new XBLOCK(pst.Header.isUnicode, dataBlockDTO);
                             return BlockBO.GetXBlockData(xblock, pst);
                         
                         } else //XXBLOCK
                         {
-                            var xxblock = new XXBLOCK(dataBlockDTO);
+                            var xxblock = new XXBLOCK(pst.Header.isUnicode, dataBlockDTO);
                             return BlockBO.GetXXBlockData(xxblock, pst);
                         }
                     } else
@@ -166,9 +168,9 @@ namespace PSTParse.NDB
                     var dataBytes = new byte[dataSize];
                     viewer.ReadArray(0, dataBytes, 0, dataSize);
                     
-                    var trailerBytes = new byte[16];
-                    viewer.ReadArray(blockSize-16, trailerBytes, 0, 16);
-                    var trailer = new BlockTrailer(trailerBytes, 0);
+                    var trailerBytes = new byte[blockTrailerLen];
+                    viewer.ReadArray(blockSize - blockTrailerLen, trailerBytes, 0, blockTrailerLen);
+                    var trailer = new BlockTrailer(pst.Header.isUnicode, trailerBytes, 0);
                     dataBlocks = new List<BlockDataDTO>
                                      {
                                          new BlockDataDTO
@@ -176,7 +178,7 @@ namespace PSTParse.NDB
                                                  Data = dataBytes,
                                                  PstOffset = entry.BREF.IB,
                                                  CRC32 = trailer.CRC,
-                                                 CRCOffset = (uint) (blockSize -12),
+                                                 CRCOffset = (uint) (blockSize - (pst.Header.isUnicode ? 12 : 4)),
                                                  BBTEntry = entry
                                              }
                                      };

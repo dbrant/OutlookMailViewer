@@ -9,15 +9,21 @@ namespace PSTParse.NDB
 
         public bool IsInternal
         {
-            get { return (this.BID & 0x02) > 0; }
+            get { return (BID & 0x02) > 0; }
         }
 
-        public BREF(byte[] bref, int offset = 0)
+        public BREF(bool unicode, byte[] bref, int offset = 0)
         {
-            this.BID = BitConverter.ToUInt64(bref, offset);
-            this.BID = this.BID & 0xfffffffffffffffe;
-            this.IB = BitConverter.ToUInt64(bref, offset + 8);
-
+            if (unicode)
+            {
+                BID = BitConverter.ToUInt64(bref, offset);
+                IB = BitConverter.ToUInt64(bref, offset + 8);
+            } else
+            {
+                BID = BitConverter.ToUInt32(bref, offset);
+                IB = BitConverter.ToUInt32(bref, offset + 4);
+            }
+            BID = BID & 0xfffffffffffffffe;
         }
     }
 }

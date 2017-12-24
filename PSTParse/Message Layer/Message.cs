@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using MiscParseUtilities;
 using PSTParse.LTP;
@@ -94,7 +93,7 @@ namespace PSTParse.Message_Layer
                         this.Attachments = new List<Attachment>();
                         foreach(var row in this.AttachmentTable.RowMatrix.Rows)
                         {
-                            this.Attachments.Add(new Attachment(row));
+                            this.Attachments.Add(new Attachment(pst.Header.isUnicode, row));
                         }
                         break;
                     case NDB.NID.NodeType.RECIPIENT_TABLE:
@@ -102,7 +101,7 @@ namespace PSTParse.Message_Layer
                         
                         foreach(var row in this.RecipientTable.RowMatrix.Rows)
                         {
-                            var recipient = new Recipient(row);
+                            var recipient = new Recipient(pst.Header.isUnicode, row);
                             switch(recipient.Type)
                             {
                                 case Recipient.RecipientType.TO:
@@ -135,7 +134,9 @@ namespace PSTParse.Message_Layer
                         this.Sensitivity = (Sensitivity) BitConverter.ToInt16(prop.Value.Data, 0);
                         break;
                     case 0x37:
-                        this.Subject = Encoding.Unicode.GetString(prop.Value.Data);
+                        this.Subject = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
                         if (this.Subject.Length > 0)
                         {
                             var chars = this.Subject.ToCharArray();
@@ -154,16 +155,24 @@ namespace PSTParse.Message_Layer
                         this.ClientSubmitTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
                         break;
                     case 0x42:
-                        this.SentRepresentingName = Encoding.Unicode.GetString(prop.Value.Data);
+                        this.SentRepresentingName = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x70:
-                        this.ConversationTopic = Encoding.Unicode.GetString(prop.Value.Data);
+                        this.ConversationTopic = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x1a:
-                        this.MessageClass = Encoding.Unicode.GetString(prop.Value.Data);
+                        this.MessageClass = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0xc1a:
-                        this.SenderName = Encoding.Unicode.GetString(prop.Value.Data);
+                        this.SenderName = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0xe06:
                         this.MessageDeliveryTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
@@ -200,16 +209,22 @@ namespace PSTParse.Message_Layer
                         //trusted sender
                         break;
                     case 0x1000:
-                        this.BodyPlainText = Encoding.Unicode.GetString(prop.Value.Data);
+                        this.BodyPlainText = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x1009:
                         this.BodyCompressedRTF = prop.Value.Data.RangeSubset(4, prop.Value.Data.Length - 4);
                         break;
                     case 0x1035:
-                        this.InternetMessageID = Encoding.Unicode.GetString(prop.Value.Data);
+                        this.InternetMessageID = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x10F3:
-                        this.UrlCompositeName = Encoding.Unicode.GetString(prop.Value.Data);
+                        this.UrlCompositeName = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x10F4:
                         this.AttributeHidden = prop.Value.Data[0] == 0x01;
@@ -236,7 +251,9 @@ namespace PSTParse.Message_Layer
                         //localeID
                         break;
                     case 0x3ff8:
-                        this.CreatorName = Encoding.Unicode.GetString(prop.Value.Data);
+                        this.CreatorName = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x3ff9:
                         //creator entryid
