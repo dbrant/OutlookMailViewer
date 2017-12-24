@@ -15,7 +15,7 @@ namespace PSTParseApp
         {
             var sw = new Stopwatch();
             sw.Start();
-            var pstPath = "outlook.pst";
+            var pstPath = "/Users/dbrant/Downloads/outlook1.pst";
             var logPath = "log.txt";
             var pstSize = new FileInfo(pstPath).Length*1.0/1024/1024;
             using (var file = new PSTFile(pstPath))
