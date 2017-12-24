@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace PSTParse.NDB
 {
     public class NID
@@ -31,10 +27,11 @@ namespace PSTParse.NDB
             LTP = 0X14
         }
 
-        public NodeType Type;
+        public NodeType Type { get; private set; }
+
         public NID(ulong nid)
         {
-            this.Type = (NodeType) (nid & 0x1f);
+            Type = (NodeType) (nid & 0x1f);
         }
     }
 }

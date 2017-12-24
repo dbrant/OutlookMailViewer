@@ -188,7 +188,7 @@ namespace PSTParse.NDB
             for (int i = 0; i < dataBlocks.Count; i++)
             {
                 var temp = dataBlocks[i].Data;   
-                DatatEncoder.CryptPermute(temp, temp.Length, false, pst);
+                DataEncoder.CryptPermute(temp, temp.Length, false, pst);
             }
             return dataBlocks;
         }

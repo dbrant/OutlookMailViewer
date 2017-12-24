@@ -4,8 +4,8 @@ namespace PSTParse.NDB
 {
     public class BREF
     {
-        public UInt64 BID;
-        public UInt64 IB;
+        public UInt64 BID { get; private set; }
+        public UInt64 IB { get; private set; }
 
         public bool IsInternal
         {
@@ -14,15 +14,8 @@ namespace PSTParse.NDB
 
         public BREF(bool unicode, byte[] bref, int offset = 0)
         {
-            if (unicode)
-            {
-                BID = BitConverter.ToUInt64(bref, offset);
-                IB = BitConverter.ToUInt64(bref, offset + 8);
-            } else
-            {
-                BID = BitConverter.ToUInt32(bref, offset);
-                IB = BitConverter.ToUInt32(bref, offset + 4);
-            }
+            BID = unicode ? BitConverter.ToUInt64(bref, offset) : BitConverter.ToUInt32(bref, offset);
+            IB = unicode ? BitConverter.ToUInt64(bref, offset + 8) : BitConverter.ToUInt32(bref, offset + 4);
             BID = BID & 0xfffffffffffffffe;
         }
     }

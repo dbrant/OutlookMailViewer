@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PSTParse.NDB
 {
     public class BID
     {
-        public ulong BlockID;
+        public ulong BlockID { get; private set; }
 
-        public BID(byte[] bytes, int offset=0)
+        public BID(bool unicode, byte[] bytes, int offset = 0)
         {
-            this.BlockID = BitConverter.ToUInt64(bytes, offset) & 0xfffffffffffffffe;
+            BlockID = unicode ? BitConverter.ToUInt64(bytes, offset) : BitConverter.ToUInt32(bytes, offset);
+            BlockID &= 0xfffffffffffffffe;
         }
     }
 }

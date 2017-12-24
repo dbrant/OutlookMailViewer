@@ -4,10 +4,10 @@ namespace PSTParse.NDB
 {
     public class BlockTrailer
     {
-        public uint DataSize { get; set; }
-        public uint WSig { get; set; }
-        public uint CRC { get; set; }
-        public ulong BID_raw { get; set; }
+        public uint DataSize { get; private set; }
+        public uint WSig { get; private set; }
+        public uint CRC { get; private set; }
+        public ulong BID_raw { get; private set; }
 
         public BlockTrailer(bool unicode, byte[] bytes, int offset)
         {

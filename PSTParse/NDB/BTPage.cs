@@ -13,17 +13,17 @@ namespace PSTParse.NDB
         private int _cLevel;
         private BREF _ref;
 
-        public List<BTPAGEENTRY> Entries;
+        public List<BTPAGEENTRY> Entries { get; private set; }
+        public List<BTPage> InternalChildren { get; private set; }
 
-        public List<BTPage> InternalChildren = new List<BTPage>();
+        public bool IsNode { get { return _trailer.PageType == PageType.NBT; } }
+        public bool IsBlock { get { return _trailer.PageType == PageType.BBT; } }
 
-        public bool IsNode { get { return this._trailer.PageType == PageType.NBT; } }
-        public bool IsBlock { get { return this._trailer.PageType == PageType.BBT; } }
-
-        public ulong BID { get { return this._trailer.BID; } }
+        public ulong BID { get { return _trailer.BID; } }
 
         public BTPage(bool unicode, byte[] pageData, BREF _ref, PSTFile pst)
         {
+            InternalChildren = new List<BTPage>();
             this._ref = _ref;
             if (unicode)
             {
@@ -42,27 +42,27 @@ namespace PSTParse.NDB
                 _cLevel = pageData[499];
             }
 
-            this.Entries = new List<BTPAGEENTRY>();
-            for (var i = 0; i < this._numEntries; i++)
+            Entries = new List<BTPAGEENTRY>();
+            for (var i = 0; i < _numEntries; i++)
             {
-                var curEntryBytes = pageData.RangeSubset(i*this._cbEnt, this._cbEnt);
-                if (this._cLevel == 0)
+                var curEntryBytes = pageData.RangeSubset(i*_cbEnt, _cbEnt);
+                if (_cLevel == 0)
                 {
-                    if (this._trailer.PageType == PageType.NBT)
-                        this.Entries.Add(new NBTENTRY(unicode, curEntryBytes));
+                    if (_trailer.PageType == PageType.NBT)
+                        Entries.Add(new NBTENTRY(unicode, curEntryBytes));
                     else
-                        this.Entries.Add(new BBTENTRY(unicode, curEntryBytes));
+                        Entries.Add(new BBTENTRY(unicode, curEntryBytes));
                 }
                 else
                 {
                     //btentries
                     var entry = new BTENTRY(unicode, curEntryBytes);
-                    this.Entries.Add(entry);
+                    Entries.Add(entry);
                     using (var view = pst.PSTMMF.CreateViewAccessor((long)entry.BREF.IB,512))
                     {
                         var bytes = new byte[512];
                         view.ReadArray(0, bytes, 0, 512);
-                        this.InternalChildren.Add(new BTPage(unicode, bytes, entry.BREF, pst));
+                        InternalChildren.Add(new BTPage(unicode, bytes, entry.BREF, pst));
                     }
                 }
             }
@@ -73,15 +73,15 @@ namespace PSTParse.NDB
             int ii = 0;
             if (BID % 2 == 1)
                 ii++;
-            BID = BID & 0xfffffffffffffffe;
-            for (int i = 0; i < this.Entries.Count; i++)
+            BID &= 0xfffffffffffffffe;
+            for (int i = 0; i < Entries.Count; i++)
             {
-                var entry = this.Entries[i];
-                if (i == this.Entries.Count - 1)
+                var entry = Entries[i];
+                if (i == Entries.Count - 1)
                 {
 
                     if (entry is BTENTRY)
-                        return this.InternalChildren[i].GetBIDBBTEntry(BID);
+                        return InternalChildren[i].GetBIDBBTEntry(BID);
                     else
                     {
                         var temp = entry as BBTENTRY;
@@ -92,13 +92,13 @@ namespace PSTParse.NDB
                 }
                 else
                 {
-                    var entry2 = this.Entries[i + 1];
+                    var entry2 = Entries[i + 1];
                     if (entry is BTENTRY)
                     {
                         var cur = entry as BTENTRY;
                         var next = entry2 as BTENTRY;
                         if (BID >= cur.Key && BID < next.Key)
-                            return this.InternalChildren[i].GetBIDBBTEntry(BID);
+                            return InternalChildren[i].GetBIDBBTEntry(BID);
                     }
                     else if (entry is BBTENTRY)
                     {
@@ -113,25 +113,25 @@ namespace PSTParse.NDB
 
         public Tuple<ulong,ulong> GetNIDBID(ulong NID)
         {
-            var isBTEntry = this.Entries[0] is BTENTRY;
-            for (int i = 0; i < this.Entries.Count; i++)
+            var isBTEntry = Entries[0] is BTENTRY;
+            for (int i = 0; i < Entries.Count; i++)
             {
-                if (i == this.Entries.Count - 1)
+                if (i == Entries.Count - 1)
                 {
                     if (isBTEntry)
-                        return this.InternalChildren[i].GetNIDBID(NID);
-                    var cur = this.Entries[i] as NBTENTRY;
+                        return InternalChildren[i].GetNIDBID(NID);
+                    var cur = Entries[i] as NBTENTRY;
                     return new Tuple<ulong, ulong>(cur.BID_Data,cur.BID_SUB);
                 }
 
-                var curEntry = this.Entries[i];
-                var nextEntry = this.Entries[i + 1];
+                var curEntry = Entries[i];
+                var nextEntry = Entries[i + 1];
                 if (isBTEntry)
                 {
                     var cur = curEntry as BTENTRY;
                     var next = nextEntry as BTENTRY;
                     if (NID >= cur.Key && NID < next.Key)
-                        return this.InternalChildren[i].GetNIDBID(NID);
+                        return InternalChildren[i].GetNIDBID(NID);
                 }
                 else
                 {

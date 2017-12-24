@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
+﻿
 namespace PSTParse.NDB
 {
-    public static class DatatEncoder
+    public static class DataEncoder
     {
         private static readonly byte[] mpbbCrypt =
 {
@@ -119,7 +115,7 @@ namespace PSTParse.NDB
                 for (int pvIndex = 0; pvIndex < cb; pvIndex++)
                 {
                     temp = pv[pvIndex];
-                    temp = temp & 0xFF;
+                    temp &= 0xFF;
                     pv[pvIndex] = mpbbCrypt[temp + idx];
                 }
             }

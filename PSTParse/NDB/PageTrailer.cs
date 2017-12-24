@@ -14,16 +14,16 @@ namespace PSTParse.NDB
         FreePageMap = 0x85,
         DensityList = 0x86
     }
+
     public class PageTrailer
     {
-        public PageType PageType { get; set; }
-        public ulong BID { get; set; }
+        public PageType PageType { get; private set; }
+        public ulong BID { get; private set; }
 
         public PageTrailer(bool unicode, byte[] trailer)
         {
-            this.PageType = (PageType) trailer[0];
-            this.BID = unicode ? BitConverter.ToUInt64(trailer, 8) : BitConverter.ToUInt32(trailer, 4);
+            PageType = (PageType) trailer[0];
+            BID = unicode ? BitConverter.ToUInt64(trailer, 8) : BitConverter.ToUInt32(trailer, 4);
         }
     }
-
 }

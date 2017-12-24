@@ -12,7 +12,7 @@ namespace PSTParse
         public NDB.PSTBTree NodeBT { get; private set; }
         public NDB.PSTBTree BlockBT { get; private set; }
 
-        public BlockEncoding EncodingAlgotihm;
+        public BlockEncoding EncodingAlgotihm { get; private set; }
         public enum BlockEncoding
         {
             NONE=0,

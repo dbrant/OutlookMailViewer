@@ -46,7 +46,7 @@ namespace PSTParse.LTP
                         this._data.Parent.Data[dataBlockOffset + 4] = 0x00;
                         this._data.Parent.Data[dataBlockOffset + 5] = 0x00;
 
-                        DatatEncoder.CryptPermute(this._data.Parent.Data, this._data.Parent.Data.Length, true, pst);
+                        DataEncoder.CryptPermute(this._data.Parent.Data, this._data.Parent.Data.Length, true, pst);
 
                         var testCRC = (new CRC32()).ComputeCRC(0, this._data.Parent.Data, (uint)this._data.Parent.Data.Length);
                         stream.Seek((long)(this._data.Parent.PstOffset + entry.DataOffset), SeekOrigin.Begin);
@@ -64,7 +64,7 @@ namespace PSTParse.LTP
 
                         var newCRC = (new CRC32()).ComputeCRC(0, this._data.Parent.Data, (uint) this._data.Parent.Data.Length);
 
-                        DatatEncoder.CryptPermute(this._data.Parent.Data, this._data.Parent.Data.Length, false, pst);
+                        DataEncoder.CryptPermute(this._data.Parent.Data, this._data.Parent.Data.Length, false, pst);
                         var crcoffset = (int) (this._data.Parent.PstOffset + this._data.Parent.CRCOffset);
                         stream.Seek(crcoffset, SeekOrigin.Begin);
                         var temp = BitConverter.GetBytes(newCRC);

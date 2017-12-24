@@ -4,29 +4,29 @@ namespace PSTParse.NDB
 {
     public class NBTENTRY : BTPAGEENTRY
     {
-        public ulong NID { get; set; }
-        public ulong BID_Data { get; set; }
-        public ulong BID_SUB { get; set; }
-        public ulong NID_TYPE { get; set; }
-        public uint NID_Parent { get; set; }
+        public ulong NID { get; private set; }
+        public ulong BID_Data { get; private set; }
+        public ulong BID_SUB { get; private set; }
+        public ulong NID_TYPE { get; private set; }
+        public uint NID_Parent { get; private set; }
 
         public NBTENTRY(bool unicode, byte[] curEntryBytes)
         {
             if (unicode)
             {
-                this.NID = BitConverter.ToUInt64(curEntryBytes, 0);
-                this.BID_Data = BitConverter.ToUInt64(curEntryBytes, 8);
-                this.BID_SUB = BitConverter.ToUInt64(curEntryBytes, 16);
-                this.NID_Parent = BitConverter.ToUInt32(curEntryBytes, 24);
+                NID = BitConverter.ToUInt64(curEntryBytes, 0);
+                BID_Data = BitConverter.ToUInt64(curEntryBytes, 8);
+                BID_SUB = BitConverter.ToUInt64(curEntryBytes, 16);
+                NID_Parent = BitConverter.ToUInt32(curEntryBytes, 24);
             }
             else
             {
-                this.NID = BitConverter.ToUInt32(curEntryBytes, 0);
-                this.BID_Data = BitConverter.ToUInt32(curEntryBytes, 4);
-                this.BID_SUB = BitConverter.ToUInt32(curEntryBytes, 8);
-                this.NID_Parent = BitConverter.ToUInt32(curEntryBytes, 12);
+                NID = BitConverter.ToUInt32(curEntryBytes, 0);
+                BID_Data = BitConverter.ToUInt32(curEntryBytes, 4);
+                BID_SUB = BitConverter.ToUInt32(curEntryBytes, 8);
+                NID_Parent = BitConverter.ToUInt32(curEntryBytes, 12);
             }
-            this.NID_TYPE = this.NID & 0x1f;
+            NID_TYPE = NID & 0x1f;
         }
     }
 }

@@ -83,7 +83,7 @@
     <Compile Include="NDB\BTENTRY.cs" />
     <Compile Include="NDB\BTPage.cs" />
     <Compile Include="NDB\BTPAGEENTRY.cs" />
-    <Compile Include="NDB\DatatEncoder.cs" />
+    <Compile Include="NDB\DataEncoder.cs" />
     <Compile Include="NDB\IBLOCK.cs" />
     <Compile Include="NDB\NBTENTRY.cs" />
     <Compile Include="NDB\NID.cs" />
