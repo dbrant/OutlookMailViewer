@@ -1,38 +1,32 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using PSTParse.LTP;
-using PSTParse.NDB;
 
 namespace PSTParse.Message_Layer
 {
     public class NamedToPropertyLookup
     {
-        public static ulong NODE_ID = 0x61;
+        private static ulong NODE_ID = 0x61;
 
-        public PropertyContext PC;
-        public Dictionary<ushort, NAMEID> Lookup; 
+        public PropertyContext PC { get; private set; }
+        public Dictionary<ushort, NAMEID> Lookup { get; private set; }
 
         internal byte[] _GUIDs;
         internal byte[] _entries;
         internal byte[] _string;
 
-        
-
         public NamedToPropertyLookup(PSTFile pst)
         {
             
-            this.PC = new PropertyContext(NamedToPropertyLookup.NODE_ID, pst);
-            this._GUIDs = this.PC.Properties[0x0002].Data;
-            this._entries = this.PC.Properties[0x0003].Data;
-            this._string = this.PC.Properties[0x0004].Data;
+            PC = new PropertyContext(NODE_ID, pst);
+            _GUIDs = PC.Properties[0x0002].Data;
+            _entries = PC.Properties[0x0003].Data;
+            _string = PC.Properties[0x0004].Data;
 
-            this.Lookup = new Dictionary<ushort, NAMEID>();
-            for (int i = 0; i < this._entries.Length; i += 8)
+            Lookup = new Dictionary<ushort, NAMEID>();
+            for (int i = 0; i < _entries.Length; i += 8)
             {
-                var cur = new NAMEID(this._entries, i, this);
-                this.Lookup.Add(cur.PropIndex, cur);
+                var cur = new NAMEID(_entries, i, this);
+                Lookup.Add(cur.PropIndex, cur);
             }
         }
     }

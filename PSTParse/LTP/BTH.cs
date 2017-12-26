@@ -6,32 +6,31 @@ namespace PSTParse.LTP
 {
     public class BTH
     {
-        public HN HeapNode;
-        public BTHHEADER Header;
-        public BTHIndexNode Root;
-        public int CurrentLevel;
-
-        public Dictionary<byte[], BTHDataEntry> Properties;
+        public HN HeapNode { get; private set; }
+        public BTHHEADER Header { get; private set; }
+        public BTHIndexNode Root { get; private set; }
+        public int CurrentLevel { get; private set; }
+        public Dictionary<byte[], BTHDataEntry> Properties { get; private set; }
 
         public BTH(HN heapNode, HID userRoot = null)
         {
-            this.HeapNode = heapNode;
+            HeapNode = heapNode;
 
             var bthHeaderHID = userRoot ?? heapNode.HeapNodes[0].Header.UserRoot;
-            this.Header = new BTHHEADER(HeapNodeBO.GetHNHIDBytes(heapNode, bthHeaderHID));
-            this.Root = new BTHIndexNode(this.Header.BTreeRoot, this, (int)this.Header.NumLevels);
+            Header = new BTHHEADER(HeapNodeBO.GetHNHIDBytes(heapNode, bthHeaderHID));
+            Root = new BTHIndexNode(Header.BTreeRoot, this, (int)Header.NumLevels);
 
-            this.Properties = new Dictionary<byte[], BTHDataEntry>(new ArrayUtilities.ByteArrayComparer());
+            Properties = new Dictionary<byte[], BTHDataEntry>(new ArrayUtilities.ByteArrayComparer());
 
             var stack = new Stack<BTHIndexNode>();
-            stack.Push(this.Root);
+            stack.Push(Root);
             while (stack.Count > 0)
             {
                 var cur = stack.Pop();
 
                 if (cur.Data != null)
                     foreach (var entry in cur.Data.DataEntries)
-                        this.Properties.Add(entry.Key, entry);
+                        Properties.Add(entry.Key, entry);
 
                 if (cur.Children != null)
                     foreach (var child in cur.Children)
@@ -42,7 +41,7 @@ namespace PSTParse.LTP
 
         public HNDataDTO GetHIDBytes(HID hid)
         {
-            return this.HeapNode.GetHIDBytes(hid);
+            return HeapNode.GetHIDBytes(hid);
         }
 
         public UInt32 GetKeyValue(byte[] key)
@@ -76,7 +75,7 @@ namespace PSTParse.LTP
             var ret = new Dictionary<ushort, ExchangeProperty>();
 
             var stack = new Stack<BTHIndexNode>();
-            stack.Push(this.Root);
+            stack.Push(Root);
             while (stack.Count > 0)
             {
                 var cur = stack.Pop();

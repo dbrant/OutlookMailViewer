@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using PSTParse.NDB;
+﻿using PSTParse.NDB;
 
 namespace PSTParse.LTP
 {

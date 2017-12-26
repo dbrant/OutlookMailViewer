@@ -1,31 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MiscParseUtilities;
-using PSTParse.NDB;
+﻿using MiscParseUtilities;
 
 namespace PSTParse.LTP
 {
     public class BTHHEADER
     {
-        public uint BType;
+        public uint BType { get; private set; }
         //must be 2,4,8,16
-        public uint KeySize;
+        public uint KeySize { get; private set; }
         //must be >0 <=32
-        public uint DataSize;
-        public uint NumLevels;
-        public HID BTreeRoot;
+        public uint DataSize { get; private set; }
+        public uint NumLevels { get; private set; }
+        public HID BTreeRoot { get; private set; }
 
         public BTHHEADER(HNDataDTO block)
         {
             var bytes = block.Data;
-            this.BType = bytes[0];
-            this.KeySize = bytes[1];
-            this.DataSize = bytes[2];
-            this.NumLevels = bytes[3];
-            this.BTreeRoot = new HID(bytes.RangeSubset(4, 4));
-
+            BType = bytes[0];
+            KeySize = bytes[1];
+            DataSize = bytes[2];
+            NumLevels = bytes[3];
+            BTreeRoot = new HID(bytes.RangeSubset(4, 4));
         }
     }
 }

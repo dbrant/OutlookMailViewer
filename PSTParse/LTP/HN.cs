@@ -1,33 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using PSTParse.NDB;
 
 namespace PSTParse.LTP
 {
     public class HN
     {
-        public NBTENTRY HNNode;
-        public List<HNBlock> HeapNodes;
-        public Dictionary<ulong, NodeDataDTO> HeapSubNode;
+        public NBTENTRY HNNode { get; private set; }
+        public List<HNBlock> HeapNodes { get; private set; }
+        public Dictionary<ulong, NodeDataDTO> HeapSubNode { get; private set; }
 
         public HN(NodeDataDTO nodeData)
         {
-            this.HeapNodes = new List<HNBlock>();
+            HeapNodes = new List<HNBlock>();
             var numBlocks = nodeData.NodeData.Count;
             for (int i = 0; i < numBlocks; i++)
             {
                 var curBlock = new HNBlock(i, nodeData.NodeData[i]);
-                this.HeapNodes.Add(curBlock);
+                HeapNodes.Add(curBlock);
             }
 
-            this.HeapSubNode = nodeData.SubNodeData;
+            HeapSubNode = nodeData.SubNodeData;
         }
 
         public HNDataDTO GetHIDBytes(HID hid)
         {
-            return this.HeapNodes[(int)hid.hidBlockIndex].GetAllocation(hid);
+            return HeapNodes[(int)hid.hidBlockIndex].GetAllocation(hid);
         }
     }
 }

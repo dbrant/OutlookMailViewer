@@ -14,17 +14,18 @@ namespace PSTParse.Message_Layer
         STORAGE = 0X06
 
     }
+
     public class Attachment
     {
-        public AttachmentMethod Method;
-        public uint Size;
-        public uint RenderingPosition;
-        public string Filename;
-        public uint LTPRowID;
-        public uint LTPRowVer;
-        public bool InvisibleInHTML;
-        public bool InvisibleInRTF;
-        public bool RenderedInBody;
+        public AttachmentMethod Method { get; private set; }
+        public uint Size { get; private set; }
+        public uint RenderingPosition { get; private set; }
+        public string Filename { get; private set; }
+        public uint LTPRowID { get; private set; }
+        public uint LTPRowVer { get; private set; }
+        public bool InvisibleInHTML { get; private set; }
+        public bool InvisibleInRTF { get; private set; }
+        public bool RenderedInBody { get; private set; }
 
         public Attachment(bool unicode, TCRowMatrixData row)
         {
@@ -33,29 +34,29 @@ namespace PSTParse.Message_Layer
                 switch (exProp.ID)
                 {
                     case 0x0e20:
-                        this.Size = BitConverter.ToUInt32(exProp.Data, 0);
+                        Size = BitConverter.ToUInt32(exProp.Data, 0);
                         break;
                     case 0x3704:
                         if (exProp.Data != null)
-                            this.Filename = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
+                            Filename = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
                     case 0x3705:
-                        this.Method = (AttachmentMethod) BitConverter.ToUInt32(exProp.Data, 0);
+                        Method = (AttachmentMethod) BitConverter.ToUInt32(exProp.Data, 0);
                         break;
                     case 0x370b:
-                        this.RenderingPosition = BitConverter.ToUInt32(exProp.Data, 0);
+                        RenderingPosition = BitConverter.ToUInt32(exProp.Data, 0);
                         break;
                     case 0x3714:
                         var flags = BitConverter.ToUInt32(exProp.Data, 0);
-                        this.InvisibleInHTML = (flags & 0x1) != 0;
-                        this.InvisibleInRTF = (flags & 0x02) != 0;
-                        this.RenderedInBody = (flags & 0x04) != 0;
+                        InvisibleInHTML = (flags & 0x1) != 0;
+                        InvisibleInRTF = (flags & 0x02) != 0;
+                        RenderedInBody = (flags & 0x04) != 0;
                         break;
                     case 0x67F2:
-                        this.LTPRowID = BitConverter.ToUInt32(exProp.Data, 0);
+                        LTPRowID = BitConverter.ToUInt32(exProp.Data, 0);
                         break;
                     case 0x67F3:
-                        this.LTPRowVer = BitConverter.ToUInt32(exProp.Data, 0);
+                        LTPRowVer = BitConverter.ToUInt32(exProp.Data, 0);
                         break;
                     default:
                         break;

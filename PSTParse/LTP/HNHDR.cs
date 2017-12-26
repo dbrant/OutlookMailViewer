@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PSTParse.LTP
 {
@@ -13,11 +11,11 @@ namespace PSTParse.LTP
             BTreeHeap = 0xB5,
             PropertyContext = 0xBC
         }
-        public ulong OffsetHNPageMap;
-        public ulong bSig;
-        public ClientSig ClientSigType;
-        public HID UserRoot;
-        public ulong FillLevel_raw;
+        public ulong OffsetHNPageMap { get; private set; }
+        public ulong bSig { get; private set; }
+        public ClientSig ClientSigType { get; private set; }
+        public HID UserRoot { get; private set; }
+        public ulong FillLevel_raw { get; private set; }
 
         public HNHDR(byte[] bytes)
         {

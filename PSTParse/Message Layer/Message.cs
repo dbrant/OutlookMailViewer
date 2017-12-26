@@ -21,48 +21,49 @@ namespace PSTParse.Message_Layer
         Private = 0x02,
         Confidential = 0x03
     }
+
     public class Message: IPMItem
     {
-        public uint NID { get; set; }
-        public NodeDataDTO Data;
-        public PropertyContext MessagePC;
-        public TableContext AttachmentTable;
-        public TableContext RecipientTable;
-        public PropertyContext AttachmentPC;
+        public uint NID { get; private set; }
+        public NodeDataDTO Data { get; private set; }
+        public PropertyContext MessagePC { get; private set; }
+        public TableContext AttachmentTable { get; private set; }
+        public TableContext RecipientTable { get; private set; }
+        public PropertyContext AttachmentPC { get; private set; }
 
-        public String Subject;
-        public String SubjectPrefix;
-        public Importance Imporance;
-        public Sensitivity Sensitivity;
-        public DateTime LastSaved;
+        public String Subject { get; private set; }
+        public String SubjectPrefix { get; private set; }
+        public Importance Imporance { get; private set; }
+        public Sensitivity Sensitivity { get; private set; }
+        public DateTime LastSaved { get; private set; }
         
-        public DateTime ClientSubmitTime;
-        public string SentRepresentingName;
-        public string ConversationTopic;
-        public string SenderName;
-        public DateTime MessageDeliveryTime;
-        public Boolean Read;
-        public Boolean Unsent;
-        public Boolean Unmodified;
-        public Boolean HasAttachments;
-        public Boolean FromMe;
-        public Boolean IsFAI;
-        public Boolean NotifyReadRequested;
-        public Boolean NotifyUnreadRequested;
-        public Boolean EverRead;
-        public UInt32 MessageSize;
-        public string BodyPlainText;
-        public UInt32 InternetArticalNumber;
-        public byte[] BodyCompressedRTF;
-        public string InternetMessageID;
-        public string UrlCompositeName;
-        public bool AttributeHidden;
-        public bool ReadOnly;
-        public DateTime CreationTime;
-        public DateTime LastModificationTime;
-        public UInt32 CodePage;
-        public String CreatorName;
-        public UInt32 NonUnicodeCodePage;
+        public DateTime ClientSubmitTime { get; private set; }
+        public string SentRepresentingName { get; private set; }
+        public string ConversationTopic { get; private set; }
+        public string SenderName { get; private set; }
+        public DateTime MessageDeliveryTime { get; private set; }
+        public Boolean Read { get; private set; }
+        public Boolean Unsent { get; private set; }
+        public Boolean Unmodified { get; private set; }
+        public Boolean HasAttachments { get; private set; }
+        public Boolean FromMe { get; private set; }
+        public Boolean IsFAI { get; private set; }
+        public Boolean NotifyReadRequested { get; private set; }
+        public Boolean NotifyUnreadRequested { get; private set; }
+        public Boolean EverRead { get; private set; }
+        public UInt32 MessageSize { get; private set; }
+        public string BodyPlainText { get; private set; }
+        public UInt32 InternetArticleNumber { get; private set; }
+        public byte[] BodyCompressedRTF { get; private set; }
+        public string InternetMessageID { get; private set; }
+        public string UrlCompositeName { get; private set; }
+        public bool AttributeHidden { get; private set; }
+        public bool ReadOnly { get; private set; }
+        public DateTime CreationTime { get; private set; }
+        public DateTime LastModificationTime { get; private set; }
+        public UInt32 CodePage { get; private set; }
+        public String CreatorName { get; private set; }
+        public UInt32 NonUnicodeCodePage { get; private set; }
 
         private UInt32 MessageFlags;
         private IPMItem _IPMItem;
@@ -76,125 +77,125 @@ namespace PSTParse.Message_Layer
 
         public Message(uint NID, IPMItem item, PSTFile pst)
         {
-            this._IPMItem = item;
-            this.Data = BlockBO.GetNodeData(NID, pst);
+            _IPMItem = item;
+            Data = BlockBO.GetNodeData(NID, pst);
             this.NID = NID;
-            //this.MessagePC = new PropertyContext(this.Data);
-            foreach(var subNode in this.Data.SubNodeData)
+            //MessagePC = new PropertyContext(Data);
+            foreach(var subNode in Data.SubNodeData)
             {
                 var temp = new NID(subNode.Key);
                 switch(temp.Type)
                 {
                     case NDB.NID.NodeType.ATTACHMENT_TABLE:
-                        this.AttachmentTable = new TableContext(subNode.Value);
+                        AttachmentTable = new TableContext(subNode.Value);
                         break;
                     case NDB.NID.NodeType.ATTACHMENT_PC:
-                        this.AttachmentPC = new PropertyContext(subNode.Value);
-                        this.Attachments = new List<Attachment>();
-                        foreach(var row in this.AttachmentTable.RowMatrix.Rows)
+                        AttachmentPC = new PropertyContext(subNode.Value);
+                        Attachments = new List<Attachment>();
+                        foreach(var row in AttachmentTable.RowMatrix.Rows)
                         {
-                            this.Attachments.Add(new Attachment(pst.Header.isUnicode, row));
+                            Attachments.Add(new Attachment(pst.Header.isUnicode, row));
                         }
                         break;
                     case NDB.NID.NodeType.RECIPIENT_TABLE:
-                        this.RecipientTable = new TableContext(subNode.Value);
+                        RecipientTable = new TableContext(subNode.Value);
                         
-                        foreach(var row in this.RecipientTable.RowMatrix.Rows)
+                        foreach(var row in RecipientTable.RowMatrix.Rows)
                         {
                             var recipient = new Recipient(pst.Header.isUnicode, row);
                             switch(recipient.Type)
                             {
                                 case Recipient.RecipientType.TO:
-                                    this.To.Add(recipient);
+                                    To.Add(recipient);
                                     break;
                                 case Recipient.RecipientType.FROM:
-                                    this.From.Add(recipient);
+                                    From.Add(recipient);
                                     break;
                                 case Recipient.RecipientType.CC:
-                                    this.CC.Add(recipient);
+                                    CC.Add(recipient);
                                     break;
                                 case Recipient.RecipientType.BCC:
-                                    this.BCC.Add(recipient);
+                                    BCC.Add(recipient);
                                     break;
                             }
                         }
                         break;
                 }
             }
-            foreach(var prop in this._IPMItem.PC.Properties)
+            foreach(var prop in _IPMItem.PC.Properties)
             {
                 if (prop.Value.Data == null)
                     continue;
                 switch(prop.Key)
                 {
                     case 0x17:
-                        this.Imporance = (Importance) BitConverter.ToInt16(prop.Value.Data, 0);
+                        Imporance = (Importance) BitConverter.ToInt16(prop.Value.Data, 0);
                         break;
                     case 0x36:
-                        this.Sensitivity = (Sensitivity) BitConverter.ToInt16(prop.Value.Data, 0);
+                        Sensitivity = (Sensitivity) BitConverter.ToInt16(prop.Value.Data, 0);
                         break;
                     case 0x37:
-                        this.Subject = pst.Header.isUnicode
+                        Subject = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
-                        if (this.Subject.Length > 0)
+                        if (Subject.Length > 0)
                         {
-                            var chars = this.Subject.ToCharArray();
+                            var chars = Subject.ToCharArray();
                             if (chars[0] == 0x001)
                             {
                                 var length = (int)chars[1];
                                 int i = 0;
                                 if (length > 1)
                                     i++;
-                                this.SubjectPrefix = this.Subject.Substring(2, length-1);
-                                this.Subject = this.Subject.Substring(2 + length-1);
+                                SubjectPrefix = Subject.Substring(2, length-1);
+                                Subject = Subject.Substring(2 + length-1);
                             }
                         }
                         break;
                     case 0x39:
-                        this.ClientSubmitTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
+                        ClientSubmitTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
                         break;
                     case 0x42:
-                        this.SentRepresentingName = pst.Header.isUnicode
+                        SentRepresentingName = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x70:
-                        this.ConversationTopic = pst.Header.isUnicode
+                        ConversationTopic = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x1a:
-                        this.MessageClass = pst.Header.isUnicode
+                        MessageClass = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0xc1a:
-                        this.SenderName = pst.Header.isUnicode
+                        SenderName = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0xe06:
-                        this.MessageDeliveryTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
+                        MessageDeliveryTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
                         break;
                     case 0xe07:
-                        this.MessageFlags = BitConverter.ToUInt32(prop.Value.Data, 0);
+                        MessageFlags = BitConverter.ToUInt32(prop.Value.Data, 0);
 
-                        this.Read = (this.MessageFlags & 0x1) != 0;
-                        this.Unsent = (this.MessageFlags & 0x8) != 0;
-                        this.Unmodified = (this.MessageFlags & 0x2) != 0;
-                        this.HasAttachments = (this.MessageFlags & 0x10) != 0;
-                        this.FromMe = (this.MessageFlags & 0x20) != 0;
-                        this.IsFAI = (this.MessageFlags & 0x40) != 0;
-                        this.NotifyReadRequested = (this.MessageFlags & 0x100) != 0;
-                        this.NotifyUnreadRequested = (this.MessageFlags & 0x200) != 0;
-                        this.EverRead = (this.MessageFlags & 0x400) != 0;
+                        Read = (MessageFlags & 0x1) != 0;
+                        Unsent = (MessageFlags & 0x8) != 0;
+                        Unmodified = (MessageFlags & 0x2) != 0;
+                        HasAttachments = (MessageFlags & 0x10) != 0;
+                        FromMe = (MessageFlags & 0x20) != 0;
+                        IsFAI = (MessageFlags & 0x40) != 0;
+                        NotifyReadRequested = (MessageFlags & 0x100) != 0;
+                        NotifyUnreadRequested = (MessageFlags & 0x200) != 0;
+                        EverRead = (MessageFlags & 0x400) != 0;
                         break;
                     case 0xe08:
-                        this.MessageSize = BitConverter.ToUInt32(prop.Value.Data, 0);
+                        MessageSize = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
                     case 0xe23:
-                        this.InternetArticalNumber = BitConverter.ToUInt32(prop.Value.Data, 0);
+                        InternetArticleNumber = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
                     case 0xe27:
                         //unknown
@@ -209,49 +210,49 @@ namespace PSTParse.Message_Layer
                         //trusted sender
                         break;
                     case 0x1000:
-                        this.BodyPlainText = pst.Header.isUnicode
+                        BodyPlainText = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x1009:
-                        this.BodyCompressedRTF = prop.Value.Data.RangeSubset(4, prop.Value.Data.Length - 4);
+                        BodyCompressedRTF = prop.Value.Data.RangeSubset(4, prop.Value.Data.Length - 4);
                         break;
                     case 0x1035:
-                        this.InternetMessageID = pst.Header.isUnicode
+                        InternetMessageID = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x10F3:
-                        this.UrlCompositeName = pst.Header.isUnicode
+                        UrlCompositeName = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x10F4:
-                        this.AttributeHidden = prop.Value.Data[0] == 0x01;
+                        AttributeHidden = prop.Value.Data[0] == 0x01;
                         break;
                     case 0x10F5:
                         //unknown
                         break;
                     case 0x10F6:
-                        this.ReadOnly = prop.Value.Data[0] == 0x01;
+                        ReadOnly = prop.Value.Data[0] == 0x01;
                         break;
                     case 0x3007:
-                        this.CreationTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
+                        CreationTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
                         break;
                     case 0x3008:
-                        this.LastModificationTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
+                        LastModificationTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
                         break;
                     case 0x300B:
                         //seach key
                         break;
                     case 0x3fDE:
-                        this.CodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
+                        CodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
                     case 0x3ff1:
                         //localeID
                         break;
                     case 0x3ff8:
-                        this.CreatorName = pst.Header.isUnicode
+                        CreatorName = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
@@ -265,7 +266,7 @@ namespace PSTParse.Message_Layer
                         //last modifier entryid
                         break;
                     case 0x3ffd:
-                        this.NonUnicodeCodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
+                        NonUnicodeCodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
                     case 0x4019:
                         //unknown

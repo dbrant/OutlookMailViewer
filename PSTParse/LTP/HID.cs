@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace PSTParse.LTP
 {
     public class HID
     {
-        public ulong HID_Type;
+        public ulong HID_Type { get; private set; }
         //the index in the allocations for the specific heap block.
-        public ulong hidIndex;
+        public ulong hidIndex { get; private set; }
         //the index in the block array for this heap
-        public ulong hidBlockIndex;
+        public ulong hidBlockIndex { get; private set; }
 
         public HID(byte[] bytes, int offset = 0)
         {
@@ -20,6 +17,5 @@ namespace PSTParse.LTP
             this.hidIndex = (temp >> 5) & 0x7FF;
             this.hidBlockIndex = BitConverter.ToUInt16(bytes, offset + 2);
         }
-
     }
 }

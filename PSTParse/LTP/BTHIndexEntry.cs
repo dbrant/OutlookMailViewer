@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MiscParseUtilities;
+﻿using MiscParseUtilities;
 
 namespace PSTParse.LTP
 {
     public class BTHIndexEntry
     {
-        public byte[] Key;
-        public HID HID;
+        public byte[] Key { get; private set; }
+        public HID HID { get; private set; }
 
         public BTHIndexEntry(byte[] bytes, int offset, BTHHEADER header)
         {
-            this.Key = bytes.RangeSubset(offset,(int)header.KeySize);
+            Key = bytes.RangeSubset(offset,(int)header.KeySize);
             var temp = offset + (int) header.KeySize;
-            this.HID = new HID(bytes.RangeSubset(temp, 4));
+            HID = new HID(bytes.RangeSubset(temp, 4));
 
         }
     }

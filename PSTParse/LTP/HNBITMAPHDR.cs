@@ -1,19 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace PSTParse.LTP
 {
     public class HNBITMAPHDR
     {
-        public uint HNPageMapOffset;
-        public byte[] FillLevel;
+        public uint HNPageMapOffset { get; private set; }
+        public byte[] FillLevel { get; private set; }
 
         public HNBITMAPHDR(ref byte[] bytes)
         {
-            this.HNPageMapOffset = BitConverter.ToUInt16(bytes, 0);
-            this.FillLevel = bytes.Skip(2).Take(64).ToArray();
+            HNPageMapOffset = BitConverter.ToUInt16(bytes, 0);
+            FillLevel = bytes.Skip(2).Take(64).ToArray();
         }
     }
 }

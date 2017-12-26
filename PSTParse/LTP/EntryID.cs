@@ -5,15 +5,15 @@ namespace PSTParse.LTP
 {
     public class EntryID
     {
-        public uint Flags;
-        public byte[] PSTUID;
-        public ulong NID;
+        public uint Flags { get; private set; }
+        public byte[] PSTUID { get; private set; }
+        public ulong NID { get; private set; }
 
         public EntryID(byte[] bytes, int offset = 0)
         {
-            this.Flags = BitConverter.ToUInt32(bytes, offset);
-            this.PSTUID = bytes.RangeSubset(4+offset, 16);
-            this.NID = BitConverter.ToUInt32(bytes, offset + 20);
+            Flags = BitConverter.ToUInt32(bytes, offset);
+            PSTUID = bytes.RangeSubset(4 + offset, 16);
+            NID = BitConverter.ToUInt32(bytes, offset + 20);
         }
     }
 }

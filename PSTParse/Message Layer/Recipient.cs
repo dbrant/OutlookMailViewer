@@ -14,14 +14,14 @@ namespace PSTParse.Message_Layer
             BCC=0x03
         }
 
-        public RecipientType Type;
-        public PSTEnums.ObjectType ObjType;
-        public bool Responsibility;
-        public byte[] Tag;
-        public EntryID EntryID;
-        public string DisplayName;
-        public string EmailAddress;
-        public string EmailAddressType;
+        public RecipientType Type { get; private set; }
+        public PSTEnums.ObjectType ObjType { get; private set; }
+        public bool Responsibility { get; private set; }
+        public byte[] Tag { get; private set; }
+        public EntryID EntryID { get; private set; }
+        public string DisplayName { get; private set; }
+        public string EmailAddress { get; private set; }
+        public string EmailAddressType { get; private set; }
 
         public Recipient(bool unicode, TCRowMatrixData row)
         {
@@ -30,28 +30,28 @@ namespace PSTParse.Message_Layer
                 switch (exProp.ID)
                 {
                     case 0x0c15:
-                        this.Type = (RecipientType)BitConverter.ToUInt32(exProp.Data, 0);
+                        Type = (RecipientType)BitConverter.ToUInt32(exProp.Data, 0);
                         break;
                     case 0x0e0f:
-                        this.Responsibility = exProp.Data[0] == 0x01;
+                        Responsibility = exProp.Data[0] == 0x01;
                         break;
                     case 0x0ff9:
-                        this.Tag = exProp.Data;
+                        Tag = exProp.Data;
                         break;
                     case 0x0ffe:
-                        this.ObjType = (PSTEnums.ObjectType)BitConverter.ToUInt32(exProp.Data, 0);
+                        ObjType = (PSTEnums.ObjectType)BitConverter.ToUInt32(exProp.Data, 0);
                         break;
                     case 0x0fff:
-                        this.EntryID = new EntryID(exProp.Data);
+                        EntryID = new EntryID(exProp.Data);
                         break;
                     case 0x3001:
-                        this.DisplayName = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
+                        DisplayName = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
                     case 0x3002:
-                        this.EmailAddressType = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
+                        EmailAddressType = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
                     case 0x3003:
-                        this.EmailAddress = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
+                        EmailAddress = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
                     default:
                         break;

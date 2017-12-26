@@ -1,29 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MiscParseUtilities;
-using PSTParse.NDB;
+﻿using MiscParseUtilities;
 
 namespace PSTParse.LTP
 {
     public class BTHDataEntry
     {
-        public byte[] Key;
-        public byte[] Data;
+        public byte[] Key { get; private set; }
+        public byte[] Data { get; private set; }
 
-        public ulong DataOffset;
-        public ulong DataBlockOffset;
-        public BTH ParentTree;
+        public ulong DataOffset { get; private set; }
+        public ulong DataBlockOffset { get; private set; }
+        public BTH ParentTree { get; private set; }
 
         public BTHDataEntry(HNDataDTO data, int offset, BTH tree)
         {
-            this.Key = data.Data.RangeSubset(offset, (int) tree.Header.KeySize);
-            //this.Key = bytes.Skip(offset).Take((int)tree.Header.KeySize).ToArray();
-            var temp = offset + (int) tree.Header.KeySize;
-            this.Data = data.Data.RangeSubset(temp, (int)tree.Header.DataSize);
-            this.DataOffset = (ulong) offset + tree.Header.KeySize;
-            this.ParentTree = tree;
+            Key = data.Data.RangeSubset(offset, (int) tree.Header.KeySize);
+            //Key = bytes.Skip(offset).Take((int)tree.Header.KeySize).ToArray();
+            Data = data.Data.RangeSubset(offset + (int)tree.Header.KeySize, (int)tree.Header.DataSize);
+            DataOffset = (ulong) offset + tree.Header.KeySize;
+            ParentTree = tree;
         }
     }
 }

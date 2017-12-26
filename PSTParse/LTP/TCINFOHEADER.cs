@@ -14,22 +14,22 @@ namespace PSTParse.LTP
         public HID RowIndexLocation;
         public ulong RowMatrixLocation;
 
-        public List<TCOLDESC> ColumnsDescriptors; 
+        public List<TCOLDESC> ColumnsDescriptors;
 
         public TCINFOHEADER(byte[] bytes)
         {
-            this.Type = bytes[0];
-            this.ColumnCount = bytes[1];
-            this.EndOffset48 = BitConverter.ToUInt16(bytes, 2);
-            this.EndOffset2 = BitConverter.ToUInt16(bytes, 4);
-            this.EndOffset1 = BitConverter.ToUInt16(bytes, 6);
-            this.EndOffsetCEB = BitConverter.ToUInt16(bytes, 8);
-            this.RowIndexLocation = new HID(bytes, 10);
-            this.RowMatrixLocation = BitConverter.ToUInt32(bytes, 14);
-            this.ColumnsDescriptors = new List<TCOLDESC>();
-            for (var i = 0; i < this.ColumnCount; i++)
+            Type = bytes[0];
+            ColumnCount = bytes[1];
+            EndOffset48 = BitConverter.ToUInt16(bytes, 2);
+            EndOffset2 = BitConverter.ToUInt16(bytes, 4);
+            EndOffset1 = BitConverter.ToUInt16(bytes, 6);
+            EndOffsetCEB = BitConverter.ToUInt16(bytes, 8);
+            RowIndexLocation = new HID(bytes, 10);
+            RowMatrixLocation = BitConverter.ToUInt32(bytes, 14);
+            ColumnsDescriptors = new List<TCOLDESC>();
+            for (var i = 0; i < ColumnCount; i++)
             {
-                this.ColumnsDescriptors.Add(new TCOLDESC(bytes, 22 + i*8));
+                ColumnsDescriptors.Add(new TCOLDESC(bytes, 22 + i * 8));
             }
         }
     }
