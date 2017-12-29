@@ -37,6 +37,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.treeViewFolders = new System.Windows.Forms.TreeView();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.tabControlContents = new System.Windows.Forms.TabControl();
             this.tabPageHtml = new System.Windows.Forms.TabPage();
@@ -46,7 +47,6 @@
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.textBoxHeaders = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.listViewMessages = new OutlookMailViewer.ListViewDblBuf();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -146,6 +146,14 @@
             this.imageList1.Images.SetKeyName(2, "textgeneric");
             this.imageList1.Images.SetKeyName(3, "inbox");
             this.imageList1.Images.SetKeyName(4, "information");
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Location = new System.Drawing.Point(0, 612);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(970, 22);
+            this.statusStrip1.TabIndex = 3;
+            this.statusStrip1.Text = "statusStrip1";
             // 
             // splitContainer2
             // 
@@ -264,14 +272,6 @@
             this.tabPage4.Text = "Details";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 612);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(970, 22);
-            this.statusStrip1.TabIndex = 3;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
             // listViewMessages
             // 
             this.listViewMessages.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -280,6 +280,7 @@
             this.columnHeader2,
             this.columnHeader3});
             this.listViewMessages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewMessages.FullRowSelect = true;
             this.listViewMessages.HideSelection = false;
             this.listViewMessages.Location = new System.Drawing.Point(0, 0);
             this.listViewMessages.Name = "listViewMessages";
@@ -288,6 +289,7 @@
             this.listViewMessages.TabIndex = 0;
             this.listViewMessages.UseCompatibleStateImageBehavior = false;
             this.listViewMessages.View = System.Windows.Forms.View.Details;
+            this.listViewMessages.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewMessages_ColumnClick);
             this.listViewMessages.SelectedIndexChanged += new System.EventHandler(this.listViewMessages_SelectedIndexChanged);
             // 
             // columnHeader1
@@ -316,6 +318,7 @@
             this.columnHeader4,
             this.columnHeader5});
             this.listViewDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewDetails.FullRowSelect = true;
             this.listViewDetails.HideSelection = false;
             this.listViewDetails.Location = new System.Drawing.Point(3, 3);
             this.listViewDetails.Name = "listViewDetails";

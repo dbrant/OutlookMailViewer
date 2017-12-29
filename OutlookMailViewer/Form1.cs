@@ -1,6 +1,8 @@
 ﻿using PSTParse;
 using PSTParse.Message_Layer;
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
@@ -13,7 +15,10 @@ namespace OutlookMailViewer
     public partial class Form1 : Form
     {
         private PSTFile currentFile;
+        private List<PSTParse.Message_Layer.Message> currentMessageList = new List<PSTParse.Message_Layer.Message>();
+
         private bool allowNextWebViewLink;
+        private bool sortAscending;
 
         public Form1()
         {
@@ -104,32 +109,20 @@ namespace OutlookMailViewer
             {
                 return;
             }
-            try
-            {
-                Utils.LockWindowUpdate(listViewMessages);
-                listViewMessages.Items.Clear();
-                MailFolder folder = (MailFolder)treeViewFolders.SelectedNode.Tag;
 
-                foreach (var item in folder)
+            currentMessageList.Clear();
+            MailFolder folder = (MailFolder)treeViewFolders.SelectedNode.Tag;
+
+            foreach (var item in folder)
+            {
+                if (item is PSTParse.Message_Layer.Message)
                 {
-                    if (item is PSTParse.Message_Layer.Message)
-                    {
-                        var message = item as PSTParse.Message_Layer.Message;
-                        var listItem = listViewMessages.Items.Add(message.Subject);
-                        listItem.Tag = message;
-                        listItem.ImageKey = "textgeneric";
-                        listItem.SubItems.Add(message.ClientSubmitTime.ToString());
-                        listItem.SubItems.Add(message.From.Count > 0
-                            ? String.Join("; ", message.From.Select(r => r.EmailAddress))
-                            : message.FromHeaderField);
-                        listItem.SubItems.Add(String.Join("; ", message.To.Select(r => r.EmailAddress)));
-                    }
+                    currentMessageList.Add((PSTParse.Message_Layer.Message)item);
                 }
             }
-            finally
-            {
-                Utils.UnlockWindowUpdate();
-            }
+            sortAscending = false;
+            SortByDate();
+            ShowMessageList();
         }
 
         private void listViewMessages_SelectedIndexChanged(object sender, EventArgs e)
@@ -174,5 +167,53 @@ namespace OutlookMailViewer
             // suppress link clicks for now.
             e.Cancel = true;
         }
+
+        private void listViewMessages_ColumnClick(object sender, ColumnClickEventArgs e)
+        {
+            sortAscending = !sortAscending;
+            if (e.Column == 0)
+            {
+                currentMessageList.Sort((a, b) => (a.Subject != null && b.Subject != null)
+                ? (sortAscending ? a.Subject.CompareTo(b.Subject) : b.Subject.CompareTo(a.Subject))
+                : 0);
+            }
+            else if (e.Column == 1)
+            {
+                SortByDate();
+            }
+            ShowMessageList();
+        }
+
+        private void SortByDate()
+        {
+            currentMessageList.Sort((a, b) => (a.ClientSubmitTime != null && b.ClientSubmitTime != null)
+                ? (sortAscending ? a.ClientSubmitTime.CompareTo(b.ClientSubmitTime) : b.ClientSubmitTime.CompareTo(a.ClientSubmitTime))
+                : 0);
+        }
+
+        private void ShowMessageList()
+        {
+            try
+            {
+                Utils.LockWindowUpdate(listViewMessages);
+                listViewMessages.Items.Clear();
+                foreach (var message in currentMessageList)
+                {
+                    var listItem = listViewMessages.Items.Add(message.Subject);
+                    listItem.Tag = message;
+                    listItem.ImageKey = "textgeneric";
+                    listItem.SubItems.Add(message.ClientSubmitTime.ToString());
+                    listItem.SubItems.Add(message.From.Count > 0
+                        ? String.Join("; ", message.From.Select(r => r.EmailAddress))
+                        : message.FromHeaderField);
+                    listItem.SubItems.Add(String.Join("; ", message.To.Select(r => r.EmailAddress)));
+                }
+            }
+            finally
+            {
+                Utils.UnlockWindowUpdate();
+            }
+        }
+
     }
 }
