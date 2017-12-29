@@ -6,6 +6,9 @@ using System.Windows.Forms;
 
 namespace OutlookMailViewer
 {
+    /// <summary>
+    /// Copyright 2018 Dmitry Brant.
+    /// </summary>
     public partial class Form1 : Form
     {
         private PSTFile currentFile;
@@ -14,6 +17,9 @@ namespace OutlookMailViewer
         {
             InitializeComponent();
             Text = Application.ProductName;
+            Utils.FixDialogFont(this);
+            Utils.FixWindowTheme(treeViewFolders);
+            Utils.FixWindowTheme(listViewMessages);
         }
 
         private void Form1_DragEnter(object sender, DragEventArgs e)
@@ -69,10 +75,17 @@ namespace OutlookMailViewer
         
         private void LayoutFolders(TreeNode parent, MailFolder folder)
         {
+            string nodeText = folder.DisplayName;
+            if (folder.Count() > 0)
+            {
+                nodeText += " (" + folder.Count() + ")";
+            }
+
             var node = parent != null
-                ? parent.Nodes.Add(folder.DisplayName)
-                : treeViewFolders.Nodes.Add(folder.DisplayName);
+                ? parent.Nodes.Add(nodeText)
+                : treeViewFolders.Nodes.Add(nodeText);
             node.Tag = folder;
+            node.ImageKey = "folder";
             foreach (var child in folder.SubFolders)
             {
                 LayoutFolders(node, child);
@@ -86,19 +99,28 @@ namespace OutlookMailViewer
             {
                 return;
             }
-            listViewMessages.Items.Clear();
-            MailFolder folder = (MailFolder)treeViewFolders.SelectedNode.Tag;
-
-            foreach (var item in folder)
+            try
             {
-                if (item is PSTParse.Message_Layer.Message)
+                Utils.LockWindowUpdate(listViewMessages);
+                listViewMessages.Items.Clear();
+                MailFolder folder = (MailFolder)treeViewFolders.SelectedNode.Tag;
+
+                foreach (var item in folder)
                 {
-                    var message = item as PSTParse.Message_Layer.Message;
-                    var listItem = listViewMessages.Items.Add(message.Subject);
-                    listItem.Tag = message;
-                    listItem.SubItems.Add(String.Join("; ", message.From.Select(r => r.EmailAddress)));
-                    listItem.SubItems.Add(String.Join("; ", message.To.Select(r => r.EmailAddress)));
+                    if (item is PSTParse.Message_Layer.Message)
+                    {
+                        var message = item as PSTParse.Message_Layer.Message;
+                        var listItem = listViewMessages.Items.Add(message.Subject);
+                        listItem.Tag = message;
+                        listItem.ImageKey = "textgeneric";
+                        listItem.SubItems.Add(String.Join("; ", message.From.Select(r => r.EmailAddress)));
+                        listItem.SubItems.Add(String.Join("; ", message.To.Select(r => r.EmailAddress)));
+                    }
                 }
+            }
+            finally
+            {
+                Utils.UnlockWindowUpdate();
             }
         }
 
