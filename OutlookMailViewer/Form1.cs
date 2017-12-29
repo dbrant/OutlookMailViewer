@@ -1,6 +1,7 @@
 ﻿using PSTParse;
 using PSTParse.Message_Layer;
 using System;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -12,6 +13,7 @@ namespace OutlookMailViewer
     public partial class Form1 : Form
     {
         private PSTFile currentFile;
+        private bool allowNextWebViewLink;
 
         public Form1()
         {
@@ -20,6 +22,9 @@ namespace OutlookMailViewer
             Utils.FixDialogFont(this);
             Utils.FixWindowTheme(treeViewFolders);
             Utils.FixWindowTheme(listViewMessages);
+            
+            textBoxPlainText.Font = new Font(FontFamily.GenericMonospace, 10f);
+            textBoxHeaders.Font = new Font(FontFamily.GenericMonospace, 10f);
         }
 
         private void Form1_DragEnter(object sender, DragEventArgs e)
@@ -85,7 +90,7 @@ namespace OutlookMailViewer
                 ? parent.Nodes.Add(nodeText)
                 : treeViewFolders.Nodes.Add(nodeText);
             node.Tag = folder;
-            node.ImageKey = "folder";
+            node.ImageKey = node.SelectedImageKey = folder.DisplayName.ToLower().Contains("inbox") ? "inbox" : "folder";
             foreach (var child in folder.SubFolders)
             {
                 LayoutFolders(node, child);
@@ -113,8 +118,8 @@ namespace OutlookMailViewer
                         var listItem = listViewMessages.Items.Add(message.Subject);
                         listItem.Tag = message;
                         listItem.ImageKey = "textgeneric";
-                        listItem.SubItems.Add(String.Join("; ", message.From.Select(r => r.EmailAddress)));
                         listItem.SubItems.Add(String.Join("; ", message.To.Select(r => r.EmailAddress)));
+                        listItem.SubItems.Add(String.Join("; ", message.From.Select(r => r.EmailAddress)));
                     }
                 }
             }
@@ -131,7 +136,40 @@ namespace OutlookMailViewer
                 return;
             }
             var message = (PSTParse.Message_Layer.Message)listViewMessages.SelectedItems[0].Tag;
-            textBoxMessage.Text = message.BodyPlainText;
+
+            allowNextWebViewLink = true;
+            webBrowser1.DocumentText = message.HtmlBody != null ? message.HtmlBody : "";
+            textBoxPlainText.Text = message.BodyPlainText != null ? message.BodyPlainText : "";
+            textBoxHeaders.Text = message.Headers != null ? message.Headers : "";
+
+            if (message.HtmlBody != null)
+            {
+                tabControlContents.SelectedTab = tabPageHtml;
+            }
+            else if (message.BodyPlainText != null)
+            {
+                tabControlContents.SelectedTab = tabPagePlainText;
+            }
+
+            listViewDetails.Items.Clear();
+            foreach (var prop in message.AllProperties)
+            {
+                var item = listViewDetails.Items.Add("0x" + Convert.ToString(prop.Key, 16));
+                item.ImageKey = "information";
+                item.SubItems.Add(prop.Value);
+            }
+            
+        }
+
+        private void webBrowser1_Navigating(object sender, WebBrowserNavigatingEventArgs e)
+        {
+            if (allowNextWebViewLink)
+            {
+                allowNextWebViewLink = false;
+                return;
+            }
+            // suppress link clicks for now.
+            e.Cancel = true;
         }
     }
 }

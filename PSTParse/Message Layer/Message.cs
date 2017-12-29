@@ -64,6 +64,14 @@ namespace PSTParse.Message_Layer
         public UInt32 CodePage { get; private set; }
         public String CreatorName { get; private set; }
         public UInt32 NonUnicodeCodePage { get; private set; }
+        public string UnsubscribeAddress { get; private set; }
+
+        public string Headers { get; private set; }
+        public string HtmlBody { get; private set; }
+
+        public List<string> ContentEx { get; private set; }
+
+        public Dictionary<int, string> AllProperties { get; private set; }
 
         private UInt32 MessageFlags;
         private IPMItem _IPMItem;
@@ -80,6 +88,10 @@ namespace PSTParse.Message_Layer
             _IPMItem = item;
             Data = BlockBO.GetNodeData(NID, pst);
             this.NID = NID;
+
+            AllProperties = new Dictionary<int, string>();
+            ContentEx = new List<string>();
+
             //MessagePC = new PropertyContext(Data);
             foreach(var subNode in Data.SubNodeData)
             {
@@ -120,13 +132,35 @@ namespace PSTParse.Message_Layer
                             }
                         }
                         break;
+                    case NDB.NID.NodeType.CONTENT_EX:
+                        foreach (var nodeData in subNode.Value.NodeData)
+                        {
+                            ContentEx.Add(pst.Header.isUnicode
+                                ? Encoding.Unicode.GetString(subNode.Value.NodeData[0].Data)
+                                : Encoding.ASCII.GetString(subNode.Value.NodeData[0].Data));
+                        }
+                        break;
+                    default:
+                        foreach (var nodeData in subNode.Value.NodeData)
+                        {
+                            string foo = pst.Header.isUnicode
+                                ? Encoding.Unicode.GetString(subNode.Value.NodeData[0].Data)
+                                : Encoding.ASCII.GetString(subNode.Value.NodeData[0].Data);
+                            Console.WriteLine(foo);
+                        }
+                        break;
                 }
             }
             foreach(var prop in _IPMItem.PC.Properties)
             {
-                if (prop.Value.Data == null)
+                if (prop.Value.Data == null || prop.Value.Data.Length == 0)
                     continue;
-                switch(prop.Key)
+
+                AllProperties.Add(prop.Key, pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data));
+
+                switch (prop.Key)
                 {
                     case 0x17:
                         Imporance = (Importance) BitConverter.ToInt16(prop.Value.Data, 0);
@@ -141,14 +175,18 @@ namespace PSTParse.Message_Layer
                         if (Subject.Length > 0)
                         {
                             var chars = Subject.ToCharArray();
-                            if (chars[0] == 0x001)
+                            if (chars[0] == 0x1)
                             {
+                                /*
+                                // for skipping past "Re:", "Fwd:", etc.
                                 var length = (int)chars[1];
                                 int i = 0;
                                 if (length > 1)
                                     i++;
                                 SubjectPrefix = Subject.Substring(2, length-1);
                                 Subject = Subject.Substring(2 + length-1);
+                                */
+                                Subject = Subject.Substring(2);
                             }
                         }
                         break;
@@ -197,18 +235,6 @@ namespace PSTParse.Message_Layer
                     case 0xe23:
                         InternetArticleNumber = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
-                    case 0xe27:
-                        //unknown
-                        break;
-                    case 0xe29:
-                        //nextSentAccount, ignore this, string
-                        break;
-                    case 0xe62:
-                        //unknown
-                        break;
-                    case 0xe79:
-                        //trusted sender
-                        break;
                     case 0x1000:
                         BodyPlainText = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
@@ -230,9 +256,6 @@ namespace PSTParse.Message_Layer
                     case 0x10F4:
                         AttributeHidden = prop.Value.Data[0] == 0x01;
                         break;
-                    case 0x10F5:
-                        //unknown
-                        break;
                     case 0x10F6:
                         ReadOnly = prop.Value.Data[0] == 0x01;
                         break;
@@ -242,41 +265,53 @@ namespace PSTParse.Message_Layer
                     case 0x3008:
                         LastModificationTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
                         break;
-                    case 0x300B:
-                        //seach key
-                        break;
                     case 0x3fDE:
                         CodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
-                        break;
-                    case 0x3ff1:
-                        //localeID
                         break;
                     case 0x3ff8:
                         CreatorName = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
-                    case 0x3ff9:
-                        //creator entryid
-                        break;
-                    case 0x3ffa:
-                        //last modifier name
-                        break;
-                    case 0x3ffb:
-                        //last modifier entryid
-                        break;
                     case 0x3ffd:
                         NonUnicodeCodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
+                    case 0x7D:
+                        Headers = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
+                        break;
+                    case 0x1013:
+                        HtmlBody = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
+                        break;
+                    case 0x300B:
+                        //seach key
+                    case 0x3ff1:
+                        //localeID
+                    case 0xe27:
+                        //unknown
+                    case 0xe29:
+                        //nextSentAccount, ignore this, string
+                    case 0xe62:
+                        //unknown
+                    case 0xe79:
+                        //trusted sender
+                    case 0x3ff9:
+                        //creator entryid
+                    case 0x3ffa:
+                        //last modifier name
+                    case 0x3ffb:
+                        //last modifier entryid
                     case 0x4019:
                         //unknown
-                        break;
                     case 0x401a:
                         //sentrepresentingflags
-                        break;
                     case 0x619:
                         //userentryid
-                        break;
+                    case 0x10F5:
+                        //unknown
                     default:
                         break;
                 }

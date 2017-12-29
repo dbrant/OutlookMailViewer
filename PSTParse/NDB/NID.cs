@@ -13,18 +13,19 @@ namespace PSTParse.NDB
             ATTACHMENT_PC = 0x05,
             SEARCH_UPDATE_QUEUE = 0x06,
             SEARCH_CRITERIA_OBJECT = 0x07,
-            ASSOC_MESSAGE = 0X08,
-            CONTENTS_TABLE_INDEX = 0X0A,
-            RECEIVE_FOLDER_TABLE = 0X0B,
-            OUTGOING_QUEUE_TABLE = 0X0C,
-            HIERARCHY_TABLE = 0X0D,
-            CONTENTS_TABLE = 0X0E,
-            ASSOC_CONTENTS_TABLE = 0X0F,
-            SEARCH_CONTENTS_TABLE = 0X10,
-            ATTACHMENT_TABLE = 0X11,
-            RECIPIENT_TABLE = 0X12,
-            SEARCH_TABLE_INDEX = 0X13,
-            LTP = 0X14
+            ASSOC_MESSAGE = 0x08,
+            CONTENTS_TABLE_INDEX = 0x0A,
+            RECEIVE_FOLDER_TABLE = 0x0B,
+            OUTGOING_QUEUE_TABLE = 0x0C,
+            HIERARCHY_TABLE = 0x0D,
+            CONTENTS_TABLE = 0x0E,
+            ASSOC_CONTENTS_TABLE = 0x0F,
+            SEARCH_CONTENTS_TABLE = 0x10,
+            ATTACHMENT_TABLE = 0x11,
+            RECIPIENT_TABLE = 0x12,
+            SEARCH_TABLE_INDEX = 0x13,
+            LTP = 0x14,
+            CONTENT_EX = 0x1F
         }
 
         public NodeType Type { get; private set; }
