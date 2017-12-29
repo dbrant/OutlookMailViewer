@@ -67,6 +67,7 @@ namespace PSTParse.Message_Layer
         public string UnsubscribeAddress { get; private set; }
 
         public string Headers { get; private set; }
+        public string FromHeaderField { get; private set; }
         public string HtmlBody { get; private set; }
 
         public List<string> ContentEx { get; private set; }
@@ -316,7 +317,25 @@ namespace PSTParse.Message_Layer
                         break;
                 }
             }
-            
+
+            // Parse the headers and pull the "From" address from there.
+            FromHeaderField = "";
+            if (Headers != null)
+            {
+                string[] headerArray = Headers.Split('\r', '\n');
+                foreach (var header in headerArray)
+                {
+                    if (header == null || header.Length == 0)
+                    {
+                        continue;
+                    }
+                    if (header.StartsWith("From:") && header.Length > 7)
+                    {
+                        FromHeaderField = header.Substring(6).Trim();
+                    }
+                }
+            }
+
         }
     }
 }

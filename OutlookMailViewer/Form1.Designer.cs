@@ -49,6 +49,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.listViewMessages = new OutlookMailViewer.ListViewDblBuf();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.listViewDetails = new OutlookMailViewer.ListViewDblBuf();
@@ -126,6 +127,7 @@
             // treeViewFolders
             // 
             this.treeViewFolders.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.treeViewFolders.HideSelection = false;
             this.treeViewFolders.ImageIndex = 0;
             this.treeViewFolders.ImageList = this.imageList1;
             this.treeViewFolders.Location = new System.Drawing.Point(0, 0);
@@ -274,9 +276,11 @@
             // 
             this.listViewMessages.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
+            this.columnHeader6,
             this.columnHeader2,
             this.columnHeader3});
             this.listViewMessages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewMessages.HideSelection = false;
             this.listViewMessages.Location = new System.Drawing.Point(0, 0);
             this.listViewMessages.Name = "listViewMessages";
             this.listViewMessages.Size = new System.Drawing.Size(650, 329);
@@ -291,14 +295,19 @@
             this.columnHeader1.Text = "Subject";
             this.columnHeader1.Width = 260;
             // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Date";
+            this.columnHeader6.Width = 160;
+            // 
             // columnHeader2
             // 
-            this.columnHeader2.Text = "To";
+            this.columnHeader2.Text = "From";
             this.columnHeader2.Width = 200;
             // 
             // columnHeader3
             // 
-            this.columnHeader3.Text = "From";
+            this.columnHeader3.Text = "To";
             this.columnHeader3.Width = 200;
             // 
             // listViewDetails
@@ -307,6 +316,7 @@
             this.columnHeader4,
             this.columnHeader5});
             this.listViewDetails.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewDetails.HideSelection = false;
             this.listViewDetails.Location = new System.Drawing.Point(3, 3);
             this.listViewDetails.Name = "listViewDetails";
             this.listViewDetails.Size = new System.Drawing.Size(636, 215);
@@ -387,6 +397,7 @@
         private System.Windows.Forms.ColumnHeader columnHeader4;
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
     }
 }
 

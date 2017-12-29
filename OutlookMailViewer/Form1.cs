@@ -118,8 +118,11 @@ namespace OutlookMailViewer
                         var listItem = listViewMessages.Items.Add(message.Subject);
                         listItem.Tag = message;
                         listItem.ImageKey = "textgeneric";
+                        listItem.SubItems.Add(message.ClientSubmitTime.ToString());
+                        listItem.SubItems.Add(message.From.Count > 0
+                            ? String.Join("; ", message.From.Select(r => r.EmailAddress))
+                            : message.FromHeaderField);
                         listItem.SubItems.Add(String.Join("; ", message.To.Select(r => r.EmailAddress)));
-                        listItem.SubItems.Add(String.Join("; ", message.From.Select(r => r.EmailAddress)));
                     }
                 }
             }
