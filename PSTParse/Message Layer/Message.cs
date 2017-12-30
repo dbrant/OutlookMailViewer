@@ -283,9 +283,8 @@ namespace PSTParse.Message_Layer
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x1013:
-                        HtmlBody = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
+                        // HACK: the HTML body property always seems to be ASCII, even if the file is unicode.
+                        HtmlBody = Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case 0x300B:
                         //seach key
