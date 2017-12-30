@@ -25,7 +25,8 @@ namespace OutlookMailViewer
             Utils.FixDialogFont(this);
             Utils.FixWindowTheme(treeViewFolders);
             Utils.FixWindowTheme(listViewMessages);
-            
+            Utils.FixWindowTheme(listViewDetails);
+
             textBoxPlainText.Font = new Font(FontFamily.GenericMonospace, 10f);
             textBoxHeaders.Font = new Font(FontFamily.GenericMonospace, 10f);
         }
