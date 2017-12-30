@@ -144,7 +144,9 @@ namespace OutlookMailViewer
             var message = currentFolder.Messages[listViewMessages.SelectedIndices[0]];
 
             allowNextWebViewLink = true;
-            webBrowser1.DocumentText = message.HtmlBody != null ? message.HtmlBody : "";
+            webBrowser1.DocumentText = message.HtmlBody != null
+                ? message.HtmlBody
+                : (message.BodyPlainText != null ? message.BodyPlainText : "");
             textBoxPlainText.Text = message.BodyPlainText != null ? message.BodyPlainText : "";
             textBoxHeaders.Text = message.Headers != null ? message.Headers : "";
             
