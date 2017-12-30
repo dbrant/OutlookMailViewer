@@ -318,11 +318,14 @@ namespace PSTParse.Message_Layer
         Sensitivity = 0x36,
         Subject = 0x37,
         ClientSubmitTime = 0x39,
+        OriginalSenderWithScheme = 0x3b,
         SentRepresentingName = 0x42,
+        RecipientWithScheme = 0x51,
         ConversationTopic = 0x70,
         Headers = 0x7D,
         UserEntryID = 0x619,
         SenderName = 0xc1a,
+        SenderNameWithScheme = 0xc1d,
         MessageDeliveryTime = 0xe06,
         MessageFlags = 0xe07,
         MessageSize = 0xe08,
@@ -361,6 +364,9 @@ namespace PSTParse.Message_Layer
         public static List<MessageProperty> AsciiOnlyProps = new List<MessageProperty> {
             MessageProperty.BodyHtml,
             MessageProperty.SearchKey,
+            MessageProperty.OriginalSenderWithScheme,
+            MessageProperty.RecipientWithScheme,
+            MessageProperty.SenderNameWithScheme,
         };
 
         public static List<MessageProperty> NumericProps = new List<MessageProperty> {
@@ -370,10 +376,18 @@ namespace PSTParse.Message_Layer
             MessageProperty.MessageSize,
             MessageProperty.CodePage,
             MessageProperty.NonUnicodeCodePage,
+            MessageProperty.UserEntryID,
+            MessageProperty.AttributeHidden,
+            MessageProperty.ReadOnly,
+            MessageProperty.LocaleID,
+            MessageProperty.CreatorEntryID,
+            MessageProperty.LastModifierEntryID,
+            MessageProperty.SentRepresentingFlags,
         };
 
         public static string PropertyToString(bool unicode, MessageProperty prop, byte[] data)
         {
+            int maxStringBytes = 2048;
             try
             {
                 if (DateTimeProps.Contains(prop))
@@ -400,14 +414,17 @@ namespace PSTParse.Message_Layer
                     }
                     else
                     {
-                        return Encoding.ASCII.GetString(data);
+                        return Encoding.ASCII.GetString(data, 0, Math.Min(maxStringBytes, data.Length));
                     }
                 }
                 else if (AsciiOnlyProps.Contains(prop))
                 {
-                    return Encoding.ASCII.GetString(data);
+                    return Encoding.ASCII.GetString(data, 0, Math.Min(maxStringBytes, data.Length));
                 }
-                return unicode ? Encoding.Unicode.GetString(data) : Encoding.ASCII.GetString(data);
+                //return Encoding.ASCII.GetString(data);
+                return unicode
+                    ? Encoding.Unicode.GetString(data, 0, Math.Min(maxStringBytes, data.Length))
+                    : Encoding.ASCII.GetString(data, 0, Math.Min(maxStringBytes, data.Length));
             }
             catch { }
             return "";
