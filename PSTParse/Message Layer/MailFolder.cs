@@ -5,7 +5,7 @@ using PSTParse.LTP;
 
 namespace PSTParse.Message_Layer
 {
-    public class MailFolder : IEnumerable<IPMItem>
+    public class MailFolder
     {
         public PropertyContext PC { get; private set; }
         public TableContext HeirachyTC { get; private set; }
@@ -16,6 +16,8 @@ namespace PSTParse.Message_Layer
         public List<string> Path { get; private set; }
 
         public List<MailFolder> SubFolders { get; private set; }
+        public List<Message> Messages { get; private set; }
+        public List<IPMItem> OtherItems { get; private set; }
 
         private PSTFile _pst;
 
@@ -50,27 +52,23 @@ namespace PSTParse.Message_Layer
             }
             
             ContentsTC = new TableContext(contentsNID, pst);
-
             
             FaiTC = new TableContext(faiNID, pst);
-        }
 
-        public IEnumerator<IPMItem> GetEnumerator()
-        {
-            foreach(var row in ContentsTC.ReverseRowIndex)
+            Messages = new List<Message>();
+            OtherItems = new List<IPMItem>();
+            foreach (var row in ContentsTC.ReverseRowIndex)
             {
-                var curItem = new IPMItem(_pst, row.Value);
-                //if (curItem.MessageClass.StartsWith("IPM.Note"))
-                    yield return new Message(row.Value, curItem, _pst);
-                /*else
-                    yield return curItem;*/
-                //yield return new Message(row.Value);
+                var item = new IPMItem(_pst, row.Value);
+                //if (item.MessageClass.StartsWith("IPM.Note"))
+                //{
+                    Messages.Add(new Message(row.Value, item, _pst));
+                //}
+                //else
+                //{
+                //    OtherItems.Add(item);
+                //}
             }
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
         }
     }
 }

@@ -15,7 +15,7 @@ namespace OutlookMailViewer
     public partial class Form1 : Form
     {
         private PSTFile currentFile;
-        private List<PSTParse.Message_Layer.Message> currentMessageList = new List<PSTParse.Message_Layer.Message>();
+        private MailFolder currentFolder;
 
         private bool allowNextWebViewLink;
         private bool sortAscending;
@@ -86,9 +86,9 @@ namespace OutlookMailViewer
         private void LayoutFolders(TreeNode parent, MailFolder folder)
         {
             string nodeText = folder.DisplayName;
-            if (folder.Count() > 0)
+            if (folder.Messages.Count > 0)
             {
-                nodeText += " (" + folder.Count() + ")";
+                nodeText += " (" + folder.Messages.Count + ")";
             }
 
             var node = parent != null
@@ -109,20 +109,12 @@ namespace OutlookMailViewer
             {
                 return;
             }
-
-            currentMessageList.Clear();
-            MailFolder folder = (MailFolder)treeViewFolders.SelectedNode.Tag;
-
-            foreach (var item in folder)
-            {
-                if (item is PSTParse.Message_Layer.Message)
-                {
-                    currentMessageList.Add((PSTParse.Message_Layer.Message)item);
-                }
-            }
+            
+            currentFolder = (MailFolder)treeViewFolders.SelectedNode.Tag;
+            
             sortAscending = false;
             SortByDate();
-            listViewMessages.VirtualListSize = currentMessageList.Count;
+            listViewMessages.VirtualListSize = currentFolder.Messages.Count;
         }
 
         private void listViewMessages_SelectedIndexChanged(object sender, EventArgs e)
@@ -131,7 +123,7 @@ namespace OutlookMailViewer
             {
                 return;
             }
-            var message = currentMessageList[listViewMessages.SelectedIndices[0]];
+            var message = currentFolder.Messages[listViewMessages.SelectedIndices[0]];
 
             allowNextWebViewLink = true;
             webBrowser1.DocumentText = message.HtmlBody != null ? message.HtmlBody : "";
@@ -173,7 +165,7 @@ namespace OutlookMailViewer
             sortAscending = !sortAscending;
             if (e.Column == 0)
             {
-                currentMessageList.Sort((a, b) => (a.Subject != null && b.Subject != null)
+                currentFolder.Messages.Sort((a, b) => (a.Subject != null && b.Subject != null)
                 ? (sortAscending ? a.Subject.CompareTo(b.Subject) : b.Subject.CompareTo(a.Subject))
                 : 0);
             }
@@ -186,14 +178,14 @@ namespace OutlookMailViewer
 
         private void SortByDate()
         {
-            currentMessageList.Sort((a, b) => (a.ClientSubmitTime != null && b.ClientSubmitTime != null)
+            currentFolder.Messages.Sort((a, b) => (a.ClientSubmitTime != null && b.ClientSubmitTime != null)
                 ? (sortAscending ? a.ClientSubmitTime.CompareTo(b.ClientSubmitTime) : b.ClientSubmitTime.CompareTo(a.ClientSubmitTime))
                 : 0);
         }
         
         private void listViewMessages_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            var message = currentMessageList[e.ItemIndex];
+            var message = currentFolder.Messages[e.ItemIndex];
             e.Item = new ListViewItem(message.Subject);
             e.Item.Tag = message;
             e.Item.ImageIndex = 2;
