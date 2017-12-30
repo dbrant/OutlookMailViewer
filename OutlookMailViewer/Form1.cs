@@ -17,6 +17,7 @@ namespace OutlookMailViewer
 
         private bool allowNextWebViewLink;
         private bool sortAscending;
+        private Font messageUnreadFont;
 
         public Form1()
         {
@@ -29,6 +30,7 @@ namespace OutlookMailViewer
 
             textBoxPlainText.Font = new Font(FontFamily.GenericMonospace, 10f);
             textBoxHeaders.Font = new Font(FontFamily.GenericMonospace, 10f);
+            messageUnreadFont = new Font(listViewMessages.Font, FontStyle.Bold);
         }
 
         private void Form1_DragEnter(object sender, DragEventArgs e)
@@ -99,7 +101,19 @@ namespace OutlookMailViewer
                 ? parent.Nodes.Add(nodeText)
                 : treeViewFolders.Nodes.Add(nodeText);
             node.Tag = folder;
-            node.ImageKey = node.SelectedImageKey = folder.DisplayName.ToLower().Contains("inbox") ? "inbox" : "folder";
+            if (folder.DisplayName.ToLower().Contains("inbox"))
+            {
+                node.ImageKey = node.SelectedImageKey = "inbox";
+            }
+            else
+            {
+                node.ImageKey = "folder";
+                node.SelectedImageKey = "folderopen";
+            }
+            if (folder.Messages.Count > 0)
+            {
+                node.NodeFont = new Font(treeViewFolders.Font, FontStyle.Bold);
+            }
             foreach (var child in folder.SubFolders)
             {
                 LayoutFolders(node, child);
@@ -194,6 +208,10 @@ namespace OutlookMailViewer
                 ? String.Join("; ", message.From.Select(r => r.EmailAddress))
                 : message.FromHeaderField);
             e.Item.SubItems.Add(String.Join("; ", message.To.Select(r => r.EmailAddress)));
+            if (!message.Read)
+            {
+                e.Item.Font = messageUnreadFont;
+            }
         }
     }
 }

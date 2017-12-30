@@ -142,10 +142,12 @@
             this.imageList1.ImageStream = ((System.Windows.Forms.ImageListStreamer)(resources.GetObject("imageList1.ImageStream")));
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "folder");
-            this.imageList1.Images.SetKeyName(1, "trash");
+            this.imageList1.Images.SetKeyName(1, "folderopen");
             this.imageList1.Images.SetKeyName(2, "textgeneric");
-            this.imageList1.Images.SetKeyName(3, "inbox");
-            this.imageList1.Images.SetKeyName(4, "information");
+            this.imageList1.Images.SetKeyName(3, "trash");
+            this.imageList1.Images.SetKeyName(4, "inbox");
+            this.imageList1.Images.SetKeyName(5, "inboxempty");
+            this.imageList1.Images.SetKeyName(6, "information");
             // 
             // splitContainer2
             // 
