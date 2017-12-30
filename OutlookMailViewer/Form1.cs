@@ -133,16 +133,7 @@ namespace OutlookMailViewer
             webBrowser1.DocumentText = message.HtmlBody != null ? message.HtmlBody : "";
             textBoxPlainText.Text = message.BodyPlainText != null ? message.BodyPlainText : "";
             textBoxHeaders.Text = message.Headers != null ? message.Headers : "";
-
-            if (message.HtmlBody != null)
-            {
-                tabControlContents.SelectedTab = tabPageHtml;
-            }
-            else if (message.BodyPlainText != null)
-            {
-                tabControlContents.SelectedTab = tabPagePlainText;
-            }
-
+            
             listViewDetails.Items.Clear();
             foreach (var prop in message.AllProperties)
             {
