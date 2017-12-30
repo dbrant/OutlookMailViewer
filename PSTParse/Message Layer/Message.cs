@@ -282,8 +282,7 @@ namespace PSTParse.Message_Layer
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case MessageProperty.BodyHtml:
-                        // HACK?: the HTML body property always seems to be ASCII, even if the file is unicode.
-                        HtmlBody = Encoding.ASCII.GetString(prop.Value.Data);
+                        HtmlBody = MessagePropertyTypes.PropertyToString(pst.Header.isUnicode, prop.Value);
                         break;
                     default:
                         break;
@@ -334,9 +333,7 @@ namespace PSTParse.Message_Layer
         RecipientName5 = 0x78,
         Headers = 0x7d,
         UserEntryID = 0x619,
-
         RecipientType = 0xc15,
-
         SenderName = 0xc1a,
         SenderNameWithScheme = 0xc1d,
         Scheme4 = 0xc1e,
@@ -405,80 +402,123 @@ namespace PSTParse.Message_Layer
 
     public class MessagePropertyTypes
     {
-        public static List<MessageProperty> DateTimeProps = new List<MessageProperty> {
-            MessageProperty.ClientSubmitTime,
-            MessageProperty.MessageDeliveryTime,
-            MessageProperty.CreationTime,
-            MessageProperty.LastModificationTime,
-        };
-
-        public static List<MessageProperty> AsciiOnlyProps = new List<MessageProperty> {
-            MessageProperty.BodyHtml,
-            MessageProperty.SearchKey,
-            MessageProperty.OriginalSenderWithScheme,
-            MessageProperty.RecipientWithScheme,
-            MessageProperty.SenderNameWithScheme,
-            MessageProperty.BodyPlainText4,
-            MessageProperty.BodyPlainText5,
-            MessageProperty.Unknown1,
-        };
-
-        public static List<MessageProperty> NumericProps = new List<MessageProperty> {
-            MessageProperty.Importance,
-            MessageProperty.Sensitivity,
-            MessageProperty.MessageFlags,
-            MessageProperty.MessageSize,
-            MessageProperty.CodePage,
-            MessageProperty.NonUnicodeCodePage,
-            MessageProperty.UserEntryID,
-            MessageProperty.AttributeHidden,
-            MessageProperty.ReadOnly,
-            MessageProperty.LocaleID,
-            MessageProperty.CreatorEntryID,
-            MessageProperty.LastModifierEntryID,
-            MessageProperty.SentRepresentingFlags,
-        };
-
-        public static string PropertyToString(bool unicode, MessageProperty prop, byte[] data)
+        public static string PropertyToString(bool unicode, ExchangeProperty prop)
         {
             int maxStringBytes = 2048;
             try
             {
-                if (DateTimeProps.Contains(prop))
+                if (prop.Type == ExchangeProperty.PropType.Binary && prop.Data.Length > 0)
                 {
-                    return DateTime.FromFileTimeUtc(BitConverter.ToInt64(data, 0)).ToString();
+                    return Encoding.ASCII.GetString(prop.Data, 0, prop.Data.Length);
                 }
-                else if (NumericProps.Contains(prop))
+                else if (prop.Type == ExchangeProperty.PropType.Boolean && prop.Data.Length > 0)
                 {
-                    if (data.Length == 1)
-                    {
-                        return ((int)data[0]).ToString();
-                    }
-                    else if (data.Length == 2)
-                    {
-                        return BitConverter.ToUInt16(data, 0).ToString();
-                    }
-                    else if (data.Length == 4)
-                    {
-                        return BitConverter.ToUInt32(data, 0).ToString();
-                    }
-                    else if (data.Length == 8)
-                    {
-                        return BitConverter.ToUInt64(data, 0).ToString();
-                    }
-                    else
-                    {
-                        return Encoding.ASCII.GetString(data, 0, Math.Min(maxStringBytes, data.Length));
-                    }
+                    // since it's little-endian, we can just take the value of the first byte,
+                    // regardless of the total width of the value.
+                    return (prop.Data[0] != 0).ToString();
                 }
-                else if (AsciiOnlyProps.Contains(prop))
+                else if (prop.Type == ExchangeProperty.PropType.Currency)
                 {
-                    return Encoding.ASCII.GetString(data, 0, Math.Min(maxStringBytes, data.Length));
                 }
-                //return Encoding.ASCII.GetString(data);
-                return unicode
-                    ? Encoding.Unicode.GetString(data, 0, Math.Min(maxStringBytes, data.Length))
-                    : Encoding.ASCII.GetString(data, 0, Math.Min(maxStringBytes, data.Length));
+                else if (prop.Type == ExchangeProperty.PropType.ErrorCode)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.Floating32 && prop.Data.Length >= 4)
+                {
+                    return BitConverter.ToSingle(prop.Data, 0).ToString();
+                }
+                else if (prop.Type == ExchangeProperty.PropType.Floating64 && prop.Data.Length >= 8)
+                {
+                    return BitConverter.ToDouble(prop.Data, 0).ToString();
+                }
+                else if (prop.Type == ExchangeProperty.PropType.FloatingTime && prop.Data.Length >= 8)
+                {
+                    return DateTime.FromBinary(BitConverter.ToInt64(prop.Data, 0)).ToString();
+                }
+                else if (prop.Type == ExchangeProperty.PropType.Guid && prop.Data.Length >= 16)
+                {
+                    return (new Guid(prop.Data)).ToString();
+                }
+                else if (prop.Type == ExchangeProperty.PropType.Integer16 && prop.Data.Length >= 2)
+                {
+                    return BitConverter.ToUInt16(prop.Data, 0).ToString();
+                }
+                else if (prop.Type == ExchangeProperty.PropType.Integer32 && prop.Data.Length >= 4)
+                {
+                    return BitConverter.ToUInt32(prop.Data, 0).ToString();
+                }
+                else if (prop.Type == ExchangeProperty.PropType.Integer64 && prop.Data.Length >= 8)
+                {
+                    return BitConverter.ToUInt64(prop.Data, 0).ToString();
+                }
+                else if (prop.Type == ExchangeProperty.PropType.MultipleBinary)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.MultipleCurrency)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.MultipleFloating32)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.MultipleFloating64)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.MultipleFloatingTime)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.MultipleGuid)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.MultipleInteger16)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.MultipleInteger32)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.MultipleInteger64)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.MultipleString && prop.Data.Length > 8)
+                {
+                    uint numStrings = BitConverter.ToUInt32(prop.Data, 0);
+                    // screw it, just render the first string, up until the end of the data.
+                    return unicode
+                        ? Encoding.Unicode.GetString(prop.Data, 8, Math.Min(maxStringBytes, prop.Data.Length - 8))
+                        : Encoding.ASCII.GetString(prop.Data, 8, Math.Min(maxStringBytes, prop.Data.Length - 8));
+                }
+                else if (prop.Type == ExchangeProperty.PropType.MultipleString8)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.MultipleTime)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.Restriction)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.RuleAction)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.ServerId)
+                {
+                }
+                else if (prop.Type == ExchangeProperty.PropType.String)
+                {
+                    return unicode
+                        ? Encoding.Unicode.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length))
+                        : Encoding.ASCII.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
+                }
+                else if (prop.Type == ExchangeProperty.PropType.String8)
+                {
+                    return Encoding.ASCII.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
+                }
+                else if (prop.Type == ExchangeProperty.PropType.Time && prop.Data.Length >= 8)
+                {
+                    return DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Data, 0)).ToString();
+                }
+
+                // If we fall through to here, then just try to render it as ascii...
+                Encoding.ASCII.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
+
             }
             catch { }
             return "";
