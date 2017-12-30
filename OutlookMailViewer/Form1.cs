@@ -122,16 +122,16 @@ namespace OutlookMailViewer
             }
             sortAscending = false;
             SortByDate();
-            ShowMessageList();
+            listViewMessages.VirtualListSize = currentMessageList.Count;
         }
 
         private void listViewMessages_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (listViewMessages.SelectedItems.Count == 0)
+            if (listViewMessages.SelectedIndices.Count == 0)
             {
                 return;
             }
-            var message = (PSTParse.Message_Layer.Message)listViewMessages.SelectedItems[0].Tag;
+            var message = currentMessageList[listViewMessages.SelectedIndices[0]];
 
             allowNextWebViewLink = true;
             webBrowser1.DocumentText = message.HtmlBody != null ? message.HtmlBody : "";
@@ -181,7 +181,7 @@ namespace OutlookMailViewer
             {
                 SortByDate();
             }
-            ShowMessageList();
+            listViewMessages.Invalidate();
         }
 
         private void SortByDate()
@@ -190,30 +190,18 @@ namespace OutlookMailViewer
                 ? (sortAscending ? a.ClientSubmitTime.CompareTo(b.ClientSubmitTime) : b.ClientSubmitTime.CompareTo(a.ClientSubmitTime))
                 : 0);
         }
-
-        private void ShowMessageList()
+        
+        private void listViewMessages_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            try
-            {
-                Utils.LockWindowUpdate(listViewMessages);
-                listViewMessages.Items.Clear();
-                foreach (var message in currentMessageList)
-                {
-                    var listItem = listViewMessages.Items.Add(message.Subject);
-                    listItem.Tag = message;
-                    listItem.ImageKey = "textgeneric";
-                    listItem.SubItems.Add(message.ClientSubmitTime.ToString());
-                    listItem.SubItems.Add(message.From.Count > 0
-                        ? String.Join("; ", message.From.Select(r => r.EmailAddress))
-                        : message.FromHeaderField);
-                    listItem.SubItems.Add(String.Join("; ", message.To.Select(r => r.EmailAddress)));
-                }
-            }
-            finally
-            {
-                Utils.UnlockWindowUpdate();
-            }
+            var message = currentMessageList[e.ItemIndex];
+            e.Item = new ListViewItem(message.Subject);
+            e.Item.Tag = message;
+            e.Item.ImageIndex = 2;
+            e.Item.SubItems.Add(message.ClientSubmitTime.ToString());
+            e.Item.SubItems.Add(message.From.Count > 0
+                ? String.Join("; ", message.From.Select(r => r.EmailAddress))
+                : message.FromHeaderField);
+            e.Item.SubItems.Add(String.Join("; ", message.To.Select(r => r.EmailAddress)));
         }
-
     }
 }
