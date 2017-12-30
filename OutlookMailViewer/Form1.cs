@@ -140,7 +140,8 @@ namespace OutlookMailViewer
             listViewDetails.Items.Clear();
             foreach (var prop in message.AllProperties)
             {
-                if (prop.Key == MessageProperty.BodyPlainText || prop.Key == MessageProperty.BodyCompressedRTF || prop.Key == MessageProperty.BodyHtml)
+                if (prop.Key == MessageProperty.BodyPlainText || prop.Key == MessageProperty.BodyCompressedRTF
+                    || prop.Key == MessageProperty.BodyHtml || prop.Key == MessageProperty.Headers)
                 {
                     continue;
                 }
