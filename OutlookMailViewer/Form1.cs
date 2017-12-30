@@ -1,8 +1,6 @@
 ﻿using PSTParse;
 using PSTParse.Message_Layer;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;

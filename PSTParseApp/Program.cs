@@ -39,28 +39,24 @@ namespace PSTParseApp
                         var count = curFolder.ContentsTC.RowIndexBTH.Properties.Count;
                         totalCount += count;
                         Console.WriteLine(String.Join(" -> ", curFolder.Path) + " ({0} messages)", count);
-                    
-                        foreach (var ipmItem in curFolder)
+
+                        foreach (var message in curFolder.Messages)
                         {
-                            if (ipmItem is Message)
-                            {
-                                var message = ipmItem as Message;
-                                Console.WriteLine(message.Subject);
-                                Console.WriteLine(message.Imporance);
-                                Console.WriteLine("Sender Name: " + message.SenderName);
-                                if (message.From.Count > 0)
-                                    Console.WriteLine("From: {0}", String.Join("; ", message.From.Select(r => r.EmailAddress)));
-                                if (message.To.Count > 0)
-                                    Console.WriteLine("To: {0}", String.Join("; ", message.To.Select(r => r.EmailAddress)));
-                                if (message.CC.Count > 0)
-                                    Console.WriteLine("CC: {0}", String.Join("; ", message.CC.Select(r => r.EmailAddress)));
-                                if (message.BCC.Count > 0)
-                                    Console.WriteLine("BCC: {0}",  String.Join("; ", message.BCC.Select(r => r.EmailAddress)));
+                            Console.WriteLine(message.Subject);
+                            Console.WriteLine(message.Imporance);
+                            Console.WriteLine("Sender Name: " + message.SenderName);
+                            if (message.From.Count > 0)
+                                Console.WriteLine("From: {0}", String.Join("; ", message.From.Select(r => r.EmailAddress)));
+                            if (message.To.Count > 0)
+                                Console.WriteLine("To: {0}", String.Join("; ", message.To.Select(r => r.EmailAddress)));
+                            if (message.CC.Count > 0)
+                                Console.WriteLine("CC: {0}", String.Join("; ", message.CC.Select(r => r.EmailAddress)));
+                            if (message.BCC.Count > 0)
+                                Console.WriteLine("BCC: {0}", String.Join("; ", message.BCC.Select(r => r.EmailAddress)));
 
-                                Console.WriteLine("Body: " + message.BodyPlainText);
+                            Console.WriteLine("Body: " + message.BodyPlainText);
 
-                                writer.WriteLine(ByteArrayToString(BitConverter.GetBytes(message.NID)));
-                            }
+                            writer.WriteLine(ByteArrayToString(BitConverter.GetBytes(message.NID)));
                         }
                     }
                 }
