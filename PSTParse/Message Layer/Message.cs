@@ -72,7 +72,7 @@ namespace PSTParse.Message_Layer
 
         public List<string> ContentEx { get; private set; }
 
-        public Dictionary<int, string> AllProperties { get; private set; }
+        public Dictionary<MessageProperty, byte[]> AllProperties { get; private set; }
 
         private UInt32 MessageFlags;
         private IPMItem _IPMItem;
@@ -90,7 +90,7 @@ namespace PSTParse.Message_Layer
             Data = BlockBO.GetNodeData(NID, pst);
             this.NID = NID;
 
-            AllProperties = new Dictionary<int, string>();
+            AllProperties = new Dictionary<MessageProperty, byte[]>();
             ContentEx = new List<string>();
 
             //MessagePC = new PropertyContext(Data);
@@ -156,20 +156,19 @@ namespace PSTParse.Message_Layer
             {
                 if (prop.Value.Data == null || prop.Value.Data.Length == 0)
                     continue;
+                
+                MessageProperty property = (MessageProperty)prop.Key;
+                AllProperties.Add((MessageProperty)prop.Key, prop.Value.Data);
 
-                AllProperties.Add(prop.Key, pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data));
-
-                switch (prop.Key)
+                switch (property)
                 {
-                    case 0x17:
+                    case MessageProperty.Importance:
                         Imporance = (Importance) BitConverter.ToInt16(prop.Value.Data, 0);
                         break;
-                    case 0x36:
+                    case MessageProperty.Sensitivity:
                         Sensitivity = (Sensitivity) BitConverter.ToInt16(prop.Value.Data, 0);
                         break;
-                    case 0x37:
+                    case MessageProperty.Subject:
                         Subject = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
@@ -191,33 +190,33 @@ namespace PSTParse.Message_Layer
                             }
                         }
                         break;
-                    case 0x39:
+                    case MessageProperty.ClientSubmitTime:
                         ClientSubmitTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
                         break;
-                    case 0x42:
+                    case MessageProperty.SentRepresentingName:
                         SentRepresentingName = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
-                    case 0x70:
+                    case MessageProperty.ConversationTopic:
                         ConversationTopic = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
-                    case 0x1a:
+                    case MessageProperty.MessageClass:
                         MessageClass = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
-                    case 0xc1a:
+                    case MessageProperty.SenderName:
                         SenderName = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
-                    case 0xe06:
+                    case MessageProperty.MessageDeliveryTime:
                         MessageDeliveryTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
                         break;
-                    case 0xe07:
+                    case MessageProperty.MessageFlags:
                         MessageFlags = BitConverter.ToUInt32(prop.Value.Data, 0);
 
                         Read = (MessageFlags & 0x1) != 0;
@@ -230,88 +229,62 @@ namespace PSTParse.Message_Layer
                         NotifyUnreadRequested = (MessageFlags & 0x200) != 0;
                         EverRead = (MessageFlags & 0x400) != 0;
                         break;
-                    case 0xe08:
+                    case MessageProperty.MessageSize:
                         MessageSize = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
-                    case 0xe23:
+                    case MessageProperty.InternetArticleNumber:
                         InternetArticleNumber = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
-                    case 0x1000:
+                    case MessageProperty.BodyPlainText:
                         BodyPlainText = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
-                    case 0x1009:
+                    case MessageProperty.BodyCompressedRTF:
                         BodyCompressedRTF = prop.Value.Data.RangeSubset(4, prop.Value.Data.Length - 4);
                         break;
-                    case 0x1035:
+                    case MessageProperty.InternetMessageID:
                         InternetMessageID = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
-                    case 0x10F3:
+                    case MessageProperty.UrlCompositeName:
                         UrlCompositeName = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
-                    case 0x10F4:
+                    case MessageProperty.AttributeHidden:
                         AttributeHidden = prop.Value.Data[0] == 0x01;
                         break;
-                    case 0x10F6:
+                    case MessageProperty.ReadOnly:
                         ReadOnly = prop.Value.Data[0] == 0x01;
                         break;
-                    case 0x3007:
+                    case MessageProperty.CreationTime:
                         CreationTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
                         break;
-                    case 0x3008:
+                    case MessageProperty.LastModificationTime:
                         LastModificationTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
                         break;
-                    case 0x3fDE:
+                    case MessageProperty.CodePage:
                         CodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
-                    case 0x3ff8:
+                    case MessageProperty.CreatorName:
                         CreatorName = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
-                    case 0x3ffd:
+                    case MessageProperty.NonUnicodeCodePage:
                         NonUnicodeCodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
-                    case 0x7D:
+                    case MessageProperty.Headers:
                         Headers = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
-                    case 0x1013:
-                        // HACK: the HTML body property always seems to be ASCII, even if the file is unicode.
+                    case MessageProperty.BodyHtml:
+                        // HACK?: the HTML body property always seems to be ASCII, even if the file is unicode.
                         HtmlBody = Encoding.ASCII.GetString(prop.Value.Data);
                         break;
-                    case 0x300B:
-                        //seach key
-                    case 0x3ff1:
-                        //localeID
-                    case 0xe27:
-                        //unknown
-                    case 0xe29:
-                        //nextSentAccount, ignore this, string
-                    case 0xe62:
-                        //unknown
-                    case 0xe79:
-                        //trusted sender
-                    case 0x3ff9:
-                        //creator entryid
-                    case 0x3ffa:
-                        //last modifier name
-                    case 0x3ffb:
-                        //last modifier entryid
-                    case 0x4019:
-                        //unknown
-                    case 0x401a:
-                        //sentrepresentingflags
-                    case 0x619:
-                        //userentryid
-                    case 0x10F5:
-                        //unknown
                     default:
                         break;
                 }
@@ -335,6 +308,109 @@ namespace PSTParse.Message_Layer
                 }
             }
 
+        }
+    }
+
+    public enum MessageProperty
+    {
+        Importance = 0x17,
+        MessageClass = 0x1a,
+        Sensitivity = 0x36,
+        Subject = 0x37,
+        ClientSubmitTime = 0x39,
+        SentRepresentingName = 0x42,
+        ConversationTopic = 0x70,
+        Headers = 0x7D,
+        UserEntryID = 0x619,
+        SenderName = 0xc1a,
+        MessageDeliveryTime = 0xe06,
+        MessageFlags = 0xe07,
+        MessageSize = 0xe08,
+        InternetArticleNumber = 0xe23,
+        NextSentAccount = 0xe29,
+        TrustedSender = 0xe79,
+        BodyPlainText = 0x1000,
+        BodyCompressedRTF = 0x1009,
+        BodyHtml = 0x1013,
+        InternetMessageID = 0x1035,
+        UrlCompositeName = 0x10F3,
+        AttributeHidden = 0x10F4,
+        ReadOnly = 0x10F6,
+        CreationTime = 0x3007,
+        LastModificationTime = 0x3008,
+        SearchKey = 0x300B,
+        CodePage = 0x3fDE,
+        CreatorName = 0x3ff8,
+        NonUnicodeCodePage = 0x3ffd,
+        LocaleID = 0x3ff1,
+        CreatorEntryID = 0x3ff9,
+        LastModifierName = 0x3ffa,
+        LastModifierEntryID = 0x3ffb,
+        SentRepresentingFlags = 0x401a,
+    }
+
+    public class MessagePropertyTypes
+    {
+        public static List<MessageProperty> DateTimeProps = new List<MessageProperty> {
+            MessageProperty.ClientSubmitTime,
+            MessageProperty.MessageDeliveryTime,
+            MessageProperty.CreationTime,
+            MessageProperty.LastModificationTime,
+        };
+
+        public static List<MessageProperty> AsciiOnlyProps = new List<MessageProperty> {
+            MessageProperty.BodyHtml,
+            MessageProperty.SearchKey,
+        };
+
+        public static List<MessageProperty> NumericProps = new List<MessageProperty> {
+            MessageProperty.Importance,
+            MessageProperty.Sensitivity,
+            MessageProperty.MessageFlags,
+            MessageProperty.MessageSize,
+            MessageProperty.CodePage,
+            MessageProperty.NonUnicodeCodePage,
+        };
+
+        public static string PropertyToString(bool unicode, MessageProperty prop, byte[] data)
+        {
+            try
+            {
+                if (DateTimeProps.Contains(prop))
+                {
+                    return DateTime.FromFileTimeUtc(BitConverter.ToInt64(data, 0)).ToString();
+                }
+                else if (NumericProps.Contains(prop))
+                {
+                    if (data.Length == 1)
+                    {
+                        return ((int)data[0]).ToString();
+                    }
+                    else if (data.Length == 2)
+                    {
+                        return BitConverter.ToUInt16(data, 0).ToString();
+                    }
+                    else if (data.Length == 4)
+                    {
+                        return BitConverter.ToUInt32(data, 0).ToString();
+                    }
+                    else if (data.Length == 8)
+                    {
+                        return BitConverter.ToUInt64(data, 0).ToString();
+                    }
+                    else
+                    {
+                        return Encoding.ASCII.GetString(data);
+                    }
+                }
+                else if (AsciiOnlyProps.Contains(prop))
+                {
+                    return Encoding.ASCII.GetString(data);
+                }
+                return unicode ? Encoding.Unicode.GetString(data) : Encoding.ASCII.GetString(data);
+            }
+            catch { }
+            return "";
         }
     }
 }

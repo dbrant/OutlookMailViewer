@@ -140,9 +140,13 @@ namespace OutlookMailViewer
             listViewDetails.Items.Clear();
             foreach (var prop in message.AllProperties)
             {
-                var item = listViewDetails.Items.Add("0x" + Convert.ToString(prop.Key, 16));
+                if (prop.Key == MessageProperty.BodyPlainText || prop.Key == MessageProperty.BodyCompressedRTF || prop.Key == MessageProperty.BodyHtml)
+                {
+                    continue;
+                }
+                var item = listViewDetails.Items.Add(prop.Key.ToString() + " (0x" + Convert.ToString((int)prop.Key, 16) + ")");
                 item.ImageKey = "information";
-                item.SubItems.Add(prop.Value);
+                item.SubItems.Add(MessagePropertyTypes.PropertyToString(currentFile.Header.isUnicode, prop.Key, prop.Value));
             }
             
         }
