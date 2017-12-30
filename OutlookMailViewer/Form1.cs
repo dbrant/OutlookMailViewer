@@ -71,6 +71,7 @@ namespace OutlookMailViewer
             }
             try
             {
+                Cursor = Cursors.WaitCursor;
                 currentFile = new PSTFile(fileName);
 
                 treeViewFolders.Nodes.Clear();
@@ -79,6 +80,10 @@ namespace OutlookMailViewer
             catch (Exception ex)
             {
                 MessageBox.Show(this, ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+            finally
+            {
+                Cursor = Cursors.Default;
             }
         }
         
