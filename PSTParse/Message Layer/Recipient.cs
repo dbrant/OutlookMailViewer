@@ -29,28 +29,28 @@ namespace PSTParse.Message_Layer
             {
                 switch (exProp.ID)
                 {
-                    case 0x0c15:
+                    case MessageProperty.RecipientType:
                         Type = (RecipientType)BitConverter.ToUInt32(exProp.Data, 0);
                         break;
-                    case 0x0e0f:
+                    case MessageProperty.RecipientResponsibility:
                         Responsibility = exProp.Data[0] == 0x01;
                         break;
-                    case 0x0ff9:
+                    case MessageProperty.RecipientTag:
                         Tag = exProp.Data;
                         break;
-                    case 0x0ffe:
+                    case MessageProperty.RecipientObjType:
                         ObjType = (PSTEnums.ObjectType)BitConverter.ToUInt32(exProp.Data, 0);
                         break;
-                    case 0x0fff:
+                    case MessageProperty.RecipientEntryID:
                         EntryID = new EntryID(exProp.Data);
                         break;
-                    case 0x3001:
+                    case MessageProperty.RecipientDisplayName:
                         DisplayName = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
-                    case 0x3002:
+                    case MessageProperty.RecipientAddressType:
                         EmailAddressType = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
-                    case 0x3003:
+                    case MessageProperty.RecipientAddress:
                         EmailAddress = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
                     default:

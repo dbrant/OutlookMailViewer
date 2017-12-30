@@ -72,7 +72,7 @@ namespace PSTParse.Message_Layer
 
         public List<string> ContentEx { get; private set; }
 
-        public Dictionary<MessageProperty, byte[]> AllProperties { get; private set; }
+        public List<ExchangeProperty> AllProperties { get; private set; }
 
         private UInt32 MessageFlags;
         private IPMItem _IPMItem;
@@ -90,7 +90,7 @@ namespace PSTParse.Message_Layer
             Data = BlockBO.GetNodeData(NID, pst);
             this.NID = NID;
 
-            AllProperties = new Dictionary<MessageProperty, byte[]>();
+            AllProperties = new List<ExchangeProperty>();
             ContentEx = new List<string>();
 
             //MessagePC = new PropertyContext(Data);
@@ -158,7 +158,7 @@ namespace PSTParse.Message_Layer
                     continue;
                 
                 MessageProperty property = (MessageProperty)prop.Key;
-                AllProperties.Add((MessageProperty)prop.Key, prop.Value.Data);
+                AllProperties.Add(prop.Value);
 
                 switch (property)
                 {
@@ -334,6 +334,9 @@ namespace PSTParse.Message_Layer
         RecipientName5 = 0x78,
         Headers = 0x7d,
         UserEntryID = 0x619,
+
+        RecipientType = 0xc15,
+
         SenderName = 0xc1a,
         SenderNameWithScheme = 0xc1d,
         Scheme4 = 0xc1e,
@@ -342,9 +345,14 @@ namespace PSTParse.Message_Layer
         MessageDeliveryTime = 0xe06,
         MessageFlags = 0xe07,
         MessageSize = 0xe08,
+        RecipientResponsibility = 0xe0f,
+        AttachmentSize = 0xe20,
         InternetArticleNumber = 0xe23,
         NextSentAccount = 0xe29,
         TrustedSender = 0xe79,
+        RecipientTag = 0xff9,
+        RecipientObjType = 0xffe,
+        RecipientEntryID = 0xfff,
         BodyPlainText = 0x1000,
         BodyCompressedRTF = 0x1009,
         BodyHtml = 0x1013,
@@ -356,10 +364,17 @@ namespace PSTParse.Message_Layer
         UrlCompositeName = 0x10F3,
         AttributeHidden = 0x10F4,
         ReadOnly = 0x10F6,
+        RecipientDisplayName = 0x3001,
+        RecipientAddressType = 0x3002,
+        RecipientAddress = 0x3003,
         CreationTime = 0x3007,
         LastModificationTime = 0x3008,
         SearchKey = 0x300B,
+        AttachmentFileName = 0x3704,
+        AttachmentMethod = 0x3705,
+        AttachmentRenderPosition = 0x370b,
         MessageID2 = 0x3712,
+        AttachmentFlags = 0x3714,
         CodePage = 0x3fDE,
         CreatorName = 0x3ff8,
         NonUnicodeCodePage = 0x3ffd,
@@ -369,6 +384,8 @@ namespace PSTParse.Message_Layer
         LastModifierEntryID = 0x3ffb,
         SentRepresentingFlags = 0x401a,
         BodyPlainText2 = 0x6619,
+        AttachmentLTPRowID = 0x67F2,
+        AttachmentLTPRowVer = 0x67F3,
         BodyPlainText3 = 0x8008,
         ContentClass = 0x8009,
         PopAccountName = 0x800d,

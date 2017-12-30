@@ -33,29 +33,29 @@ namespace PSTParse.Message_Layer
             {
                 switch (exProp.ID)
                 {
-                    case 0x0e20:
+                    case MessageProperty.AttachmentSize:
                         Size = BitConverter.ToUInt32(exProp.Data, 0);
                         break;
-                    case 0x3704:
+                    case MessageProperty.AttachmentFileName:
                         if (exProp.Data != null)
                             Filename = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
-                    case 0x3705:
+                    case MessageProperty.AttachmentMethod:
                         Method = (AttachmentMethod) BitConverter.ToUInt32(exProp.Data, 0);
                         break;
-                    case 0x370b:
+                    case MessageProperty.AttachmentRenderPosition:
                         RenderingPosition = BitConverter.ToUInt32(exProp.Data, 0);
                         break;
-                    case 0x3714:
+                    case MessageProperty.AttachmentFlags:
                         var flags = BitConverter.ToUInt32(exProp.Data, 0);
                         InvisibleInHTML = (flags & 0x1) != 0;
                         InvisibleInRTF = (flags & 0x02) != 0;
                         RenderedInBody = (flags & 0x04) != 0;
                         break;
-                    case 0x67F2:
+                    case MessageProperty.AttachmentLTPRowID:
                         LTPRowID = BitConverter.ToUInt32(exProp.Data, 0);
                         break;
-                    case 0x67F3:
+                    case MessageProperty.AttachmentLTPRowVer:
                         LTPRowVer = BitConverter.ToUInt32(exProp.Data, 0);
                         break;
                     default:

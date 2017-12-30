@@ -153,14 +153,14 @@ namespace OutlookMailViewer
             listViewDetails.Items.Clear();
             foreach (var prop in message.AllProperties)
             {
-                if (prop.Key == MessageProperty.BodyPlainText || prop.Key == MessageProperty.BodyCompressedRTF
-                    || prop.Key == MessageProperty.BodyHtml || prop.Key == MessageProperty.Headers)
+                if (prop.ID == MessageProperty.BodyPlainText || prop.ID == MessageProperty.BodyCompressedRTF
+                    || prop.ID == MessageProperty.BodyHtml || prop.ID == MessageProperty.Headers)
                 {
                     continue;
                 }
-                var item = listViewDetails.Items.Add("0x" + Convert.ToString((int)prop.Key, 16) + " - " + prop.Key.ToString());
+                var item = listViewDetails.Items.Add("0x" + Convert.ToString((int)prop.ID, 16) + " - " + prop.ID.ToString());
                 item.ImageKey = "information";
-                item.SubItems.Add(MessagePropertyTypes.PropertyToString(currentFile.Header.isUnicode, prop.Key, prop.Value));
+                item.SubItems.Add(MessagePropertyTypes.PropertyToString(currentFile.Header.isUnicode, prop.ID, prop.Data));
             }
             
         }

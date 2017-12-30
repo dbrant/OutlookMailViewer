@@ -71,7 +71,6 @@
     <Compile Include="Message Layer\NamedProperty.cs" />
     <Compile Include="Message Layer\NamedToPropertyLookup.cs" />
     <Compile Include="Message Layer\NAMEID.cs" />
-    <Compile Include="Message Layer\PropType.cs" />
     <Compile Include="Message Layer\Recipient.cs" />
     <Compile Include="NDB\BBTENTRY.cs" />
     <Compile Include="NDB\BID.cs" />
@@ -110,9 +109,7 @@
     <Compile Include="Util\CRC32.cs" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Util\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
