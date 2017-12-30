@@ -151,7 +151,7 @@ namespace OutlookMailViewer
                 {
                     continue;
                 }
-                var item = listViewDetails.Items.Add(prop.Key.ToString() + " (0x" + Convert.ToString((int)prop.Key, 16) + ")");
+                var item = listViewDetails.Items.Add("0x" + Convert.ToString((int)prop.Key, 16) + " - " + prop.Key.ToString());
                 item.ImageKey = "information";
                 item.SubItems.Add(MessagePropertyTypes.PropertyToString(currentFile.Header.isUnicode, prop.Key, prop.Value));
             }

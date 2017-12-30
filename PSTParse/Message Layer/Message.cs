@@ -243,7 +243,7 @@ namespace PSTParse.Message_Layer
                     case MessageProperty.BodyCompressedRTF:
                         BodyCompressedRTF = prop.Value.Data.RangeSubset(4, prop.Value.Data.Length - 4);
                         break;
-                    case MessageProperty.InternetMessageID:
+                    case MessageProperty.MessageID:
                         InternetMessageID = pst.Header.isUnicode
                             ? Encoding.Unicode.GetString(prop.Value.Data)
                             : Encoding.ASCII.GetString(prop.Value.Data);
@@ -319,13 +319,26 @@ namespace PSTParse.Message_Layer
         Subject = 0x37,
         ClientSubmitTime = 0x39,
         OriginalSenderWithScheme = 0x3b,
+        RecipientName2 = 0x40,
         SentRepresentingName = 0x42,
+        RecipientName3 = 0x44,
         RecipientWithScheme = 0x51,
+        RecipientWithScheme2 = 0x52,
+        Scheme1 = 0x64,
+        ReturnPath = 0x65,
         ConversationTopic = 0x70,
-        Headers = 0x7D,
+        Unknown1 = 0x71,
+        Scheme2 = 0x75,
+        RecipientName4 = 0x76,
+        Scheme3 = 0x77,
+        RecipientName5 = 0x78,
+        Headers = 0x7d,
         UserEntryID = 0x619,
         SenderName = 0xc1a,
         SenderNameWithScheme = 0xc1d,
+        Scheme4 = 0xc1e,
+        SenderName2 = 0xc1f,
+        RecipientName = 0xe04,
         MessageDeliveryTime = 0xe06,
         MessageFlags = 0xe07,
         MessageSize = 0xe08,
@@ -335,13 +348,18 @@ namespace PSTParse.Message_Layer
         BodyPlainText = 0x1000,
         BodyCompressedRTF = 0x1009,
         BodyHtml = 0x1013,
-        InternetMessageID = 0x1035,
+        MessageID = 0x1035,
+        ReferencesMessageID = 0x1039,
+        ReplyToMessageID = 0x1042,
+        UnsubscribeAddress = 0x1045,
+        SenderName3 = 0x1046,
         UrlCompositeName = 0x10F3,
         AttributeHidden = 0x10F4,
         ReadOnly = 0x10F6,
         CreationTime = 0x3007,
         LastModificationTime = 0x3008,
         SearchKey = 0x300B,
+        MessageID2 = 0x3712,
         CodePage = 0x3fDE,
         CreatorName = 0x3ff8,
         NonUnicodeCodePage = 0x3ffd,
@@ -350,6 +368,22 @@ namespace PSTParse.Message_Layer
         LastModifierName = 0x3ffa,
         LastModifierEntryID = 0x3ffb,
         SentRepresentingFlags = 0x401a,
+        BodyPlainText2 = 0x6619,
+        BodyPlainText3 = 0x8008,
+        ContentClass = 0x8009,
+        PopAccountName = 0x800d,
+        PopUri = 0x8011,
+        ContentType2 = 0x8013,
+        TransferEncoding2 = 0x8014,
+        BodyPlainText4 = 0x8015,
+        PopUri2 = 0x804c,
+        PopServerName = 0x8070,
+        ContentType = 0x8076,
+        TransferEncoding = 0x807b,
+        BodyPlainText5 = 0x807e,
+        MailSoftwareName = 0x8088,
+        PopAccountName2 = 0x808a,
+        MailSoftwareEngine = 0x808b,
     }
 
     public class MessagePropertyTypes
@@ -367,6 +401,9 @@ namespace PSTParse.Message_Layer
             MessageProperty.OriginalSenderWithScheme,
             MessageProperty.RecipientWithScheme,
             MessageProperty.SenderNameWithScheme,
+            MessageProperty.BodyPlainText4,
+            MessageProperty.BodyPlainText5,
+            MessageProperty.Unknown1,
         };
 
         public static List<MessageProperty> NumericProps = new List<MessageProperty> {
