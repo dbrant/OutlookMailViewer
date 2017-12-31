@@ -107,6 +107,7 @@
     <Compile Include="PSTParser.cs" />
     <Compile Include="Util\ArrayUtilities.cs" />
     <Compile Include="Util\CRC32.cs" />
+    <Compile Include="Util\RtfDecompressor.cs" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup />

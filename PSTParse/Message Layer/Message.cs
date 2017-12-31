@@ -54,7 +54,7 @@ namespace PSTParse.Message_Layer
         public UInt32 MessageSize { get; private set; }
         public string BodyPlainText { get; private set; }
         public UInt32 InternetArticleNumber { get; private set; }
-        public byte[] BodyCompressedRTF { get; private set; }
+        public string BodyRTF { get; private set; }
         public string InternetMessageID { get; private set; }
         public string UrlCompositeName { get; private set; }
         public bool AttributeHidden { get; private set; }
@@ -241,7 +241,7 @@ namespace PSTParse.Message_Layer
                             : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     case MessageProperty.BodyCompressedRTF:
-                        BodyCompressedRTF = prop.Value.Data.RangeSubset(4, prop.Value.Data.Length - 4);
+                        BodyRTF = new Util.RtfDecompressor().Decompress(prop.Value.Data);
                         break;
                     case MessageProperty.MessageID:
                         InternetMessageID = pst.Header.isUnicode
