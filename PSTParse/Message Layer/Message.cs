@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using MiscParseUtilities;
 using PSTParse.LTP;
 using PSTParse.NDB;
 
@@ -52,23 +51,13 @@ namespace PSTParse.Message_Layer
         public Boolean NotifyUnreadRequested { get; private set; }
         public Boolean EverRead { get; private set; }
         public UInt32 MessageSize { get; private set; }
-        public string BodyPlainText { get; private set; }
         public UInt32 InternetArticleNumber { get; private set; }
-        public string BodyRTF { get; private set; }
-        public string InternetMessageID { get; private set; }
-        public string UrlCompositeName { get; private set; }
         public bool AttributeHidden { get; private set; }
         public bool ReadOnly { get; private set; }
         public DateTime CreationTime { get; private set; }
         public DateTime LastModificationTime { get; private set; }
         public UInt32 CodePage { get; private set; }
-        public String CreatorName { get; private set; }
         public UInt32 NonUnicodeCodePage { get; private set; }
-        public string UnsubscribeAddress { get; private set; }
-
-        public string Headers { get; private set; }
-        public string FromHeaderField { get; private set; }
-        public string HtmlBody { get; private set; }
 
         public List<string> ContentEx { get; private set; }
 
@@ -76,16 +65,52 @@ namespace PSTParse.Message_Layer
 
         private UInt32 MessageFlags;
         private IPMItem _IPMItem;
+        private bool unicode;
 
         public List<Recipient> To = new List<Recipient>();
         public List<Recipient> From = new List<Recipient>();
         public List<Recipient> CC = new List<Recipient>();
         public List<Recipient> BCC = new List<Recipient>();
 
-        public List<Attachment> Attachments = new List<Attachment>(); 
+        public List<Attachment> Attachments = new List<Attachment>();
+
+        public string Headers
+        {
+            get
+            {
+                return GetProperty(MessageProperty.Headers);
+            }
+        }
+
+        public string BodyPlainText
+        {
+            get
+            {
+                return GetProperty(MessageProperty.BodyPlainText);
+            }
+        }
+
+        public string HtmlBody
+        {
+            get
+            {
+                return GetProperty(MessageProperty.BodyHtml);
+            }
+        }
+
+        public string BodyRTF
+        {
+            get
+            {
+                var prop = AllProperties.Find(p => p.ID == MessageProperty.BodyHtml);
+                return prop == null ? null : new Util.RtfDecompressor().Decompress(prop.Data);
+            }
+        }
+
 
         public Message(uint NID, IPMItem item, PSTFile pst)
         {
+            unicode = pst.Header.isUnicode;
             _IPMItem = item;
             Data = BlockBO.GetNodeData(NID, pst);
             this.NID = NID;
@@ -134,14 +159,19 @@ namespace PSTParse.Message_Layer
                         }
                         break;
                     case NDB.NID.NodeType.CONTENT_EX:
+                        // TODO: investigate what this is.
+                        /*
                         foreach (var nodeData in subNode.Value.NodeData)
                         {
                             ContentEx.Add(pst.Header.isUnicode
                                 ? Encoding.Unicode.GetString(subNode.Value.NodeData[0].Data)
                                 : Encoding.ASCII.GetString(subNode.Value.NodeData[0].Data));
                         }
+                        */
                         break;
                     default:
+                        // TODO: investigate what this is.
+                        /*
                         foreach (var nodeData in subNode.Value.NodeData)
                         {
                             string foo = pst.Header.isUnicode
@@ -149,6 +179,7 @@ namespace PSTParse.Message_Layer
                                 : Encoding.ASCII.GetString(subNode.Value.NodeData[0].Data);
                             Console.WriteLine(foo);
                         }
+                        */
                         break;
                 }
             }
@@ -235,24 +266,6 @@ namespace PSTParse.Message_Layer
                     case MessageProperty.InternetArticleNumber:
                         InternetArticleNumber = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
-                    case MessageProperty.BodyPlainText:
-                        BodyPlainText = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
-                        break;
-                    case MessageProperty.BodyCompressedRTF:
-                        BodyRTF = new Util.RtfDecompressor().Decompress(prop.Value.Data);
-                        break;
-                    case MessageProperty.MessageID:
-                        InternetMessageID = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
-                        break;
-                    case MessageProperty.UrlCompositeName:
-                        UrlCompositeName = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
-                        break;
                     case MessageProperty.AttributeHidden:
                         AttributeHidden = prop.Value.Data[0] == 0x01;
                         break;
@@ -268,45 +281,19 @@ namespace PSTParse.Message_Layer
                     case MessageProperty.CodePage:
                         CodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
-                    case MessageProperty.CreatorName:
-                        CreatorName = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
-                        break;
                     case MessageProperty.NonUnicodeCodePage:
                         NonUnicodeCodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
-                        break;
-                    case MessageProperty.Headers:
-                        Headers = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
-                        break;
-                    case MessageProperty.BodyHtml:
-                        HtmlBody = MessagePropertyTypes.PropertyToString(pst.Header.isUnicode, prop.Value);
                         break;
                     default:
                         break;
                 }
             }
+        }
 
-            // Parse the headers and pull the "From" address from there.
-            FromHeaderField = "";
-            if (Headers != null)
-            {
-                string[] headerArray = Headers.Split('\r', '\n');
-                foreach (var header in headerArray)
-                {
-                    if (header == null || header.Length == 0)
-                    {
-                        continue;
-                    }
-                    if (header.StartsWith("From:") && header.Length > 7)
-                    {
-                        FromHeaderField = header.Substring(6).Trim();
-                    }
-                }
-            }
-
+        public string GetProperty(MessageProperty property)
+        {
+            var prop = AllProperties.Find(p => p.ID == property);
+            return prop == null ? null : MessagePropertyTypes.PropertyToString(unicode, prop);
         }
     }
 
@@ -402,9 +389,9 @@ namespace PSTParse.Message_Layer
 
     public class MessagePropertyTypes
     {
-        public static string PropertyToString(bool unicode, ExchangeProperty prop)
+        public static string PropertyToString(bool unicode, ExchangeProperty prop, bool enforceMaxLength = false)
         {
-            int maxStringBytes = 2048;
+            int maxStringBytes = enforceMaxLength ? 2048 : Int32.MaxValue;
             try
             {
                 if (prop.Type == ExchangeProperty.PropType.Binary && prop.Data.Length > 0)

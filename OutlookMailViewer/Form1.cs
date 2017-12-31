@@ -144,11 +144,12 @@ namespace OutlookMailViewer
             var message = currentFolder.Messages[listViewMessages.SelectedIndices[0]];
 
             allowNextWebViewLink = true;
-            webBrowser1.DocumentText = message.HtmlBody != null
-                ? message.HtmlBody
-                : (message.BodyPlainText != null ? message.BodyPlainText.Replace("\n", "<br />") : "");
-            textBoxPlainText.Text = message.BodyPlainText != null ? message.BodyPlainText : "";
-            textBoxHeaders.Text = message.Headers != null ? message.Headers : "";
+            string headers = message.Headers;
+            string html = message.HtmlBody;
+            string plainText = message.BodyPlainText;
+            webBrowser1.DocumentText = html != null ? html : (plainText != null ? plainText.Replace("\n", "<br />") : "");
+            textBoxPlainText.Text = plainText != null ? plainText : "";
+            textBoxHeaders.Text = headers != null ? headers : "";
             
             listViewDetails.Items.Clear();
             foreach (var prop in message.AllProperties)
@@ -160,7 +161,7 @@ namespace OutlookMailViewer
                 }
                 var item = listViewDetails.Items.Add("0x" + Convert.ToString((int)prop.ID, 16) + " - " + prop.ID.ToString());
                 item.ImageKey = "information";
-                item.SubItems.Add(MessagePropertyTypes.PropertyToString(currentFile.Header.isUnicode, prop));
+                item.SubItems.Add(MessagePropertyTypes.PropertyToString(currentFile.Header.isUnicode, prop, true));
             }
             
         }
@@ -206,9 +207,9 @@ namespace OutlookMailViewer
             e.Item.Tag = message;
             e.Item.ImageIndex = 2;
             e.Item.SubItems.Add(message.ClientSubmitTime.ToString());
-            e.Item.SubItems.Add(message.From.Count > 0
-                ? String.Join("; ", message.From.Select(r => r.EmailAddress))
-                : message.FromHeaderField);
+
+            string fromStr = message.SentRepresentingName != null ? message.SentRepresentingName : message.SenderName;
+            e.Item.SubItems.Add(fromStr);
             e.Item.SubItems.Add(String.Join("; ", message.To.Select(r => r.EmailAddress)));
             if (!message.Read)
             {
