@@ -10,9 +10,8 @@ namespace PSTParse.Message_Layer
         BY_VALUE= 0x01,
         BY_REFERENCE = 0X02,
         BY_REFERENCE_ONLY = 0X04,
-        EMBEDDEED_MESSAGE = 0X05,
+        EMBEDDED_MESSAGE = 0X05,
         STORAGE = 0X06
-
     }
 
     public class Attachment

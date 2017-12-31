@@ -47,6 +47,7 @@
             this.textBoxHeaders = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.tabPageAttachments = new System.Windows.Forms.TabPage();
             this.listViewMessages = new OutlookMailViewer.ListViewDblBuf();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -55,6 +56,10 @@
             this.listViewDetails = new OutlookMailViewer.ListViewDblBuf();
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.listViewAttachments = new OutlookMailViewer.ListViewDblBuf();
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -69,6 +74,7 @@
             this.tabPagePlainText.SuspendLayout();
             this.tabPage3.SuspendLayout();
             this.tabPage4.SuspendLayout();
+            this.tabPageAttachments.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -143,11 +149,14 @@
             this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             this.imageList1.Images.SetKeyName(0, "folder");
             this.imageList1.Images.SetKeyName(1, "folderopen");
-            this.imageList1.Images.SetKeyName(2, "textgeneric");
-            this.imageList1.Images.SetKeyName(3, "trash");
-            this.imageList1.Images.SetKeyName(4, "inbox");
-            this.imageList1.Images.SetKeyName(5, "inboxempty");
-            this.imageList1.Images.SetKeyName(6, "information");
+            this.imageList1.Images.SetKeyName(2, "mail");
+            this.imageList1.Images.SetKeyName(3, "mailopen");
+            this.imageList1.Images.SetKeyName(4, "mailattach");
+            this.imageList1.Images.SetKeyName(5, "trash");
+            this.imageList1.Images.SetKeyName(6, "inbox");
+            this.imageList1.Images.SetKeyName(7, "inboxempty");
+            this.imageList1.Images.SetKeyName(8, "information");
+            this.imageList1.Images.SetKeyName(9, "documentsub");
             // 
             // splitContainer2
             // 
@@ -174,6 +183,7 @@
             this.tabControlContents.Controls.Add(this.tabPagePlainText);
             this.tabControlContents.Controls.Add(this.tabPage3);
             this.tabControlContents.Controls.Add(this.tabPage4);
+            this.tabControlContents.Controls.Add(this.tabPageAttachments);
             this.tabControlContents.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControlContents.Location = new System.Drawing.Point(0, 0);
             this.tabControlContents.Name = "tabControlContents";
@@ -274,6 +284,17 @@
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
             // 
+            // tabPageAttachments
+            // 
+            this.tabPageAttachments.Controls.Add(this.listViewAttachments);
+            this.tabPageAttachments.Location = new System.Drawing.Point(4, 22);
+            this.tabPageAttachments.Name = "tabPageAttachments";
+            this.tabPageAttachments.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageAttachments.Size = new System.Drawing.Size(642, 221);
+            this.tabPageAttachments.TabIndex = 4;
+            this.tabPageAttachments.Text = "Attachments";
+            this.tabPageAttachments.UseVisualStyleBackColor = true;
+            // 
             // listViewMessages
             // 
             this.listViewMessages.AllowColumnReorder = true;
@@ -343,6 +364,38 @@
             this.columnHeader5.Text = "Value";
             this.columnHeader5.Width = 400;
             // 
+            // listViewAttachments
+            // 
+            this.listViewAttachments.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader7,
+            this.columnHeader8,
+            this.columnHeader9});
+            this.listViewAttachments.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewAttachments.FullRowSelect = true;
+            this.listViewAttachments.HideSelection = false;
+            this.listViewAttachments.Location = new System.Drawing.Point(3, 3);
+            this.listViewAttachments.Name = "listViewAttachments";
+            this.listViewAttachments.Size = new System.Drawing.Size(636, 215);
+            this.listViewAttachments.SmallImageList = this.imageList1;
+            this.listViewAttachments.TabIndex = 2;
+            this.listViewAttachments.UseCompatibleStateImageBehavior = false;
+            this.listViewAttachments.View = System.Windows.Forms.View.Details;
+            // 
+            // columnHeader7
+            // 
+            this.columnHeader7.Text = "Name";
+            this.columnHeader7.Width = 240;
+            // 
+            // columnHeader8
+            // 
+            this.columnHeader8.Text = "Size";
+            this.columnHeader8.Width = 80;
+            // 
+            // columnHeader9
+            // 
+            this.columnHeader9.Text = "Type";
+            this.columnHeader9.Width = 160;
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -374,6 +427,7 @@
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.tabPage4.ResumeLayout(false);
+            this.tabPageAttachments.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -406,6 +460,11 @@
         private System.Windows.Forms.ColumnHeader columnHeader5;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.TabPage tabPageAttachments;
+        private ListViewDblBuf listViewAttachments;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
+        private System.Windows.Forms.ColumnHeader columnHeader8;
+        private System.Windows.Forms.ColumnHeader columnHeader9;
     }
 }
 

@@ -27,6 +27,7 @@ namespace OutlookMailViewer
             Utils.FixWindowTheme(treeViewFolders);
             Utils.FixWindowTheme(listViewMessages);
             Utils.FixWindowTheme(listViewDetails);
+            Utils.FixWindowTheme(listViewAttachments);
 
             textBoxPlainText.Font = new Font(FontFamily.GenericMonospace, 10f);
             textBoxHeaders.Font = new Font(FontFamily.GenericMonospace, 10f);
@@ -163,7 +164,15 @@ namespace OutlookMailViewer
                 item.ImageKey = "information";
                 item.SubItems.Add(MessagePropertyTypes.PropertyToString(currentFile.Header.isUnicode, prop, true));
             }
-            
+
+            listViewAttachments.Items.Clear();
+            foreach (var attachment in message.Attachments)
+            {
+                var item = listViewAttachments.Items.Add(attachment.Filename);
+                item.ImageKey = "documentsub";
+                item.SubItems.Add(attachment.Size.ToString());
+                item.SubItems.Add(attachment.Method.ToString());
+            }
         }
 
         private void webBrowser1_Navigating(object sender, WebBrowserNavigatingEventArgs e)
@@ -205,15 +214,28 @@ namespace OutlookMailViewer
             var message = currentFolder.Messages[e.ItemIndex];
             e.Item = new ListViewItem(message.Subject);
             e.Item.Tag = message;
-            e.Item.ImageIndex = 2;
             e.Item.SubItems.Add(message.ClientSubmitTime.ToString());
 
             string fromStr = message.SentRepresentingName != null ? message.SentRepresentingName : message.SenderName;
             e.Item.SubItems.Add(fromStr);
             e.Item.SubItems.Add(String.Join("; ", message.To.Select(r => r.EmailAddress)));
+
             if (!message.Read)
             {
                 e.Item.Font = messageUnreadFont;
+            }
+
+            if (message.Attachments.Count > 0)
+            {
+                e.Item.ImageIndex = 4;
+            }
+            else if (!message.Read)
+            {
+                e.Item.ImageIndex = 2;
+            }
+            else
+            {
+                e.Item.ImageIndex = 3;
             }
         }
     }
