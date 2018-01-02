@@ -21,18 +21,25 @@ namespace PSTParse
         {
             Path = path;
             PSTMMF = MemoryMappedFile.CreateFromFile(path, FileMode.Open);
+            try
+            {
+                Header = new PSTHeader(this);
 
-            Header = new PSTHeader(this);
+                /*var messageStoreData = BlockBO.GetNodeData(SpecialNIDs.NID_MESSAGE_STORE);
+                var temp = BlockBO.GetNodeData(SpecialNIDs.NID_ROOT_FOLDER);*/
+                MailStore = new MailStore(this);
 
-            /*var messageStoreData = BlockBO.GetNodeData(SpecialNIDs.NID_MESSAGE_STORE);
-            var temp = BlockBO.GetNodeData(SpecialNIDs.NID_ROOT_FOLDER);*/
-            MailStore = new MailStore(this);
-
-            TopOfPST = new MailFolder(MailStore.RootFolder.NID, new List<string>(), this);
-            NamedPropertyLookup = new NamedToPropertyLookup(this);
-            //var temp = new TableContext(rootEntryID.NID);
-            //PasswordReset.ResetPassword();
-
+                TopOfPST = new MailFolder(MailStore.RootFolder.NID, new List<string>(), this);
+                NamedPropertyLookup = new NamedToPropertyLookup(this);
+                //var temp = new TableContext(rootEntryID.NID);
+                //PasswordReset.ResetPassword();
+            }
+            catch (Exception ex)
+            {
+                // don't hold the MMF open if something failed here.
+                PSTMMF.Dispose();
+                throw ex;
+            }
         }
 
         public void CloseMMF()

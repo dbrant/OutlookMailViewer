@@ -8,7 +8,7 @@ namespace PSTParse.Message_Layer
     public class MailFolder
     {
         public PropertyContext PC { get; private set; }
-        public TableContext HeirachyTC { get; private set; }
+        public TableContext HierarchyTC { get; private set; }
         public TableContext ContentsTC { get; private set; }
         public TableContext FaiTC { get; private set; }
 
@@ -40,10 +40,10 @@ namespace PSTParse.Message_Layer
             var contentsNID = ((nid >> 5) << 5) | 0x0E;
             var faiNID = ((nid >> 5) << 5) | 0x0F;
 
-            HeirachyTC = new TableContext(heirachyNID, pst);
+            HierarchyTC = new TableContext(heirachyNID, pst);
 
             SubFolders = new List<MailFolder>();
-            foreach(var row in HeirachyTC.ReverseRowIndex)
+            foreach(var row in HierarchyTC.ReverseRowIndex)
             {
                 SubFolders.Add(new MailFolder(row.Value, Path, pst));
                 //var temp = row.Key;
