@@ -13,9 +13,9 @@ namespace PSTParse.LTP
         public HID(byte[] bytes, int offset = 0)
         {
             var temp = BitConverter.ToUInt32(bytes, offset);
-            this.HID_Type = temp & 0x1F;
-            this.hidIndex = (temp >> 5) & 0x7FF;
-            this.hidBlockIndex = BitConverter.ToUInt16(bytes, offset + 2);
+            HID_Type = temp & 0x1F;
+            hidIndex = (temp >> 5) & 0x7FF;
+            hidBlockIndex = BitConverter.ToUInt16(bytes, offset + 2);
         }
     }
 }

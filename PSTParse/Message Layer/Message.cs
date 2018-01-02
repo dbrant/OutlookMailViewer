@@ -133,6 +133,19 @@ namespace PSTParse.Message_Layer
                         foreach(var row in AttachmentTable.RowMatrix.Rows)
                         {
                             Attachments.Add(new Attachment(pst.Header.isUnicode, row));
+
+
+
+
+
+
+                            if (Attachments[0].Size > 100000)
+                            GetAttachment(Attachments[0]);
+
+
+
+
+
                         }
                         break;
                     case NDB.NID.NodeType.RECIPIENT_TABLE:
@@ -295,10 +308,37 @@ namespace PSTParse.Message_Layer
             var prop = AllProperties.Find(p => p.ID == property);
             return prop == null ? null : MessagePropertyTypes.PropertyToString(unicode, prop);
         }
+
+        public byte[] GetAttachment(Attachment attachment)
+        {
+            foreach (var prop in AttachmentPC.Properties)
+            {
+                MessageProperty property = (MessageProperty)prop.Key;
+
+                switch (property)
+                {
+                    case MessageProperty.Importance:
+                        break;
+
+
+                    default:
+                        break;
+                }
+
+                if (prop.Value.Data != null && prop.Value.Data.Length > 10000)
+                {
+                    return prop.Value.Data;
+                }
+            }
+            return null;
+        }
     }
 
     public enum MessageProperty
     {
+        GuidList = 0x2,
+        EntryList = 0x3,
+        StringList = 0x4,
         Importance = 0x17,
         MessageClass = 0x1a,
         Sensitivity = 0x36,
@@ -348,12 +388,13 @@ namespace PSTParse.Message_Layer
         UrlCompositeName = 0x10F3,
         AttributeHidden = 0x10F4,
         ReadOnly = 0x10F6,
-        RecipientDisplayName = 0x3001,
-        RecipientAddressType = 0x3002,
-        RecipientAddress = 0x3003,
+        DisplayName = 0x3001,
+        AddressType = 0x3002,
+        AddressName = 0x3003,
         CreationTime = 0x3007,
         LastModificationTime = 0x3008,
         SearchKey = 0x300B,
+        RootFolder = 0x35e0,
         AttachmentFileName = 0x3704,
         AttachmentMethod = 0x3705,
         AttachmentRenderPosition = 0x370b,

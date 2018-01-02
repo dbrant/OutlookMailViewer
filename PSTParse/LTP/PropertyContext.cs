@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using PSTParse.Message_Layer;
 using PSTParse.NDB;
 
 namespace PSTParse.LTP
@@ -7,7 +7,7 @@ namespace PSTParse.LTP
     public class PropertyContext
     {
         public BTH BTH { get; private set; }
-        public Dictionary<UInt16,ExchangeProperty> Properties { get; private set; }
+        public Dictionary<MessageProperty, ExchangeProperty> Properties { get; private set; }
 
         public PropertyContext(ulong nid, PSTFile pst)
         {

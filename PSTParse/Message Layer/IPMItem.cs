@@ -15,8 +15,8 @@ namespace PSTParse.Message_Layer
             _nid = nid;
             PC = new PropertyContext(nid, pst);
             MessageClass = pst.Header.isUnicode
-                ? Encoding.Unicode.GetString(PC.Properties[0x1a].Data)
-                : Encoding.ASCII.GetString(PC.Properties[0x1a].Data);
+                ? Encoding.Unicode.GetString(PC.Properties[MessageProperty.MessageClass].Data)
+                : Encoding.ASCII.GetString(PC.Properties[MessageProperty.MessageClass].Data);
         }
 
         protected IPMItem()

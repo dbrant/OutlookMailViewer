@@ -44,13 +44,13 @@ namespace PSTParse.Message_Layer
                     case MessageProperty.RecipientEntryID:
                         EntryID = new EntryID(exProp.Data);
                         break;
-                    case MessageProperty.RecipientDisplayName:
+                    case MessageProperty.DisplayName:
                         DisplayName = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
-                    case MessageProperty.RecipientAddressType:
+                    case MessageProperty.AddressType:
                         EmailAddressType = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
-                    case MessageProperty.RecipientAddress:
+                    case MessageProperty.AddressName:
                         EmailAddress = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
                         break;
                     default:

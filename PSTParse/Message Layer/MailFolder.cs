@@ -30,8 +30,8 @@ namespace PSTParse.Message_Layer
             var pcNID = ((nid >> 5) << 5) | 0x02;
             PC = new PropertyContext(pcNID, pst);
             DisplayName = pst.Header.isUnicode
-                ? Encoding.Unicode.GetString(PC.Properties[0x3001].Data)
-                : Encoding.ASCII.GetString(PC.Properties[0x3001].Data);
+                ? Encoding.Unicode.GetString(PC.Properties[MessageProperty.DisplayName].Data)
+                : Encoding.ASCII.GetString(PC.Properties[MessageProperty.DisplayName].Data);
 
             Path = new List<string>(path);
             Path.Add(DisplayName);

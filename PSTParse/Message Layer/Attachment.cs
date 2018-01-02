@@ -25,7 +25,7 @@ namespace PSTParse.Message_Layer
         public bool InvisibleInHTML { get; private set; }
         public bool InvisibleInRTF { get; private set; }
         public bool RenderedInBody { get; private set; }
-
+        
         public Attachment(bool unicode, TCRowMatrixData row)
         {
             foreach (var exProp in row)

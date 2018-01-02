@@ -1,4 +1,5 @@
 ﻿using PSTParse.LTP;
+using PSTParse.Message_Layer;
 using PSTParse.NDB;
 
 namespace PSTParse
@@ -11,7 +12,7 @@ namespace PSTParse
         public MailStore(PSTFile pst)
         {
             _pc = new PropertyContext(SpecialNIDs.NID_MESSAGE_STORE, pst);
-            RootFolder = new EntryID(_pc.BTH.GetExchangeProperties()[0x35e0].Data);
+            RootFolder = new EntryID(_pc.BTH.GetExchangeProperties()[MessageProperty.RootFolder].Data);
         }
     }
 }
