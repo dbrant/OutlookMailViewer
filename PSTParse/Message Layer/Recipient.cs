@@ -17,7 +17,6 @@ namespace PSTParse.Message_Layer
         public RecipientType Type { get; private set; }
         public PSTEnums.ObjectType ObjType { get; private set; }
         public bool Responsibility { get; private set; }
-        public byte[] Tag { get; private set; }
         public EntryID EntryID { get; private set; }
         public string DisplayName { get; private set; }
         public string EmailAddress { get; private set; }
@@ -34,9 +33,6 @@ namespace PSTParse.Message_Layer
                         break;
                     case MessageProperty.RecipientResponsibility:
                         Responsibility = exProp.Data[0] == 0x01;
-                        break;
-                    case MessageProperty.RecipientTag:
-                        Tag = exProp.Data;
                         break;
                     case MessageProperty.RecipientObjType:
                         ObjType = (PSTEnums.ObjectType)BitConverter.ToUInt32(exProp.Data, 0);

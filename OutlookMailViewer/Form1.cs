@@ -2,6 +2,7 @@
 using PSTParse.Message_Layer;
 using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -168,7 +169,7 @@ namespace OutlookMailViewer
             listViewAttachments.Items.Clear();
             foreach (var attachment in message.Attachments)
             {
-                var item = listViewAttachments.Items.Add(attachment.Filename);
+                var item = listViewAttachments.Items.Add(attachment.FileName);
                 item.ImageKey = "documentsub";
                 item.SubItems.Add(attachment.Size.ToString());
                 item.SubItems.Add(attachment.Method.ToString());
@@ -236,6 +237,37 @@ namespace OutlookMailViewer
             else
             {
                 e.Item.ImageIndex = 3;
+            }
+        }
+
+        private void menuItemSaveAttachment_Click(object sender, EventArgs e)
+        {
+            if (listViewMessages.SelectedIndices.Count == 0 || listViewAttachments.SelectedIndices.Count == 0)
+            {
+                return;
+            }
+            var message = currentFolder.Messages[listViewMessages.SelectedIndices[0]];
+            if (listViewAttachments.SelectedIndices[0] >= message.Attachments.Count)
+            {
+                return;
+            }
+            Attachment attachment = message.Attachments[listViewAttachments.SelectedIndices[0]];
+            var saveDlg = new SaveFileDialog();
+            saveDlg.OverwritePrompt = true;
+            saveDlg.Title = "Save attachment...";
+            saveDlg.FileName = attachment.FileName;
+            if (saveDlg.ShowDialog() != DialogResult.OK) return;
+            try
+            {
+                using (var f = new FileStream(saveDlg.FileName, FileMode.Create, FileAccess.Write))
+                {
+                    byte[] data = attachment.Data;
+                    f.Write(data, 0, data.Length);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(this, ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
     }

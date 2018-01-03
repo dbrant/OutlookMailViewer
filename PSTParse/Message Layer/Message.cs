@@ -28,7 +28,6 @@ namespace PSTParse.Message_Layer
         public PropertyContext MessagePC { get; private set; }
         public TableContext AttachmentTable { get; private set; }
         public TableContext RecipientTable { get; private set; }
-        public PropertyContext AttachmentPC { get; private set; }
 
         public String Subject { get; private set; }
         public String SubjectPrefix { get; private set; }
@@ -114,11 +113,13 @@ namespace PSTParse.Message_Layer
             _IPMItem = item;
             Data = BlockBO.GetNodeData(NID, pst);
             this.NID = NID;
-
+            
             AllProperties = new List<ExchangeProperty>();
             ContentEx = new List<string>();
 
             //MessagePC = new PropertyContext(Data);
+            int attachmentPcIndex = 0;
+
             foreach(var subNode in Data.SubNodeData)
             {
                 var temp = new NID(subNode.Key);
@@ -126,27 +127,18 @@ namespace PSTParse.Message_Layer
                 {
                     case NDB.NID.NodeType.ATTACHMENT_TABLE:
                         AttachmentTable = new TableContext(subNode.Value);
-                        break;
-                    case NDB.NID.NodeType.ATTACHMENT_PC:
-                        AttachmentPC = new PropertyContext(subNode.Value);
-                        Attachments = new List<Attachment>();
-                        foreach(var row in AttachmentTable.RowMatrix.Rows)
+                        foreach (var row in AttachmentTable.RowMatrix.Rows)
                         {
                             Attachments.Add(new Attachment(pst.Header.isUnicode, row));
-
-
-
-
-
-
-                            if (Attachments[0].Size > 100000)
-                            GetAttachment(Attachments[0]);
-
-
-
-
-
                         }
+                        break;
+                    case NDB.NID.NodeType.ATTACHMENT_PC:
+                        var AttachmentPC = new PropertyContext(subNode.Value);
+                        if (Attachments.Count > attachmentPcIndex)
+                        {
+                            Attachments[attachmentPcIndex].AddProperties(unicode, AttachmentPC);
+                        }
+                        attachmentPcIndex++;
                         break;
                     case NDB.NID.NodeType.RECIPIENT_TABLE:
                         RecipientTable = new TableContext(subNode.Value);
@@ -201,10 +193,9 @@ namespace PSTParse.Message_Layer
                 if (prop.Value.Data == null || prop.Value.Data.Length == 0)
                     continue;
                 
-                MessageProperty property = (MessageProperty)prop.Key;
                 AllProperties.Add(prop.Value);
 
-                switch (property)
+                switch (prop.Key)
                 {
                     case MessageProperty.Importance:
                         Imporance = (Importance) BitConverter.ToInt16(prop.Value.Data, 0);
@@ -308,30 +299,6 @@ namespace PSTParse.Message_Layer
             var prop = AllProperties.Find(p => p.ID == property);
             return prop == null ? null : MessagePropertyTypes.PropertyToString(unicode, prop);
         }
-
-        public byte[] GetAttachment(Attachment attachment)
-        {
-            foreach (var prop in AttachmentPC.Properties)
-            {
-                MessageProperty property = (MessageProperty)prop.Key;
-
-                switch (property)
-                {
-                    case MessageProperty.Importance:
-                        break;
-
-
-                    default:
-                        break;
-                }
-
-                if (prop.Value.Data != null && prop.Value.Data.Length > 10000)
-                {
-                    return prop.Value.Data;
-                }
-            }
-            return null;
-        }
     }
 
     public enum MessageProperty
@@ -341,64 +308,117 @@ namespace PSTParse.Message_Layer
         StringList = 0x4,
         Importance = 0x17,
         MessageClass = 0x1a,
+        DeliveryReportRequested = 0x23,
+        Priority = 0x26,
+        ReadReceiptRequested = 0x29,
+        RecipientReassignmentProhibited = 0x2B,
+        SensitivityOriginal = 0x2E,
+        ReportTime = 0x32,
         Sensitivity = 0x36,
         Subject = 0x37,
         ClientSubmitTime = 0x39,
         OriginalSenderWithScheme = 0x3b,
-        RecipientName2 = 0x40,
+        ReceivedByEntryID = 0x3F,
+        ReceivedByName = 0x40,
+        SentRepresentingEntryID = 0x41,
         SentRepresentingName = 0x42,
-        RecipientName3 = 0x44,
-        RecipientWithScheme = 0x51,
-        RecipientWithScheme2 = 0x52,
-        Scheme1 = 0x64,
-        ReturnPath = 0x65,
+        ReceivedRepresentingEntryID = 0x43,
+        ReceivedRepresentingName = 0x44,
+        ReplyRecipientEntries = 0x4F,
+        ReplyRecipientNames = 0x50,
+        ReceivedBySearchKey = 0x51,
+        ReceivedRepresentingSearchKey = 0x52,
+        MessageToMe = 0x57,
+        MessageCCMe = 0x58,
+        MessageRecipientMe = 0x59,
+        ResponseRequested = 0x60,
+        SentRepresentingAddressType = 0x64,
+        SentRepresentingAddress = 0x65,
         ConversationTopic = 0x70,
-        Unknown1 = 0x71,
-        Scheme2 = 0x75,
-        RecipientName4 = 0x76,
-        Scheme3 = 0x77,
-        RecipientName5 = 0x78,
+        ConversationIndex = 0x71,
+        OriginalDisplayBcc = 0x72,
+        OriginalDisplayCc = 0x73,
+        OriginalDisplayTo = 0x74,
+        ReceivedByAddressType = 0x75,
+        ReceivedByAddress = 0x76,
+        ReceivedRepresentingAddressType = 0x77,
+        ReceivedRepresentingAddress = 0x78,
         Headers = 0x7d,
         UserEntryID = 0x619,
+        NdrReasonCode = 0xC04,
+        NdrDiagCode = 0xC05,
+        NonReceiptNotificationRequested = 0xC06,
         RecipientType = 0xc15,
+        ReplyRequested = 0xc17,
+        SenderEntryID = 0xc19,
         SenderName = 0xc1a,
-        SenderNameWithScheme = 0xc1d,
-        Scheme4 = 0xc1e,
-        SenderName2 = 0xc1f,
+        SupplementaryInfo = 0xc1b,
+        SenderSearchKey = 0xc1d,
+        SenderAddressType = 0xc1e,
+        SenderAddress = 0xc1f,
+        DeleteAfterSubmit = 0xe01,
+        DisplayBccAddresses = 0xe02,
+        DisplayCcAddresses = 0xe03,
         RecipientName = 0xe04,
         MessageDeliveryTime = 0xe06,
         MessageFlags = 0xe07,
         MessageSize = 0xe08,
+        SentMailEntryID = 0xe0a,
         RecipientResponsibility = 0xe0f,
+        NormalizedSubject = 0xe1d,
+        RtfInSync = 0xe1f,
         AttachmentSize = 0xe20,
         InternetArticleNumber = 0xe23,
         NextSentAccount = 0xe29,
         TrustedSender = 0xe79,
-        RecipientTag = 0xff9,
+        RecordKey = 0xff9,
         RecipientObjType = 0xffe,
         RecipientEntryID = 0xfff,
         BodyPlainText = 0x1000,
+        ReportText = 0x1001,
+        BodyRtfCrc = 0x1006,
+        BodyRtfSyncCount = 0x1007,
+        BodyRtfSyncTag = 0x1008,
         BodyCompressedRTF = 0x1009,
+        BodyRtfSyncPrefixCount = 0x1010,
+        BodyRtfSyncTrailingCount = 0x1011,
         BodyHtml = 0x1013,
         MessageID = 0x1035,
         ReferencesMessageID = 0x1039,
         ReplyToMessageID = 0x1042,
         UnsubscribeAddress = 0x1045,
-        SenderName3 = 0x1046,
+        ReturnPath = 0x1046,
         UrlCompositeName = 0x10F3,
         AttributeHidden = 0x10F4,
         ReadOnly = 0x10F6,
         DisplayName = 0x3001,
         AddressType = 0x3002,
         AddressName = 0x3003,
+        Comment = 0x3004,
         CreationTime = 0x3007,
         LastModificationTime = 0x3008,
         SearchKey = 0x300B,
+        ValidFolderMask = 0x35df,
         RootFolder = 0x35e0,
+        OutboxFolder = 0x35e2,
+        DeletedItemsFolder = 0x35e3,
+        SentFolder = 0x35e4,
+        UserViewsFolder = 0x35e5,
+        CommonViewsFolder = 0x35e6,
+        SearchFolder = 0x35e7,
+        FolderContentCount = 0x3602,
+        FolderUnreadCount = 0x3603,
+        FolderHasChildren = 0x360a,
+        ContainerClass = 0x3613,
+        AssocContentCount = 0x3617,
+        AttachmentData = 0x3701,
         AttachmentFileName = 0x3704,
         AttachmentMethod = 0x3705,
+        AttachmentLongFileName = 0x3707,
         AttachmentRenderPosition = 0x370b,
-        MessageID2 = 0x3712,
+        AttachmentMimeType = 0x370e,
+        AttachmentMimeSequence = 0x3710,
+        AttachmentContentID = 0x3712,
         AttachmentFlags = 0x3714,
         CodePage = 0x3fDE,
         CreatorName = 0x3ff8,
