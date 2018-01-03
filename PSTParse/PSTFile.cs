@@ -57,6 +57,13 @@ namespace PSTParse
             return Header.NodeBT.Root.GetNIDBID(NID);
         }
 
+        public List<Tuple<ulong, ulong>> GetAllNodeBIDs()
+        {
+            var list = new List<Tuple<ulong, ulong>>();
+            Header.NodeBT.Root.GetAllNIDBIDs(list);
+            return list;
+        }
+
         public void Dispose()
         {
             CloseMMF();

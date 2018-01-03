@@ -25,7 +25,6 @@ namespace PSTParse.Message_Layer
     {
         public uint NID { get; private set; }
         public NodeDataDTO Data { get; private set; }
-        public PropertyContext MessagePC { get; private set; }
         public TableContext AttachmentTable { get; private set; }
         public TableContext RecipientTable { get; private set; }
 
@@ -59,11 +58,8 @@ namespace PSTParse.Message_Layer
         public UInt32 NonUnicodeCodePage { get; private set; }
 
         public List<string> ContentEx { get; private set; }
-
-        public List<ExchangeProperty> AllProperties { get; private set; }
-
+        
         private UInt32 MessageFlags;
-        private IPMItem _IPMItem;
         private bool unicode;
 
         public List<Recipient> To = new List<Recipient>();
@@ -75,46 +71,42 @@ namespace PSTParse.Message_Layer
 
         public string Headers
         {
-            get
-            {
-                return GetProperty(MessageProperty.Headers);
-            }
+            get { return GetProperty(MessageProperty.Headers); }
         }
 
         public string BodyPlainText
         {
-            get
-            {
-                return GetProperty(MessageProperty.BodyPlainText);
-            }
+            get { return GetProperty(MessageProperty.BodyPlainText); }
         }
 
         public string HtmlBody
         {
-            get
-            {
-                return GetProperty(MessageProperty.BodyHtml);
-            }
+            get { return GetProperty(MessageProperty.BodyHtml); }
         }
 
         public string BodyRTF
         {
             get
             {
-                var prop = AllProperties.Find(p => p.ID == MessageProperty.BodyHtml);
-                return prop == null ? null : new Util.RtfDecompressor().Decompress(prop.Data);
+                foreach (var prop in PC.Properties)
+                {
+                    if (prop.Value.ID == MessageProperty.BodyCompressedRTF)
+                    {
+                        return new Util.RtfDecompressor().Decompress(prop.Value.Data);
+                    }
+                }
+                return null;
             }
         }
 
 
-        public Message(uint NID, IPMItem item, PSTFile pst)
+        public Message(uint NID, PSTFile pst)
+            : base(pst, NID)
         {
             unicode = pst.Header.isUnicode;
-            _IPMItem = item;
             Data = BlockBO.GetNodeData(NID, pst);
             this.NID = NID;
             
-            AllProperties = new List<ExchangeProperty>();
             ContentEx = new List<string>();
 
             //MessagePC = new PropertyContext(Data);
@@ -188,13 +180,11 @@ namespace PSTParse.Message_Layer
                         break;
                 }
             }
-            foreach(var prop in _IPMItem.PC.Properties)
+            foreach(var prop in PC.Properties)
             {
                 if (prop.Value.Data == null || prop.Value.Data.Length == 0)
                     continue;
                 
-                AllProperties.Add(prop.Value);
-
                 switch (prop.Key)
                 {
                     case MessageProperty.Importance:
@@ -296,8 +286,14 @@ namespace PSTParse.Message_Layer
 
         public string GetProperty(MessageProperty property)
         {
-            var prop = AllProperties.Find(p => p.ID == property);
-            return prop == null ? null : MessagePropertyTypes.PropertyToString(unicode, prop);
+            foreach (var prop in PC.Properties)
+            {
+                if (prop.Value.ID == property)
+                {
+                    return MessagePropertyTypes.PropertyToString(unicode, prop.Value);
+                }
+            }
+            return null;
         }
     }
 

@@ -62,13 +62,14 @@ namespace PSTParse.Message_Layer
                 var item = new IPMItem(_pst, row.Value);
                 //if (item.MessageClass.StartsWith("IPM.Note"))
                 //{
-                    Messages.Add(new Message(row.Value, item, _pst));
+                    Messages.Add(new Message(row.Value, _pst));
                 //}
                 //else
                 //{
                 //    OtherItems.Add(item);
                 //}
             }
+            
         }
     }
 }

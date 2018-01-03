@@ -10,12 +10,8 @@ namespace PSTParse.LTP
         public Dictionary<MessageProperty, ExchangeProperty> Properties { get; private set; }
 
         public PropertyContext(ulong nid, PSTFile pst)
-        {
-            var bytes = BlockBO.GetNodeData(nid, pst);
-            var HN = new HN(bytes);
-            BTH = new BTH(HN);
-            Properties = BTH.GetExchangeProperties();
-        }
+            : this(BlockBO.GetNodeData(nid, pst))
+        { }
 
         public PropertyContext(NodeDataDTO data)
         {

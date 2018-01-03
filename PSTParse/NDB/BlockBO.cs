@@ -7,14 +7,18 @@ namespace PSTParse.NDB
     {
         public static NodeDataDTO GetNodeData(ulong nid, PSTFile pst)
         {
-            var nodeBIDs = pst.GetNodeBIDs(nid);
+            return GetNodeData(pst.GetNodeBIDs(nid), pst);
+        }
+
+        public static NodeDataDTO GetNodeData(Tuple<ulong, ulong> nodeBIDs, PSTFile pst)
+        {
             var mainData = BlockBO.GetBBTEntryData(pst.GetBlockBBTEntry(nodeBIDs.Item1), pst);
-            var subNodeData = new Dictionary<ulong,NodeDataDTO>();
+            var subNodeData = new Dictionary<ulong, NodeDataDTO>();
 
             if (nodeBIDs.Item2 != 0)
                 subNodeData = BlockBO.GetSubNodeData(pst.GetBlockBBTEntry(nodeBIDs.Item2), pst);
 
-            return new NodeDataDTO {NodeData = mainData, SubNodeData = subNodeData};
+            return new NodeDataDTO { NodeData = mainData, SubNodeData = subNodeData };
         }
 
         private static Dictionary<ulong, NodeDataDTO> GetSubNodeData(BBTENTRY entry, PSTFile pst)

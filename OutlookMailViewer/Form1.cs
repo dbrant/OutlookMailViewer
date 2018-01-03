@@ -1,4 +1,5 @@
 ﻿using PSTParse;
+using PSTParse.LTP;
 using PSTParse.Message_Layer;
 using System;
 using System.Drawing;
@@ -131,7 +132,8 @@ namespace OutlookMailViewer
             }
             
             currentFolder = (MailFolder)treeViewFolders.SelectedNode.Tag;
-            
+            UpdatePropertyList(currentFolder.PC);
+
             sortAscending = false;
             SortByDate();
             listViewMessages.VirtualListSize = currentFolder.Messages.Count;
@@ -152,19 +154,8 @@ namespace OutlookMailViewer
             webBrowser1.DocumentText = html != null ? html : (plainText != null ? plainText.Replace("\n", "<br />") : "");
             textBoxPlainText.Text = plainText != null ? plainText : "";
             textBoxHeaders.Text = headers != null ? headers : "";
-            
-            listViewDetails.Items.Clear();
-            foreach (var prop in message.AllProperties)
-            {
-                if (prop.ID == MessageProperty.BodyPlainText || prop.ID == MessageProperty.BodyCompressedRTF
-                    || prop.ID == MessageProperty.BodyHtml || prop.ID == MessageProperty.Headers)
-                {
-                    continue;
-                }
-                var item = listViewDetails.Items.Add("0x" + Convert.ToString((int)prop.ID, 16) + " - " + prop.ID.ToString());
-                item.ImageKey = "information";
-                item.SubItems.Add(MessagePropertyTypes.PropertyToString(currentFile.Header.isUnicode, prop, true));
-            }
+
+            UpdatePropertyList(message.PC);
 
             listViewAttachments.Items.Clear();
             foreach (var attachment in message.Attachments)
@@ -173,6 +164,22 @@ namespace OutlookMailViewer
                 item.ImageKey = "documentsub";
                 item.SubItems.Add(attachment.Size.ToString());
                 item.SubItems.Add(attachment.Method.ToString());
+            }
+        }
+
+        private void UpdatePropertyList(PropertyContext PC)
+        {
+            listViewDetails.Items.Clear();
+            foreach (var prop in PC.Properties)
+            {
+                if (prop.Value.ID == MessageProperty.BodyPlainText || prop.Value.ID == MessageProperty.BodyCompressedRTF
+                    || prop.Value.ID == MessageProperty.BodyHtml || prop.Value.ID == MessageProperty.Headers)
+                {
+                    continue;
+                }
+                var item = listViewDetails.Items.Add("0x" + Convert.ToString((int)prop.Value.ID, 16) + " - " + prop.Value.ID.ToString());
+                item.ImageKey = "information";
+                item.SubItems.Add(MessagePropertyTypes.PropertyToString(currentFile.Header.isUnicode, prop.Value, true));
             }
         }
 

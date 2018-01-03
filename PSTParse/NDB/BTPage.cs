@@ -142,5 +142,22 @@ namespace PSTParse.NDB
             }
             return new Tuple<ulong, ulong>(0, 0);
         }
+
+        public void GetAllNIDBIDs(List<Tuple<ulong, ulong>> list)
+        {
+            var isBTEntry = Entries[0] is BTENTRY;
+            for (int i = 0; i < Entries.Count; i++)
+            {
+                if (isBTEntry)
+                {
+                    InternalChildren[i].GetAllNIDBIDs(list);
+                }
+                else
+                {
+                    var cur = Entries[i] as NBTENTRY;
+                    list.Add(new Tuple<ulong, ulong>(cur.BID_Data, cur.BID_SUB));
+                }
+            }
+        }
     }
 }
