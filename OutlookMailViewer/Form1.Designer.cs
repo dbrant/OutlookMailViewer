@@ -62,6 +62,8 @@
             this.contextMenuStripAttachments = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuItemSaveAttachment = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -83,7 +85,8 @@
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.fileToolStripMenuItem});
+            this.fileToolStripMenuItem,
+            this.helpToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(970, 24);
@@ -397,12 +400,12 @@
             this.contextMenuStripAttachments.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.menuItemSaveAttachment});
             this.contextMenuStripAttachments.Name = "contextMenuStripAttachments";
-            this.contextMenuStripAttachments.Size = new System.Drawing.Size(153, 48);
+            this.contextMenuStripAttachments.Size = new System.Drawing.Size(108, 26);
             // 
             // menuItemSaveAttachment
             // 
             this.menuItemSaveAttachment.Name = "menuItemSaveAttachment";
-            this.menuItemSaveAttachment.Size = new System.Drawing.Size(152, 22);
+            this.menuItemSaveAttachment.Size = new System.Drawing.Size(107, 22);
             this.menuItemSaveAttachment.Text = "Save...";
             this.menuItemSaveAttachment.Click += new System.EventHandler(this.menuItemSaveAttachment_Click);
             // 
@@ -413,6 +416,21 @@
             this.statusStrip1.Size = new System.Drawing.Size(970, 22);
             this.statusStrip1.TabIndex = 3;
             this.statusStrip1.Text = "statusStrip1";
+            // 
+            // helpToolStripMenuItem
+            // 
+            this.helpToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.aboutToolStripMenuItem});
+            this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            this.helpToolStripMenuItem.Size = new System.Drawing.Size(44, 20);
+            this.helpToolStripMenuItem.Text = "Help";
+            // 
+            // aboutToolStripMenuItem
+            // 
+            this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.aboutToolStripMenuItem.Text = "About...";
+            this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -486,6 +504,8 @@
         private System.Windows.Forms.ColumnHeader columnHeader9;
         private System.Windows.Forms.ContextMenuStrip contextMenuStripAttachments;
         private System.Windows.Forms.ToolStripMenuItem menuItemSaveAttachment;
+        private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutToolStripMenuItem;
     }
 }
 

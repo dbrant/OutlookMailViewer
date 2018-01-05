@@ -277,5 +277,10 @@ namespace OutlookMailViewer
                 MessageBox.Show(this, ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
         }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            MessageBox.Show(this, "Outlook PST mail database viewer.\n\nCopyright 2018 Dmitry Brant.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
     }
 }
