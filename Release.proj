@@ -42,6 +42,7 @@
 	</Target>
 	
 	<Target Name="Clean">
+		<RemoveDir Directories="$(BasePath)\final" />
 		<MSBuild Projects="@(CompileProject);@(CompileSolution)"
 			Properties="Configuration=$(Configuration)"
 			Targets="Clean" />
@@ -54,7 +55,8 @@
 	</Target>
 
 	<Target Name="ILMerge">
-		<Exec Command="$(BasePath)\packages\ILMerge.2.14.1208\tools\ilmerge.exe /out:$(ExePath)\OutlookPstViewer.exe $(ExePath)\OutlookMailViewer.exe $(ExePath)\PSTParse.dll" />
+		<MakeDir Directories="$(BasePath)\final" />
+		<Exec Command="$(BasePath)\packages\ILMerge.2.14.1208\tools\ilmerge.exe /out:$(BasePath)\final\OutlookPstViewer.exe $(ExePath)\OutlookMailViewer.exe $(ExePath)\PSTParse.dll" />
 	</Target>
 
 	<!-- clean, compile and package! -->
