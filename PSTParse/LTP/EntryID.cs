@@ -5,6 +5,7 @@ namespace PSTParse.LTP
 {
     public class EntryID
     {
+        public const int Size = 24;
         public uint Flags { get; private set; }
         public byte[] PSTUID { get; private set; }
         public ulong NID { get; private set; }

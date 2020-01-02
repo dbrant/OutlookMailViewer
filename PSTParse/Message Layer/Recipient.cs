@@ -29,16 +29,16 @@ namespace PSTParse.Message_Layer
                 switch (exProp.ID)
                 {
                     case MessageProperty.RecipientType:
-                        Type = (RecipientType)BitConverter.ToUInt32(exProp.Data, 0);
+                        Type = exProp.Data.Length > 0 ? (RecipientType)BitConverter.ToUInt32(exProp.Data, 0) : RecipientType.FROM;
                         break;
                     case MessageProperty.RecipientResponsibility:
-                        Responsibility = exProp.Data[0] == 0x01;
+                        Responsibility = exProp.Data.Length > 0 ? exProp.Data[0] == 0x01 : false;
                         break;
                     case MessageProperty.RecipientObjType:
-                        ObjType = (PSTEnums.ObjectType)BitConverter.ToUInt32(exProp.Data, 0);
+                        ObjType = exProp.Data.Length >= 4 ? (PSTEnums.ObjectType)BitConverter.ToUInt32(exProp.Data, 0) : PSTEnums.ObjectType.MAIL_USER;
                         break;
                     case MessageProperty.RecipientEntryID:
-                        EntryID = new EntryID(exProp.Data);
+                        EntryID = exProp.Data.Length >= EntryID.Size ? new EntryID(exProp.Data) : null;
                         break;
                     case MessageProperty.DisplayName:
                         DisplayName = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
