@@ -34,11 +34,11 @@ namespace PSTParse
                 //var temp = new TableContext(rootEntryID.NID);
                 //PasswordReset.ResetPassword();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // don't hold the MMF open if something failed here.
                 PSTMMF.Dispose();
-                throw ex;
+                throw;
             }
         }
 
