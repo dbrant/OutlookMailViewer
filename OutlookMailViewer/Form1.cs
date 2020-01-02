@@ -84,7 +84,7 @@ namespace OutlookMailViewer
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, ex.Message, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                MessageBox.Show(this, ex.Message + ":\n\n" + ex.StackTrace.ToString(), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
             }
             finally
             {
