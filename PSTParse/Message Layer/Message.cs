@@ -453,7 +453,7 @@ namespace PSTParse.Message_Layer
             {
                 if (prop.Type == ExchangeProperty.PropType.Binary && prop.Data.Length > 0)
                 {
-                    return Encoding.ASCII.GetString(prop.Data, 0, prop.Data.Length);
+                    return Encoding.UTF8.GetString(prop.Data, 0, prop.Data.Length);
                 }
                 else if (prop.Type == ExchangeProperty.PropType.Boolean && prop.Data.Length > 0)
                 {
@@ -528,7 +528,7 @@ namespace PSTParse.Message_Layer
                     // screw it, just render the first string, up until the end of the data.
                     return unicode
                         ? Encoding.Unicode.GetString(prop.Data, 8, Math.Min(maxStringBytes, prop.Data.Length - 8))
-                        : Encoding.ASCII.GetString(prop.Data, 8, Math.Min(maxStringBytes, prop.Data.Length - 8));
+                        : Encoding.UTF8.GetString(prop.Data, 8, Math.Min(maxStringBytes, prop.Data.Length - 8));
                 }
                 else if (prop.Type == ExchangeProperty.PropType.MultipleString8)
                 {
@@ -549,19 +549,19 @@ namespace PSTParse.Message_Layer
                 {
                     return unicode
                         ? Encoding.Unicode.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length))
-                        : Encoding.ASCII.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
+                        : Encoding.UTF8.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
                 }
                 else if (prop.Type == ExchangeProperty.PropType.String8)
                 {
-                    return Encoding.ASCII.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
+                    return Encoding.UTF8.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
                 }
                 else if (prop.Type == ExchangeProperty.PropType.Time && prop.Data.Length >= 8)
                 {
                     return DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Data, 0)).ToString();
                 }
 
-                // If we fall through to here, then just try to render it as ascii...
-                Encoding.ASCII.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
+                // If we fall through to here, then just try to render it as UTF-8...
+                Encoding.UTF8.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
 
             }
             catch { }
