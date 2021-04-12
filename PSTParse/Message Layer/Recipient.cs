@@ -26,6 +26,10 @@ namespace PSTParse.Message_Layer
         {
             foreach (var exProp in row)
             {
+                if (exProp.Data == null)
+                {
+                    continue;
+                }
                 switch (exProp.ID)
                 {
                     case MessageProperty.RecipientType:
@@ -38,7 +42,7 @@ namespace PSTParse.Message_Layer
                         ObjType = exProp.Data.Length >= 4 ? (PSTEnums.ObjectType)BitConverter.ToUInt32(exProp.Data, 0) : PSTEnums.ObjectType.MAIL_USER;
                         break;
                     case MessageProperty.RecipientEntryID:
-                        EntryID = exProp.Data.Length >= EntryID.Size ? new EntryID(exProp.Data) : null;
+                        EntryID = exProp.Data != null && (exProp.Data.Length >= EntryID.Size) ? new EntryID(exProp.Data) : null;
                         break;
                     case MessageProperty.DisplayName:
                         DisplayName = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
