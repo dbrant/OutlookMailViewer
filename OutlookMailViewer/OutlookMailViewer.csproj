@@ -86,14 +86,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PSTParse\PSTParse.csproj">
-      <Project>{d8896ce5-befd-4f1f-9b7c-24a5abde5683}</Project>
-      <Name>PSTParse</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="myicon.ico" />
   </ItemGroup>
+  <Import Project="..\PstShared\PstShared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

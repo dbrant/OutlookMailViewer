@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("OutlookMailViewer")]
-[assembly: AssemblyCopyright("Copyright © Dmitry Brant 2018-2020")]
+[assembly: AssemblyCopyright("Copyright © Dmitry Brant 2018-2021")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

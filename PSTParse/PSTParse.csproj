@@ -39,84 +39,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LTP\BTH.cs" />
-    <Compile Include="LTP\BTHDataEntry.cs" />
-    <Compile Include="LTP\BTHDataNode.cs" />
-    <Compile Include="LTP\BTHDataRecord.cs" />
-    <Compile Include="LTP\BTHHEADER.cs" />
-    <Compile Include="LTP\BTHIndexAllocationRecords.cs" />
-    <Compile Include="LTP\BTHIndexEntry.cs" />
-    <Compile Include="LTP\BTHIndexNode.cs" />
-    <Compile Include="LTP\EntryID.cs" />
-    <Compile Include="LTP\HeapNodeBO.cs" />
-    <Compile Include="LTP\HID.cs" />
-    <Compile Include="LTP\HN.cs" />
-    <Compile Include="LTP\HNBITMAPHDR.cs" />
-    <Compile Include="LTP\HNBlock.cs" />
-    <Compile Include="LTP\HNDataDTO.cs" />
-    <Compile Include="LTP\HNHDR.cs" />
-    <Compile Include="LTP\HNID.cs" />
-    <Compile Include="LTP\HNPAGEHDR.cs" />
-    <Compile Include="LTP\HNPAGEMAP.cs" />
-    <Compile Include="LTP\MVPropVarBase.cs" />
-    <Compile Include="LTP\PCBTHRecord.cs" />
-    <Compile Include="LTP\ExchangeProperty.cs" />
-    <Compile Include="LTP\TableContext.cs" />
-    <Compile Include="LTP\TCINFOHEADER.cs" />
-    <Compile Include="LTP\TCOLDESC.cs" />
-    <Compile Include="LTP\TCRowMatrix.cs" />
-    <Compile Include="LTP\TCRowMatrixData.cs" />
-    <Compile Include="Message Layer\Attachment.cs" />
-    <Compile Include="Message Layer\IPMItem.cs" />
-    <Compile Include="Message Layer\MailFolder.cs" />
-    <Compile Include="Message Layer\MailStore.cs" />
-    <Compile Include="LTP\PropertyContext.cs" />
-    <Compile Include="Message Layer\Message.cs" />
-    <Compile Include="Message Layer\NamedProperty.cs" />
-    <Compile Include="Message Layer\NamedToPropertyLookup.cs" />
-    <Compile Include="Message Layer\NAMEID.cs" />
-    <Compile Include="Message Layer\Recipient.cs" />
-    <Compile Include="NDB\BBTENTRY.cs" />
-    <Compile Include="NDB\BID.cs" />
-    <Compile Include="NDB\BlockBO.cs" />
-    <Compile Include="NDB\BlockDataDTO.cs" />
-    <Compile Include="NDB\BlockFactory.cs" />
-    <Compile Include="NDB\BlockTrailer.cs" />
-    <Compile Include="NDB\BREF.cs" />
-    <Compile Include="NDB\BTENTRY.cs" />
-    <Compile Include="NDB\BTPage.cs" />
-    <Compile Include="NDB\BTPAGEENTRY.cs" />
-    <Compile Include="NDB\DataEncoder.cs" />
-    <Compile Include="NDB\IBLOCK.cs" />
-    <Compile Include="NDB\NBTENTRY.cs" />
-    <Compile Include="NDB\NID.cs" />
-    <Compile Include="NDB\NodeBTree.cs" />
-    <Compile Include="NDB\NodeDataDTO.cs" />
-    <Compile Include="NDB\PageTrailer.cs" />
-    <Compile Include="NDB\PSTBTree.cs" />
-    <Compile Include="NDB\PSTBTreeNode.cs" />
-    <Compile Include="NDB\SIBLOCK.cs" />
-    <Compile Include="NDB\SIENTRY.cs" />
-    <Compile Include="NDB\SLBLOCK.cs" />
-    <Compile Include="NDB\SLENTRY.cs" />
-    <Compile Include="NDB\SpecialNIDs.cs" />
-    <Compile Include="NDB\SubNodeDataDTO.cs" />
-    <Compile Include="NDB\XBLOCK.cs" />
-    <Compile Include="NDB\XXBLOCK.cs" />
-    <Compile Include="PasswordReset.cs" />
-    <Compile Include="PSTEnums.cs" />
-    <Compile Include="PSTFile.cs" />
-    <Compile Include="PSTHeader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="PSTParser.cs" />
-    <Compile Include="Util\ArrayUtilities.cs" />
-    <Compile Include="Util\CRC32.cs" />
-    <Compile Include="Util\RtfDecompressor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
+  <Import Project="..\PstShared\PstShared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
