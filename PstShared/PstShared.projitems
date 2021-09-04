@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects Condition="'$(MSBuildVersion)' == '' Or '$(MSBuildVersion)' &lt; '16.0'">$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>4c946a39-258c-4f52-9160-f57eb3c44f9e</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>PstShared</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\BTH.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\BTHDataEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\BTHDataNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\BTHDataRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\BTHHEADER.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\BTHIndexAllocationRecords.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\BTHIndexEntry.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\BTHIndexNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\EntryID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\ExchangeProperty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\HeapNodeBO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\HID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\HN.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\HNBITMAPHDR.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\HNBlock.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\HNDataDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\HNHDR.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\HNID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\HNPAGEHDR.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\HNPAGEMAP.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\MVPropVarBase.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\PCBTHRecord.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\PropertyContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\TableContext.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\TCINFOHEADER.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\TCOLDESC.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\TCRowMatrix.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)LTP\TCRowMatrixData.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Message Layer\Attachment.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Message Layer\IPMItem.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Message Layer\MailFolder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Message Layer\MailStore.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Message Layer\Message.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Message Layer\NamedProperty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Message Layer\NamedToPropertyLookup.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Message Layer\NAMEID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Message Layer\Recipient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\BBTENTRY.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\BID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\BlockBO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\BlockDataDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\BlockFactory.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\BlockTrailer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\BREF.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\BTENTRY.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\BTPage.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\BTPAGEENTRY.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\DataEncoder.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\IBLOCK.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\NBTENTRY.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\NID.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\NodeBTree.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\NodeDataDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\PageTrailer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\PSTBTree.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\PSTBTreeNode.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\SIBLOCK.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\SIENTRY.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\SLBLOCK.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\SLENTRY.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\SpecialNIDs.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\SubNodeDataDTO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\XBLOCK.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\XXBLOCK.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PasswordReset.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PSTEnums.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PSTFile.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PSTHeader.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)PSTParser.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\ArrayUtilities.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\CRC32.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Util\RtfDecompressor.cs" />
+  </ItemGroup>
+</Project>
