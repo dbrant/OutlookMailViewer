@@ -2,6 +2,7 @@
 using PSTParse.LTP;
 using PSTParse.Message_Layer;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace OutlookMailViewer
     {
         private PSTFile currentFile;
         private MailFolder currentFolder;
+        private List<PSTParse.Message_Layer.Message> displayedMessages = new List<PSTParse.Message_Layer.Message>();
 
         private bool allowNextWebViewLink;
         private bool sortAscending;
@@ -133,10 +135,11 @@ namespace OutlookMailViewer
             
             currentFolder = (MailFolder)treeViewFolders.SelectedNode.Tag;
             UpdatePropertyList(currentFolder.PC);
+            RegenerateListBySearch();
 
             sortAscending = false;
             SortByDate();
-            listViewMessages.VirtualListSize = currentFolder.Messages.Count;
+            listViewMessages.Invalidate();
         }
 
         private void listViewMessages_SelectedIndexChanged(object sender, EventArgs e)
@@ -145,7 +148,7 @@ namespace OutlookMailViewer
             {
                 return;
             }
-            var message = currentFolder.Messages[listViewMessages.SelectedIndices[0]];
+            var message = displayedMessages[listViewMessages.SelectedIndices[0]];
 
             allowNextWebViewLink = true;
             string headers = message.Headers;
@@ -199,7 +202,7 @@ namespace OutlookMailViewer
             sortAscending = !sortAscending;
             if (e.Column == 0)
             {
-                currentFolder.Messages.Sort((a, b) => (a.Subject != null && b.Subject != null)
+                displayedMessages.Sort((a, b) => (a.Subject != null && b.Subject != null)
                 ? (sortAscending ? a.Subject.CompareTo(b.Subject) : b.Subject.CompareTo(a.Subject))
                 : 0);
             }
@@ -212,14 +215,14 @@ namespace OutlookMailViewer
 
         private void SortByDate()
         {
-            currentFolder.Messages.Sort((a, b) => (a.ClientSubmitTime != null && b.ClientSubmitTime != null)
+            displayedMessages.Sort((a, b) => (a.ClientSubmitTime != null && b.ClientSubmitTime != null)
                 ? (sortAscending ? a.ClientSubmitTime.CompareTo(b.ClientSubmitTime) : b.ClientSubmitTime.CompareTo(a.ClientSubmitTime))
                 : 0);
         }
         
         private void listViewMessages_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
-            var message = currentFolder.Messages[e.ItemIndex];
+            var message = displayedMessages[e.ItemIndex];
             e.Item = new ListViewItem(message.Subject);
             e.Item.Tag = message;
             e.Item.SubItems.Add(message.ClientSubmitTime.ToString());
@@ -253,7 +256,7 @@ namespace OutlookMailViewer
             {
                 return;
             }
-            var message = currentFolder.Messages[listViewMessages.SelectedIndices[0]];
+            var message = displayedMessages[listViewMessages.SelectedIndices[0]];
             if (listViewAttachments.SelectedIndices[0] >= message.Attachments.Count)
             {
                 return;
@@ -281,6 +284,52 @@ namespace OutlookMailViewer
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
             MessageBox.Show(this, "Outlook PST mail database viewer.\n\nCopyright 2018-2021 Dmitry Brant.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void mnuFind_Click(object sender, EventArgs e)
+        {
+            panelSearch.Visible = true;
+        }
+
+        private void btnSearchClose_Click(object sender, EventArgs e)
+        {
+            panelSearch.Visible = false;
+            RegenerateListBySearch();
+        }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            RegenerateListBySearch();
+        }
+
+        private void RegenerateListBySearch()
+        {
+            displayedMessages.Clear();
+            if (!panelSearch.Visible || txtSearch.Text.Length == 0)
+            {
+                displayedMessages.AddRange(currentFolder.Messages);
+            }
+            else
+            {
+                var searchTerm = txtSearch.Text.ToLowerInvariant();
+                foreach (var message in currentFolder.Messages)
+                {
+                    if (
+                        (chkSearchSubject.Checked && message.Subject.ToLowerInvariant().Contains(searchTerm)) ||
+                        (chkSearchBody.Checked && message.HtmlBody != null && message.HtmlBody.ToLowerInvariant().Contains(searchTerm)) ||
+                        (chkSearchBody.Checked && message.BodyPlainText != null && message.BodyPlainText.ToLowerInvariant().Contains(searchTerm)) ||
+                        (chkSearchFrom.Checked && message.SentRepresentingName != null && message.SentRepresentingName.ToLowerInvariant().Contains(searchTerm)) ||
+                        (chkSearchFrom.Checked && message.SenderName != null && message.SenderName.ToLowerInvariant().Contains(searchTerm)) ||
+                        (chkSearchTo.Checked && message.To != null && string.Join("; ", message.To.Select(r => r.EmailAddress.ToLowerInvariant())).Contains(searchTerm)) ||
+                        (chkSearchHeaders.Checked && message.Headers != null && message.Headers.ToLowerInvariant().Contains(searchTerm)) ||
+                        (chkSearchAttachments.Checked && message.Attachments != null && message.Attachments.Find(a => a.FileName != null && a.FileName.ToLowerInvariant().Contains(searchTerm)) != null)
+                        )
+                    {
+                        displayedMessages.Add(message);
+                    }
+                }
+            }
+            listViewMessages.VirtualListSize = displayedMessages.Count;
         }
     }
 }
