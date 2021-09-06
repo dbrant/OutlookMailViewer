@@ -207,6 +207,10 @@ namespace OutlookMailViewer
             {
                 sortAscending = !sortAscending;
             }
+            else
+            {
+                sortAscending = true;
+            }
             sortOrder = newSortOrder;
             UpdateSort();
             listViewMessages.Invalidate();
