@@ -20,8 +20,14 @@ namespace OutlookMailViewer
         private List<PSTParse.Message_Layer.Message> displayedMessages = new List<PSTParse.Message_Layer.Message>();
 
         private bool allowNextWebViewLink;
-        private bool sortAscending;
+        private SortOrder sortOrder = SortOrder.Date;
+        private bool sortAscending = false;
         private Font messageUnreadFont;
+
+        private enum SortOrder
+        {
+            None = -1, Subject = 0, Date
+        }
 
         public Form1()
         {
@@ -136,9 +142,6 @@ namespace OutlookMailViewer
             currentFolder = (MailFolder)treeViewFolders.SelectedNode.Tag;
             UpdatePropertyList(currentFolder.PC);
             RegenerateListBySearch();
-
-            sortAscending = false;
-            SortByDate();
             listViewMessages.Invalidate();
         }
 
@@ -199,27 +202,16 @@ namespace OutlookMailViewer
 
         private void listViewMessages_ColumnClick(object sender, ColumnClickEventArgs e)
         {
-            sortAscending = !sortAscending;
-            if (e.Column == 0)
+            var newSortOrder = (SortOrder)e.Column;
+            if (newSortOrder == sortOrder)
             {
-                displayedMessages.Sort((a, b) => (a.Subject != null && b.Subject != null)
-                ? (sortAscending ? a.Subject.CompareTo(b.Subject) : b.Subject.CompareTo(a.Subject))
-                : 0);
+                sortAscending = !sortAscending;
             }
-            else if (e.Column == 1)
-            {
-                SortByDate();
-            }
+            sortOrder = newSortOrder;
+            UpdateSort();
             listViewMessages.Invalidate();
         }
 
-        private void SortByDate()
-        {
-            displayedMessages.Sort((a, b) => (a.ClientSubmitTime != null && b.ClientSubmitTime != null)
-                ? (sortAscending ? a.ClientSubmitTime.CompareTo(b.ClientSubmitTime) : b.ClientSubmitTime.CompareTo(a.ClientSubmitTime))
-                : 0);
-        }
-        
         private void listViewMessages_RetrieveVirtualItem(object sender, RetrieveVirtualItemEventArgs e)
         {
             var message = displayedMessages[e.ItemIndex];
@@ -289,6 +281,8 @@ namespace OutlookMailViewer
         private void mnuFind_Click(object sender, EventArgs e)
         {
             panelSearch.Visible = true;
+            txtSearch.Focus();
+            txtSearch.SelectAll();
         }
 
         private void btnSearchClose_Click(object sender, EventArgs e)
@@ -302,34 +296,66 @@ namespace OutlookMailViewer
             RegenerateListBySearch();
         }
 
+        private void txtSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                RegenerateListBySearch();
+            }
+        }
+
         private void RegenerateListBySearch()
         {
             displayedMessages.Clear();
-            if (!panelSearch.Visible || txtSearch.Text.Length == 0)
+            if (currentFolder != null && currentFolder.Messages != null)
             {
-                displayedMessages.AddRange(currentFolder.Messages);
-            }
-            else
-            {
-                var searchTerm = txtSearch.Text.ToLowerInvariant();
-                foreach (var message in currentFolder.Messages)
+                if (!panelSearch.Visible || txtSearch.Text.Length == 0)
                 {
-                    if (
-                        (chkSearchSubject.Checked && message.Subject.ToLowerInvariant().Contains(searchTerm)) ||
-                        (chkSearchBody.Checked && message.HtmlBody != null && message.HtmlBody.ToLowerInvariant().Contains(searchTerm)) ||
-                        (chkSearchBody.Checked && message.BodyPlainText != null && message.BodyPlainText.ToLowerInvariant().Contains(searchTerm)) ||
-                        (chkSearchFrom.Checked && message.SentRepresentingName != null && message.SentRepresentingName.ToLowerInvariant().Contains(searchTerm)) ||
-                        (chkSearchFrom.Checked && message.SenderName != null && message.SenderName.ToLowerInvariant().Contains(searchTerm)) ||
-                        (chkSearchTo.Checked && message.To != null && string.Join("; ", message.To.Select(r => r.EmailAddress.ToLowerInvariant())).Contains(searchTerm)) ||
-                        (chkSearchHeaders.Checked && message.Headers != null && message.Headers.ToLowerInvariant().Contains(searchTerm)) ||
-                        (chkSearchAttachments.Checked && message.Attachments != null && message.Attachments.Find(a => a.FileName != null && a.FileName.ToLowerInvariant().Contains(searchTerm)) != null)
-                        )
+                    displayedMessages.AddRange(currentFolder.Messages);
+                }
+                else
+                {
+                    var searchTerm = txtSearch.Text.ToLowerInvariant();
+                    foreach (var message in currentFolder.Messages)
                     {
-                        displayedMessages.Add(message);
+                        if (
+                            (chkSearchSubject.Checked && message.Subject.ToLowerInvariant().Contains(searchTerm)) ||
+                            (chkSearchBody.Checked && message.HtmlBody != null && message.HtmlBody.ToLowerInvariant().Contains(searchTerm)) ||
+                            (chkSearchBody.Checked && message.BodyPlainText != null && message.BodyPlainText.ToLowerInvariant().Contains(searchTerm)) ||
+                            (chkSearchFrom.Checked && message.SentRepresentingName != null && message.SentRepresentingName.ToLowerInvariant().Contains(searchTerm)) ||
+                            (chkSearchFrom.Checked && message.SenderName != null && message.SenderName.ToLowerInvariant().Contains(searchTerm)) ||
+                            (chkSearchTo.Checked && message.To != null && string.Join("; ", message.To.Select(r => r.EmailAddress.ToLowerInvariant())).Contains(searchTerm)) ||
+                            (chkSearchHeaders.Checked && message.Headers != null && message.Headers.ToLowerInvariant().Contains(searchTerm)) ||
+                            (chkSearchAttachments.Checked && message.Attachments != null && message.Attachments.Find(a => a.FileName != null && a.FileName.ToLowerInvariant().Contains(searchTerm)) != null)
+                            )
+                        {
+                            displayedMessages.Add(message);
+                        }
                     }
                 }
             }
+            UpdateSort();
             listViewMessages.VirtualListSize = displayedMessages.Count;
+        }
+
+        private void UpdateSort()
+        {
+            if (sortOrder == SortOrder.None)
+            {
+                return;
+            }
+            else if (sortOrder == SortOrder.Subject)
+            {
+                displayedMessages.Sort((a, b) => (a.Subject != null && b.Subject != null)
+                ? (sortAscending ? a.Subject.CompareTo(b.Subject) : b.Subject.CompareTo(a.Subject))
+                : 0);
+            }
+            else if (sortOrder == SortOrder.Date)
+            {
+                displayedMessages.Sort((a, b) => (a.ClientSubmitTime != null && b.ClientSubmitTime != null)
+                ? (sortAscending ? a.ClientSubmitTime.CompareTo(b.ClientSubmitTime) : b.ClientSubmitTime.CompareTo(a.ClientSubmitTime))
+                : 0);
+            }
         }
     }
 }
