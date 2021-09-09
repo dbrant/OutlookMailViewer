@@ -403,10 +403,38 @@ namespace OutlookMailViewer
                         catch { }
                     }
                 }
+                if (message.MessageId != null)
+                {
+                    email.InternetMessageId = message.MessageId;
+                }
+                if (message.ReplyToId != null)
+                {
+                    email.InReplyToId = message.ReplyToId;
+                }
                 email.Importance = (MsgKit.Enums.MessageImportance)message.Imporance;
-                
 
-                email.Save("feep.msg");
+                if (message.MessageDeliveryTime != null)
+                {
+                    email.ReceivedOn = message.MessageDeliveryTime;
+                }
+                if (message.ClientSubmitTime != null)
+                {
+                    email.SentOn = message.ClientSubmitTime;
+                }
+                foreach (var rec in message.To)
+                {
+                    email.Recipients.AddTo(rec.EmailAddress, rec.DisplayName);
+                }
+                foreach (var rec in message.CC)
+                {
+                    email.Recipients.AddCc(rec.EmailAddress, rec.DisplayName);
+                }
+                foreach (var rec in message.BCC)
+                {
+                    email.Recipients.AddBcc(rec.EmailAddress, rec.DisplayName);
+                }
+
+                email.Save("test.msg");
             }
         }
     }
