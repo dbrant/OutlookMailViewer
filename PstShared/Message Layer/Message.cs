@@ -56,6 +56,8 @@ namespace PSTParse.Message_Layer
         public DateTime LastModificationTime { get; private set; }
         public UInt32 CodePage { get; private set; }
         public UInt32 NonUnicodeCodePage { get; private set; }
+        public string MessageId { get; private set; }
+        public string ReplyToId { get; private set; }
 
         public List<string> ContentEx { get; private set; }
         
@@ -277,6 +279,16 @@ namespace PSTParse.Message_Layer
                         break;
                     case MessageProperty.NonUnicodeCodePage:
                         NonUnicodeCodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
+                        break;
+                    case MessageProperty.MessageID:
+                        MessageId = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
+                        break;
+                    case MessageProperty.ReplyToMessageID:
+                        ReplyToId = pst.Header.isUnicode
+                            ? Encoding.Unicode.GetString(prop.Value.Data)
+                            : Encoding.ASCII.GetString(prop.Value.Data);
                         break;
                     default:
                         break;
