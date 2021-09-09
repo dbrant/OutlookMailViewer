@@ -34,12 +34,30 @@
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mnuFind = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.aboutToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.treeViewFolders = new System.Windows.Forms.TreeView();
             this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.listViewMessages = new OutlookMailViewer.ListViewDblBuf();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.panelSearch = new System.Windows.Forms.Panel();
+            this.btnSearchClose = new System.Windows.Forms.Button();
+            this.btnSearch = new System.Windows.Forms.Button();
+            this.chkSearchAttachments = new System.Windows.Forms.CheckBox();
+            this.chkSearchHeaders = new System.Windows.Forms.CheckBox();
+            this.chkSearchTo = new System.Windows.Forms.CheckBox();
+            this.chkSearchFrom = new System.Windows.Forms.CheckBox();
+            this.chkSearchBody = new System.Windows.Forms.CheckBox();
+            this.chkSearchSubject = new System.Windows.Forms.CheckBox();
+            this.txtSearch = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.tabControlContents = new System.Windows.Forms.TabControl();
             this.tabPageHtml = new System.Windows.Forms.TabPage();
             this.webBrowser1 = new System.Windows.Forms.WebBrowser();
@@ -48,35 +66,19 @@
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.textBoxHeaders = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.tabPageAttachments = new System.Windows.Forms.TabPage();
-            this.contextMenuStripAttachments = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.menuItemSaveAttachment = new System.Windows.Forms.ToolStripMenuItem();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.panelSearch = new System.Windows.Forms.Panel();
-            this.label1 = new System.Windows.Forms.Label();
-            this.txtSearch = new System.Windows.Forms.TextBox();
-            this.chkSearchSubject = new System.Windows.Forms.CheckBox();
-            this.chkSearchBody = new System.Windows.Forms.CheckBox();
-            this.chkSearchFrom = new System.Windows.Forms.CheckBox();
-            this.chkSearchTo = new System.Windows.Forms.CheckBox();
-            this.chkSearchAttachments = new System.Windows.Forms.CheckBox();
-            this.chkSearchHeaders = new System.Windows.Forms.CheckBox();
-            this.btnSearch = new System.Windows.Forms.Button();
-            this.btnSearchClose = new System.Windows.Forms.Button();
-            this.searchToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.mnuFind = new System.Windows.Forms.ToolStripMenuItem();
-            this.listViewMessages = new OutlookMailViewer.ListViewDblBuf();
-            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.listViewDetails = new OutlookMailViewer.ListViewDblBuf();
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tabPageAttachments = new System.Windows.Forms.TabPage();
             this.listViewAttachments = new OutlookMailViewer.ListViewDblBuf();
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.contextMenuStripAttachments = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.menuItemSaveAttachment = new System.Windows.Forms.ToolStripMenuItem();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.mnuSaveSelected = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -86,6 +88,7 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
+            this.panelSearch.SuspendLayout();
             this.tabControlContents.SuspendLayout();
             this.tabPageHtml.SuspendLayout();
             this.tabPagePlainText.SuspendLayout();
@@ -93,7 +96,6 @@
             this.tabPage4.SuspendLayout();
             this.tabPageAttachments.SuspendLayout();
             this.contextMenuStripAttachments.SuspendLayout();
-            this.panelSearch.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -112,6 +114,8 @@
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.openToolStripMenuItem,
+            this.mnuSaveSelected,
+            this.toolStripMenuItem1,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -122,16 +126,33 @@
             this.openToolStripMenuItem.Image = ((System.Drawing.Image)(resources.GetObject("openToolStripMenuItem.Image")));
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.openToolStripMenuItem.Text = "Open...";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(255, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // searchToolStripMenuItem
+            // 
+            this.searchToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.mnuFind});
+            this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
+            this.searchToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
+            this.searchToolStripMenuItem.Text = "Search";
+            // 
+            // mnuFind
+            // 
+            this.mnuFind.Image = ((System.Drawing.Image)(resources.GetObject("mnuFind.Image")));
+            this.mnuFind.Name = "mnuFind";
+            this.mnuFind.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
+            this.mnuFind.Size = new System.Drawing.Size(146, 22);
+            this.mnuFind.Text = "Find...";
+            this.mnuFind.Click += new System.EventHandler(this.mnuFind_Click);
             // 
             // helpToolStripMenuItem
             // 
@@ -145,7 +166,7 @@
             // 
             this.aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
             this.aboutToolStripMenuItem.ShortcutKeys = System.Windows.Forms.Keys.F1;
-            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.aboutToolStripMenuItem.Size = new System.Drawing.Size(135, 22);
             this.aboutToolStripMenuItem.Text = "About...";
             this.aboutToolStripMenuItem.Click += new System.EventHandler(this.aboutToolStripMenuItem_Click);
             // 
@@ -216,6 +237,172 @@
             this.splitContainer2.Size = new System.Drawing.Size(704, 580);
             this.splitContainer2.SplitterDistance = 329;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // listViewMessages
+            // 
+            this.listViewMessages.AllowColumnReorder = true;
+            this.listViewMessages.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
+            this.columnHeader1,
+            this.columnHeader6,
+            this.columnHeader2,
+            this.columnHeader3});
+            this.listViewMessages.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listViewMessages.FullRowSelect = true;
+            this.listViewMessages.HideSelection = false;
+            this.listViewMessages.Location = new System.Drawing.Point(0, 50);
+            this.listViewMessages.Name = "listViewMessages";
+            this.listViewMessages.Size = new System.Drawing.Size(704, 279);
+            this.listViewMessages.SmallImageList = this.imageList1;
+            this.listViewMessages.TabIndex = 2;
+            this.listViewMessages.UseCompatibleStateImageBehavior = false;
+            this.listViewMessages.View = System.Windows.Forms.View.Details;
+            this.listViewMessages.VirtualMode = true;
+            this.listViewMessages.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewMessages_ColumnClick);
+            this.listViewMessages.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listViewMessages_RetrieveVirtualItem);
+            this.listViewMessages.SelectedIndexChanged += new System.EventHandler(this.listViewMessages_SelectedIndexChanged);
+            // 
+            // columnHeader1
+            // 
+            this.columnHeader1.Text = "Subject";
+            this.columnHeader1.Width = 260;
+            // 
+            // columnHeader6
+            // 
+            this.columnHeader6.Text = "Date";
+            this.columnHeader6.Width = 160;
+            // 
+            // columnHeader2
+            // 
+            this.columnHeader2.Text = "From";
+            this.columnHeader2.Width = 200;
+            // 
+            // columnHeader3
+            // 
+            this.columnHeader3.Text = "To";
+            this.columnHeader3.Width = 200;
+            // 
+            // panelSearch
+            // 
+            this.panelSearch.Controls.Add(this.btnSearchClose);
+            this.panelSearch.Controls.Add(this.btnSearch);
+            this.panelSearch.Controls.Add(this.chkSearchAttachments);
+            this.panelSearch.Controls.Add(this.chkSearchHeaders);
+            this.panelSearch.Controls.Add(this.chkSearchTo);
+            this.panelSearch.Controls.Add(this.chkSearchFrom);
+            this.panelSearch.Controls.Add(this.chkSearchBody);
+            this.panelSearch.Controls.Add(this.chkSearchSubject);
+            this.panelSearch.Controls.Add(this.txtSearch);
+            this.panelSearch.Controls.Add(this.label1);
+            this.panelSearch.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelSearch.Location = new System.Drawing.Point(0, 0);
+            this.panelSearch.Name = "panelSearch";
+            this.panelSearch.Size = new System.Drawing.Size(704, 50);
+            this.panelSearch.TabIndex = 1;
+            this.panelSearch.Visible = false;
+            // 
+            // btnSearchClose
+            // 
+            this.btnSearchClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSearchClose.FlatAppearance.BorderSize = 0;
+            this.btnSearchClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSearchClose.Image = ((System.Drawing.Image)(resources.GetObject("btnSearchClose.Image")));
+            this.btnSearchClose.Location = new System.Drawing.Point(678, 0);
+            this.btnSearchClose.Name = "btnSearchClose";
+            this.btnSearchClose.Size = new System.Drawing.Size(24, 24);
+            this.btnSearchClose.TabIndex = 9;
+            this.btnSearchClose.UseVisualStyleBackColor = true;
+            this.btnSearchClose.Click += new System.EventHandler(this.btnSearchClose_Click);
+            // 
+            // btnSearch
+            // 
+            this.btnSearch.Location = new System.Drawing.Point(478, 5);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(82, 24);
+            this.btnSearch.TabIndex = 8;
+            this.btnSearch.Text = "Find";
+            this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            // 
+            // chkSearchAttachments
+            // 
+            this.chkSearchAttachments.AutoSize = true;
+            this.chkSearchAttachments.Location = new System.Drawing.Point(357, 26);
+            this.chkSearchAttachments.Name = "chkSearchAttachments";
+            this.chkSearchAttachments.Size = new System.Drawing.Size(85, 17);
+            this.chkSearchAttachments.TabIndex = 7;
+            this.chkSearchAttachments.Text = "Attachments";
+            this.chkSearchAttachments.UseVisualStyleBackColor = true;
+            // 
+            // chkSearchHeaders
+            // 
+            this.chkSearchHeaders.AutoSize = true;
+            this.chkSearchHeaders.Location = new System.Drawing.Point(357, 3);
+            this.chkSearchHeaders.Name = "chkSearchHeaders";
+            this.chkSearchHeaders.Size = new System.Drawing.Size(66, 17);
+            this.chkSearchHeaders.TabIndex = 6;
+            this.chkSearchHeaders.Text = "Headers";
+            this.chkSearchHeaders.UseVisualStyleBackColor = true;
+            // 
+            // chkSearchTo
+            // 
+            this.chkSearchTo.AutoSize = true;
+            this.chkSearchTo.Location = new System.Drawing.Point(261, 26);
+            this.chkSearchTo.Name = "chkSearchTo";
+            this.chkSearchTo.Size = new System.Drawing.Size(71, 17);
+            this.chkSearchTo.TabIndex = 5;
+            this.chkSearchTo.Text = "Recipient";
+            this.chkSearchTo.UseVisualStyleBackColor = true;
+            // 
+            // chkSearchFrom
+            // 
+            this.chkSearchFrom.AutoSize = true;
+            this.chkSearchFrom.Location = new System.Drawing.Point(261, 3);
+            this.chkSearchFrom.Name = "chkSearchFrom";
+            this.chkSearchFrom.Size = new System.Drawing.Size(60, 17);
+            this.chkSearchFrom.TabIndex = 4;
+            this.chkSearchFrom.Text = "Sender";
+            this.chkSearchFrom.UseVisualStyleBackColor = true;
+            // 
+            // chkSearchBody
+            // 
+            this.chkSearchBody.AutoSize = true;
+            this.chkSearchBody.Checked = true;
+            this.chkSearchBody.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSearchBody.Location = new System.Drawing.Point(163, 26);
+            this.chkSearchBody.Name = "chkSearchBody";
+            this.chkSearchBody.Size = new System.Drawing.Size(69, 17);
+            this.chkSearchBody.TabIndex = 3;
+            this.chkSearchBody.Text = "Message";
+            this.chkSearchBody.UseVisualStyleBackColor = true;
+            // 
+            // chkSearchSubject
+            // 
+            this.chkSearchSubject.AutoSize = true;
+            this.chkSearchSubject.Checked = true;
+            this.chkSearchSubject.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkSearchSubject.Location = new System.Drawing.Point(163, 3);
+            this.chkSearchSubject.Name = "chkSearchSubject";
+            this.chkSearchSubject.Size = new System.Drawing.Size(62, 17);
+            this.chkSearchSubject.TabIndex = 2;
+            this.chkSearchSubject.Text = "Subject";
+            this.chkSearchSubject.UseVisualStyleBackColor = true;
+            // 
+            // txtSearch
+            // 
+            this.txtSearch.Location = new System.Drawing.Point(6, 22);
+            this.txtSearch.Name = "txtSearch";
+            this.txtSearch.Size = new System.Drawing.Size(137, 20);
+            this.txtSearch.TabIndex = 1;
+            this.txtSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearch_KeyDown);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(4, 4);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(44, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "Search:";
             // 
             // tabControlContents
             // 
@@ -316,222 +503,6 @@
             this.tabPage4.Text = "Details";
             this.tabPage4.UseVisualStyleBackColor = true;
             // 
-            // tabPageAttachments
-            // 
-            this.tabPageAttachments.Controls.Add(this.listViewAttachments);
-            this.tabPageAttachments.Location = new System.Drawing.Point(4, 22);
-            this.tabPageAttachments.Name = "tabPageAttachments";
-            this.tabPageAttachments.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageAttachments.Size = new System.Drawing.Size(696, 221);
-            this.tabPageAttachments.TabIndex = 4;
-            this.tabPageAttachments.Text = "Attachments";
-            this.tabPageAttachments.UseVisualStyleBackColor = true;
-            // 
-            // contextMenuStripAttachments
-            // 
-            this.contextMenuStripAttachments.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.menuItemSaveAttachment});
-            this.contextMenuStripAttachments.Name = "contextMenuStripAttachments";
-            this.contextMenuStripAttachments.Size = new System.Drawing.Size(108, 26);
-            // 
-            // menuItemSaveAttachment
-            // 
-            this.menuItemSaveAttachment.Name = "menuItemSaveAttachment";
-            this.menuItemSaveAttachment.Size = new System.Drawing.Size(107, 22);
-            this.menuItemSaveAttachment.Text = "Save...";
-            this.menuItemSaveAttachment.Click += new System.EventHandler(this.menuItemSaveAttachment_Click);
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.Location = new System.Drawing.Point(0, 612);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1024, 22);
-            this.statusStrip1.TabIndex = 3;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // panelSearch
-            // 
-            this.panelSearch.Controls.Add(this.btnSearchClose);
-            this.panelSearch.Controls.Add(this.btnSearch);
-            this.panelSearch.Controls.Add(this.chkSearchAttachments);
-            this.panelSearch.Controls.Add(this.chkSearchHeaders);
-            this.panelSearch.Controls.Add(this.chkSearchTo);
-            this.panelSearch.Controls.Add(this.chkSearchFrom);
-            this.panelSearch.Controls.Add(this.chkSearchBody);
-            this.panelSearch.Controls.Add(this.chkSearchSubject);
-            this.panelSearch.Controls.Add(this.txtSearch);
-            this.panelSearch.Controls.Add(this.label1);
-            this.panelSearch.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelSearch.Location = new System.Drawing.Point(0, 0);
-            this.panelSearch.Name = "panelSearch";
-            this.panelSearch.Size = new System.Drawing.Size(704, 50);
-            this.panelSearch.TabIndex = 1;
-            this.panelSearch.Visible = false;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(4, 4);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(44, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Search:";
-            // 
-            // txtSearch
-            // 
-            this.txtSearch.Location = new System.Drawing.Point(6, 22);
-            this.txtSearch.Name = "txtSearch";
-            this.txtSearch.Size = new System.Drawing.Size(137, 20);
-            this.txtSearch.TabIndex = 1;
-            this.txtSearch.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSearch_KeyDown);
-            // 
-            // chkSearchSubject
-            // 
-            this.chkSearchSubject.AutoSize = true;
-            this.chkSearchSubject.Checked = true;
-            this.chkSearchSubject.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSearchSubject.Location = new System.Drawing.Point(163, 3);
-            this.chkSearchSubject.Name = "chkSearchSubject";
-            this.chkSearchSubject.Size = new System.Drawing.Size(62, 17);
-            this.chkSearchSubject.TabIndex = 2;
-            this.chkSearchSubject.Text = "Subject";
-            this.chkSearchSubject.UseVisualStyleBackColor = true;
-            // 
-            // chkSearchBody
-            // 
-            this.chkSearchBody.AutoSize = true;
-            this.chkSearchBody.Checked = true;
-            this.chkSearchBody.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkSearchBody.Location = new System.Drawing.Point(163, 26);
-            this.chkSearchBody.Name = "chkSearchBody";
-            this.chkSearchBody.Size = new System.Drawing.Size(69, 17);
-            this.chkSearchBody.TabIndex = 3;
-            this.chkSearchBody.Text = "Message";
-            this.chkSearchBody.UseVisualStyleBackColor = true;
-            // 
-            // chkSearchFrom
-            // 
-            this.chkSearchFrom.AutoSize = true;
-            this.chkSearchFrom.Location = new System.Drawing.Point(261, 3);
-            this.chkSearchFrom.Name = "chkSearchFrom";
-            this.chkSearchFrom.Size = new System.Drawing.Size(60, 17);
-            this.chkSearchFrom.TabIndex = 4;
-            this.chkSearchFrom.Text = "Sender";
-            this.chkSearchFrom.UseVisualStyleBackColor = true;
-            // 
-            // chkSearchTo
-            // 
-            this.chkSearchTo.AutoSize = true;
-            this.chkSearchTo.Location = new System.Drawing.Point(261, 26);
-            this.chkSearchTo.Name = "chkSearchTo";
-            this.chkSearchTo.Size = new System.Drawing.Size(71, 17);
-            this.chkSearchTo.TabIndex = 5;
-            this.chkSearchTo.Text = "Recipient";
-            this.chkSearchTo.UseVisualStyleBackColor = true;
-            // 
-            // chkSearchAttachments
-            // 
-            this.chkSearchAttachments.AutoSize = true;
-            this.chkSearchAttachments.Location = new System.Drawing.Point(357, 26);
-            this.chkSearchAttachments.Name = "chkSearchAttachments";
-            this.chkSearchAttachments.Size = new System.Drawing.Size(85, 17);
-            this.chkSearchAttachments.TabIndex = 7;
-            this.chkSearchAttachments.Text = "Attachments";
-            this.chkSearchAttachments.UseVisualStyleBackColor = true;
-            // 
-            // chkSearchHeaders
-            // 
-            this.chkSearchHeaders.AutoSize = true;
-            this.chkSearchHeaders.Location = new System.Drawing.Point(357, 3);
-            this.chkSearchHeaders.Name = "chkSearchHeaders";
-            this.chkSearchHeaders.Size = new System.Drawing.Size(66, 17);
-            this.chkSearchHeaders.TabIndex = 6;
-            this.chkSearchHeaders.Text = "Headers";
-            this.chkSearchHeaders.UseVisualStyleBackColor = true;
-            // 
-            // btnSearch
-            // 
-            this.btnSearch.Location = new System.Drawing.Point(478, 5);
-            this.btnSearch.Name = "btnSearch";
-            this.btnSearch.Size = new System.Drawing.Size(82, 24);
-            this.btnSearch.TabIndex = 8;
-            this.btnSearch.Text = "Find";
-            this.btnSearch.UseVisualStyleBackColor = true;
-            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
-            // 
-            // btnSearchClose
-            // 
-            this.btnSearchClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSearchClose.FlatAppearance.BorderSize = 0;
-            this.btnSearchClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSearchClose.Image = ((System.Drawing.Image)(resources.GetObject("btnSearchClose.Image")));
-            this.btnSearchClose.Location = new System.Drawing.Point(678, 0);
-            this.btnSearchClose.Name = "btnSearchClose";
-            this.btnSearchClose.Size = new System.Drawing.Size(24, 24);
-            this.btnSearchClose.TabIndex = 9;
-            this.btnSearchClose.UseVisualStyleBackColor = true;
-            this.btnSearchClose.Click += new System.EventHandler(this.btnSearchClose_Click);
-            // 
-            // searchToolStripMenuItem
-            // 
-            this.searchToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.mnuFind});
-            this.searchToolStripMenuItem.Name = "searchToolStripMenuItem";
-            this.searchToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
-            this.searchToolStripMenuItem.Text = "Search";
-            // 
-            // mnuFind
-            // 
-            this.mnuFind.Image = ((System.Drawing.Image)(resources.GetObject("mnuFind.Image")));
-            this.mnuFind.Name = "mnuFind";
-            this.mnuFind.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.F)));
-            this.mnuFind.Size = new System.Drawing.Size(180, 22);
-            this.mnuFind.Text = "Find...";
-            this.mnuFind.Click += new System.EventHandler(this.mnuFind_Click);
-            // 
-            // listViewMessages
-            // 
-            this.listViewMessages.AllowColumnReorder = true;
-            this.listViewMessages.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.columnHeader1,
-            this.columnHeader6,
-            this.columnHeader2,
-            this.columnHeader3});
-            this.listViewMessages.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listViewMessages.FullRowSelect = true;
-            this.listViewMessages.HideSelection = false;
-            this.listViewMessages.Location = new System.Drawing.Point(0, 50);
-            this.listViewMessages.Name = "listViewMessages";
-            this.listViewMessages.Size = new System.Drawing.Size(704, 279);
-            this.listViewMessages.SmallImageList = this.imageList1;
-            this.listViewMessages.TabIndex = 2;
-            this.listViewMessages.UseCompatibleStateImageBehavior = false;
-            this.listViewMessages.View = System.Windows.Forms.View.Details;
-            this.listViewMessages.VirtualMode = true;
-            this.listViewMessages.ColumnClick += new System.Windows.Forms.ColumnClickEventHandler(this.listViewMessages_ColumnClick);
-            this.listViewMessages.RetrieveVirtualItem += new System.Windows.Forms.RetrieveVirtualItemEventHandler(this.listViewMessages_RetrieveVirtualItem);
-            this.listViewMessages.SelectedIndexChanged += new System.EventHandler(this.listViewMessages_SelectedIndexChanged);
-            // 
-            // columnHeader1
-            // 
-            this.columnHeader1.Text = "Subject";
-            this.columnHeader1.Width = 260;
-            // 
-            // columnHeader6
-            // 
-            this.columnHeader6.Text = "Date";
-            this.columnHeader6.Width = 160;
-            // 
-            // columnHeader2
-            // 
-            this.columnHeader2.Text = "From";
-            this.columnHeader2.Width = 200;
-            // 
-            // columnHeader3
-            // 
-            this.columnHeader3.Text = "To";
-            this.columnHeader3.Width = 200;
-            // 
             // listViewDetails
             // 
             this.listViewDetails.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
@@ -557,6 +528,17 @@
             // 
             this.columnHeader5.Text = "Value";
             this.columnHeader5.Width = 400;
+            // 
+            // tabPageAttachments
+            // 
+            this.tabPageAttachments.Controls.Add(this.listViewAttachments);
+            this.tabPageAttachments.Location = new System.Drawing.Point(4, 22);
+            this.tabPageAttachments.Name = "tabPageAttachments";
+            this.tabPageAttachments.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPageAttachments.Size = new System.Drawing.Size(696, 221);
+            this.tabPageAttachments.TabIndex = 4;
+            this.tabPageAttachments.Text = "Attachments";
+            this.tabPageAttachments.UseVisualStyleBackColor = true;
             // 
             // listViewAttachments
             // 
@@ -591,6 +573,42 @@
             this.columnHeader9.Text = "Type";
             this.columnHeader9.Width = 160;
             // 
+            // contextMenuStripAttachments
+            // 
+            this.contextMenuStripAttachments.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.menuItemSaveAttachment});
+            this.contextMenuStripAttachments.Name = "contextMenuStripAttachments";
+            this.contextMenuStripAttachments.Size = new System.Drawing.Size(108, 26);
+            // 
+            // menuItemSaveAttachment
+            // 
+            this.menuItemSaveAttachment.Name = "menuItemSaveAttachment";
+            this.menuItemSaveAttachment.Size = new System.Drawing.Size(107, 22);
+            this.menuItemSaveAttachment.Text = "Save...";
+            this.menuItemSaveAttachment.Click += new System.EventHandler(this.menuItemSaveAttachment_Click);
+            // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Location = new System.Drawing.Point(0, 612);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(1024, 22);
+            this.statusStrip1.TabIndex = 3;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // mnuSaveSelected
+            // 
+            this.mnuSaveSelected.Image = ((System.Drawing.Image)(resources.GetObject("mnuSaveSelected.Image")));
+            this.mnuSaveSelected.Name = "mnuSaveSelected";
+            this.mnuSaveSelected.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.mnuSaveSelected.Size = new System.Drawing.Size(255, 22);
+            this.mnuSaveSelected.Text = "Save selected message(s)...";
+            this.mnuSaveSelected.Click += new System.EventHandler(this.mnuSaveSelected_Click);
+            // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(252, 6);
+            // 
             // Form1
             // 
             this.AllowDrop = true;
@@ -616,6 +634,8 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
+            this.panelSearch.ResumeLayout(false);
+            this.panelSearch.PerformLayout();
             this.tabControlContents.ResumeLayout(false);
             this.tabPageHtml.ResumeLayout(false);
             this.tabPagePlainText.ResumeLayout(false);
@@ -625,8 +645,6 @@
             this.tabPage4.ResumeLayout(false);
             this.tabPageAttachments.ResumeLayout(false);
             this.contextMenuStripAttachments.ResumeLayout(false);
-            this.panelSearch.ResumeLayout(false);
-            this.panelSearch.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -681,6 +699,8 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.ToolStripMenuItem searchToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem mnuFind;
+        private System.Windows.Forms.ToolStripMenuItem mnuSaveSelected;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
     }
 }
 

@@ -1,4 +1,5 @@
-﻿using PSTParse;
+﻿using MsgKit;
+using PSTParse;
 using PSTParse.LTP;
 using PSTParse.Message_Layer;
 using System;
@@ -257,7 +258,7 @@ namespace OutlookMailViewer
             {
                 return;
             }
-            Attachment attachment = message.Attachments[listViewAttachments.SelectedIndices[0]];
+            var attachment = message.Attachments[listViewAttachments.SelectedIndices[0]];
             var saveDlg = new SaveFileDialog();
             saveDlg.OverwritePrompt = true;
             saveDlg.Title = "Save attachment...";
@@ -359,6 +360,53 @@ namespace OutlookMailViewer
                 displayedMessages.Sort((a, b) => (a.ClientSubmitTime != null && b.ClientSubmitTime != null)
                 ? (sortAscending ? a.ClientSubmitTime.CompareTo(b.ClientSubmitTime) : b.ClientSubmitTime.CompareTo(a.ClientSubmitTime))
                 : 0);
+            }
+        }
+
+        private void mnuSaveSelected_Click(object sender, EventArgs e)
+        {
+            if (listViewMessages.SelectedIndices.Count == 0)
+            {
+                return;
+            }
+            var message = displayedMessages[listViewMessages.SelectedIndices[0]];
+
+            var senderName = message.SentRepresentingName ?? (message.SenderName ?? "");
+            var fromEmail = message.From != null && message.From.Count > 0 ? message.From[0].EmailAddress : "";
+            var emailSender = new Sender(fromEmail, senderName);
+            using (var email = new Email(emailSender, message.Subject ?? ""))
+            {
+                if (message.HtmlBody != null)
+                {
+                    email.BodyHtml = message.HtmlBody;
+                }
+                if (message.BodyPlainText != null)
+                {
+                    email.BodyText = message.BodyPlainText;
+                }
+                if (message.BodyRTF != null)
+                {
+                    email.BodyRtf = message.BodyRTF;
+                }
+                if (message.Attachments != null)
+                {
+                    foreach (var att in message.Attachments)
+                    {
+                        if (att.Data == null) { continue; }
+                        try
+                        {
+                            using (var stream = new MemoryStream(att.Data))
+                            {
+                                email.Attachments.Add(stream, att.FileName, renderingPosition: att.RenderingPosition, isInline: att.RenderedInBody);
+                            }
+                        }
+                        catch { }
+                    }
+                }
+                email.Importance = (MsgKit.Enums.MessageImportance)message.Imporance;
+                
+
+                email.Save("feep.msg");
             }
         }
     }
