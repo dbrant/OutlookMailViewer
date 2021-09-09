@@ -463,7 +463,7 @@ namespace PSTParse.Message_Layer
             int maxStringBytes = enforceMaxLength ? 2048 : Int32.MaxValue;
             try
             {
-                if (prop.Type == ExchangeProperty.PropType.Binary && prop.Data.Length > 0)
+                if (prop.Type == ExchangeProperty.PropType.Binary && prop.Data != null && prop.Data.Length > 0)
                 {
                     return Encoding.UTF8.GetString(prop.Data, 0, prop.Data.Length);
                 }
