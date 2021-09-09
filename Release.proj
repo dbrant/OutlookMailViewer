@@ -56,7 +56,7 @@
 
 	<Target Name="ILMerge">
 		<MakeDir Directories="$(BasePath)\final" />
-		<Exec Command="$(BasePath)\packages\ILMerge.2.14.1208\tools\ilmerge.exe /out:$(BasePath)\final\OutlookPstViewer.exe $(ExePath)\OutlookMailViewer.exe $(ExePath)\MsgKit.dll $(ExePath)\OpenMcdf.dll $(ExePath)\BouncyCastle.Crypto.dll $(ExePath)\System.Buffers.dll" />
+		<Exec Command="$(BasePath)\packages\ILMerge.2.14.1208\tools\ilmerge.exe /out:$(BasePath)\final\OutlookPstViewer.exe $(ExePath)\OutlookMailViewer.exe $(ExePath)\MsgKit.dll $(ExePath)\OpenMcdf.dll" />
 	</Target>
 
 	<!-- clean, compile and package! -->
