@@ -573,8 +573,10 @@ namespace PSTParse.Message_Layer
                 }
 
                 // If we fall through to here, then just try to render it as UTF-8...
-                Encoding.UTF8.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
-
+                if (prop.Data != null)
+                {
+                    return Encoding.UTF8.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
+                }
             }
             catch { }
             return "";
