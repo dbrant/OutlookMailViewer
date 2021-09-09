@@ -369,6 +369,16 @@ namespace OutlookMailViewer
             {
                 return;
             }
+
+            string selectedPath = ".";
+            using (FolderBrowserDialog dlg = new FolderBrowserDialog())
+            {
+                dlg.ShowNewFolderButton = true;
+                dlg.Description = "Select the folder where the file(s) will be saved:";
+                if (dlg.ShowDialog(this) != DialogResult.OK) { return; }
+                selectedPath = dlg.SelectedPath;
+            }
+
             var message = displayedMessages[listViewMessages.SelectedIndices[0]];
 
             var senderName = message.SentRepresentingName ?? (message.SenderName ?? "");
@@ -434,7 +444,23 @@ namespace OutlookMailViewer
                     email.Recipients.AddBcc(rec.EmailAddress, rec.DisplayName);
                 }
 
-                email.Save("test.msg");
+                var fileName = "Message";
+                try
+                {
+                    DateTime dt = DateTime.Now;
+                    if (message.MessageDeliveryTime != null)
+                    {
+                        dt = message.MessageDeliveryTime;
+                    }
+                    if (message.ClientSubmitTime != null)
+                    {
+                        dt = message.ClientSubmitTime;
+                    }
+                    fileName += " on " + dt.ToShortDateString() + " " + dt.ToLongTimeString();
+                    fileName = fileName.Replace(':', '-');
+                }
+                catch { }
+                email.Save(Path.Combine(selectedPath, fileName + ".msg"));
             }
         }
     }
