@@ -386,83 +386,90 @@ namespace OutlookMailViewer
                 var senderName = message.SentRepresentingName ?? (message.SenderName ?? "");
                 var fromEmail = message.From != null && message.From.Count > 0 ? message.From[0].EmailAddress : "";
                 var emailSender = new Sender(fromEmail, senderName);
-                using (var email = new Email(emailSender, message.Subject ?? ""))
+                var attachmentStreams = new List<Stream>();
+
+                try
                 {
-                    if (message.HtmlBody != null)
+                    using (var email = new Email(emailSender, message.Subject ?? ""))
                     {
-                        email.BodyHtml = message.HtmlBody;
-                    }
-                    if (message.BodyPlainText != null)
-                    {
-                        email.BodyText = message.BodyPlainText;
-                    }
-                    if (message.BodyRTF != null)
-                    {
-                        email.BodyRtf = message.BodyRTF;
-                    }
-                    if (message.Attachments != null)
-                    {
-                        foreach (var att in message.Attachments)
+                        if (message.HtmlBody != null)
                         {
-                            if (att.Data == null) { continue; }
-                            try
-                            {
-                                using (var stream = new MemoryStream(att.Data))
-                                {
-                                    email.Attachments.Add(stream, att.FileName, renderingPosition: att.RenderingPosition, isInline: att.RenderedInBody);
-                                }
-                            }
-                            catch { }
+                            email.BodyHtml = message.HtmlBody;
                         }
-                    }
-                    if (message.MessageId != null)
-                    {
-                        email.InternetMessageId = message.MessageId;
-                    }
-                    if (message.ReplyToId != null)
-                    {
-                        email.InReplyToId = message.ReplyToId;
-                    }
-                    email.Importance = (MsgKit.Enums.MessageImportance)message.Imporance;
+                        if (message.BodyPlainText != null)
+                        {
+                            email.BodyText = message.BodyPlainText;
+                        }
+                        if (message.BodyRTF != null)
+                        {
+                            email.BodyRtf = message.BodyRTF;
+                        }
+                        if (message.Attachments != null)
+                        {
+                            foreach (var att in message.Attachments)
+                            {
+                                if (att.Data == null) { continue; }
+                                var stream = new MemoryStream(att.Data);
+                                attachmentStreams.Add(stream);
+                                email.Attachments.Add(stream, att.FileName, renderingPosition: (int)att.RenderingPosition, isInline: att.RenderedInBody);
+                            }
+                        }
+                        if (message.MessageId != null)
+                        {
+                            email.InternetMessageId = message.MessageId;
+                        }
+                        if (message.ReplyToId != null)
+                        {
+                            email.InReplyToId = message.ReplyToId;
+                        }
+                        email.Importance = (MsgKit.Enums.MessageImportance)message.Imporance;
 
-                    if (message.MessageDeliveryTime != null)
-                    {
-                        email.ReceivedOn = message.MessageDeliveryTime;
-                    }
-                    if (message.ClientSubmitTime != null)
-                    {
-                        email.SentOn = message.ClientSubmitTime;
-                    }
-                    foreach (var rec in message.To)
-                    {
-                        email.Recipients.AddTo(rec.EmailAddress, rec.DisplayName);
-                    }
-                    foreach (var rec in message.CC)
-                    {
-                        email.Recipients.AddCc(rec.EmailAddress, rec.DisplayName);
-                    }
-                    foreach (var rec in message.BCC)
-                    {
-                        email.Recipients.AddBcc(rec.EmailAddress, rec.DisplayName);
-                    }
-
-                    var fileName = "Message";
-                    try
-                    {
-                        DateTime dt = DateTime.Now;
                         if (message.MessageDeliveryTime != null)
                         {
-                            dt = message.MessageDeliveryTime;
+                            email.ReceivedOn = message.MessageDeliveryTime;
                         }
                         if (message.ClientSubmitTime != null)
                         {
-                            dt = message.ClientSubmitTime;
+                            email.SentOn = message.ClientSubmitTime;
                         }
-                        fileName += " on " + dt.ToShortDateString() + " " + dt.ToLongTimeString();
-                        fileName = fileName.Replace(':', '-');
+                        foreach (var rec in message.To)
+                        {
+                            email.Recipients.AddTo(rec.EmailAddress, rec.DisplayName);
+                        }
+                        foreach (var rec in message.CC)
+                        {
+                            email.Recipients.AddCc(rec.EmailAddress, rec.DisplayName);
+                        }
+                        foreach (var rec in message.BCC)
+                        {
+                            email.Recipients.AddBcc(rec.EmailAddress, rec.DisplayName);
+                        }
+
+                        var fileName = "Message";
+                        try
+                        {
+                            DateTime dt = DateTime.Now;
+                            if (message.MessageDeliveryTime != null)
+                            {
+                                dt = message.MessageDeliveryTime;
+                            }
+                            if (message.ClientSubmitTime != null)
+                            {
+                                dt = message.ClientSubmitTime;
+                            }
+                            fileName += " on " + dt.ToShortDateString() + " " + dt.ToLongTimeString();
+                            fileName = fileName.Replace(':', '-');
+                        }
+                        catch { }
+                        email.Save(Path.Combine(selectedPath, fileName + ".msg"));
                     }
-                    catch { }
-                    email.Save(Path.Combine(selectedPath, fileName + ".msg"));
+                }
+                finally
+                {
+                    foreach (var s in attachmentStreams)
+                    {
+                        try { s.Dispose(); } catch { }
+                    }
                 }
             }
         }
