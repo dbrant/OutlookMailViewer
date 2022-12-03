@@ -8,6 +8,10 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>myicon.ico</ApplicationIcon>
+    <Copyright>Copyright © Dmitry Brant 2018-2021</Copyright>
+    <PackageProjectUrl>https://dmitrybrant.com</PackageProjectUrl>
+    <Authors>Dmitry Brant</Authors>
+    <Description>Utility for viewing the contents of Outlook mail archive files.</Description>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="ListViewDblBuf.cs">
@@ -18,7 +22,7 @@
     <Content Include="myicon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ILMerge" Version="2.14.1208" />
+    <PackageReference Include="ILMerge" Version="3.0.41" />
     <PackageReference Include="MsgKit" Version="2.5.1" />
     <PackageReference Include="Obfuscar" Version="2.2.36">
       <PrivateAssets>all</PrivateAssets>

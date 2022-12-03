@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSTParse", "PSTParse\PSTParse.csproj", "{D8896CE5-BEFD-4F1F-9B7C-24A5ABDE5683}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PSTParseApp", "PSTParseApp\PSTParseApp.csproj", "{9159D5C8-F773-4AC1-8927-48A0B35F40F0}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OutlookMailViewer", "OutlookMailViewer\OutlookMailViewer.csproj", "{6FED0F8A-4CA6-40E5-9B79-F928A6A77BEB}"
@@ -21,16 +19,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D8896CE5-BEFD-4F1F-9B7C-24A5ABDE5683}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D8896CE5-BEFD-4F1F-9B7C-24A5ABDE5683}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D8896CE5-BEFD-4F1F-9B7C-24A5ABDE5683}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{D8896CE5-BEFD-4F1F-9B7C-24A5ABDE5683}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{D8896CE5-BEFD-4F1F-9B7C-24A5ABDE5683}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{D8896CE5-BEFD-4F1F-9B7C-24A5ABDE5683}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D8896CE5-BEFD-4F1F-9B7C-24A5ABDE5683}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D8896CE5-BEFD-4F1F-9B7C-24A5ABDE5683}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{D8896CE5-BEFD-4F1F-9B7C-24A5ABDE5683}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{D8896CE5-BEFD-4F1F-9B7C-24A5ABDE5683}.Release|x86.ActiveCfg = Release|Any CPU
 		{9159D5C8-F773-4AC1-8927-48A0B35F40F0}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{9159D5C8-F773-4AC1-8927-48A0B35F40F0}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{9159D5C8-F773-4AC1-8927-48A0B35F40F0}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
