@@ -6,12 +6,8 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="ILMerge" Version="3.0.41" />
+    <PackageReference Include="ILRepack" Version="2.0.18" />
     <PackageReference Include="MsgKit" Version="2.5.1" />
-    <PackageReference Include="Obfuscar" Version="2.2.36">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
   </ItemGroup>
   <Import Project="..\PstShared\PstShared.projitems" Label="Shared" />
 </Project>

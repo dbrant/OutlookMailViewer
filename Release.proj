@@ -60,6 +60,6 @@
 	</Target>
 
 	<!-- clean, compile and package! -->
-	<Target Name="BuildAll" DependsOnTargets="Prepare;Clean;Compile;ILMerge" />
+	<Target Name="BuildAll" DependsOnTargets="Prepare;Clean;Compile" />
 
 </Project>
