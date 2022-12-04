@@ -22,7 +22,6 @@
     <Content Include="myicon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="ILRepack" Version="2.0.18" />
     <PackageReference Include="MsgKit" Version="2.5.1" />
   </ItemGroup>
   <Import Project="..\PstShared\PstShared.projitems" Label="Shared" />
