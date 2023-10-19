@@ -8,7 +8,7 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>myicon.ico</ApplicationIcon>
-    <Copyright>Copyright © Dmitry Brant 2018-2021</Copyright>
+    <Copyright>Copyright © Dmitry Brant 2018-2023</Copyright>
     <PackageProjectUrl>https://dmitrybrant.com</PackageProjectUrl>
     <Authors>Dmitry Brant</Authors>
     <Description>Utility for viewing the contents of Outlook mail archive files.</Description>
