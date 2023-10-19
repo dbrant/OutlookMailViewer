@@ -124,7 +124,7 @@ namespace OutlookMailViewer
             }
             if (folder.Messages.Count > 0)
             {
-                node.NodeFont = new Font(treeViewFolders.Font, FontStyle.Bold);
+                node.NodeFont = messageUnreadFont;
             }
             foreach (var child in folder.SubFolders)
             {
