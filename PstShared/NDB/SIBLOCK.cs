@@ -20,7 +20,7 @@ namespace PSTParse.NDB
             for (int i = 0; i < EntryCount; i++)
                 Entries.Add(unicode
                             ? new SIENTRY(unicode, dataBlock.Data.RangeSubset(8 + 16 * i, 16))
-                            : new SIENTRY(unicode, dataBlock.Data.RangeSubset(8 + 8 * i, 8)));
+                            : new SIENTRY(unicode, dataBlock.Data.RangeSubset(4 + 8 * i, 8)));
         }
     }
 }
