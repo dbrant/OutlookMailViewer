@@ -60,12 +60,14 @@ namespace OutlookMailViewer
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var openDlg = new OpenFileDialog();
-            openDlg.DefaultExt = ".mpo";
-            openDlg.CheckFileExists = true;
-            openDlg.Title = "Open Outlook mail archive...";
-            openDlg.Filter = "Outlook files (*.pst, *.ost)|*.pst;*.ost|All Files (*.*)|*.*";
-            openDlg.FilterIndex = 1;
+            var openDlg = new OpenFileDialog
+            {
+                DefaultExt = ".mpo",
+                CheckFileExists = true,
+                Title = "Open Outlook mail archive...",
+                Filter = "Outlook files (*.pst, *.ost)|*.pst;*.ost|All Files (*.*)|*.*",
+                FilterIndex = 1
+            };
             if (openDlg.ShowDialog() == DialogResult.Cancel) return;
             OpenPST(openDlg.FileName);
         }
@@ -124,7 +126,7 @@ namespace OutlookMailViewer
             }
             if (folder.Messages.Count > 0)
             {
-                node.NodeFont = messageUnreadFont;
+                node.ForeColor = Color.DarkBlue;
             }
             foreach (var child in folder.SubFolders)
             {
