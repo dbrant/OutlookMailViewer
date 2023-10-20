@@ -563,7 +563,7 @@ namespace PSTParse.Message_Layer
                         ? Encoding.Unicode.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length))
                         : Encoding.UTF8.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
                 }
-                else if (prop.Type == ExchangeProperty.PropType.String8)
+                else if (prop.Type == ExchangeProperty.PropType.String8 && prop.Data != null)
                 {
                     return Encoding.UTF8.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
                 }
