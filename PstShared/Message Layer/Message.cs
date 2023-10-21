@@ -23,7 +23,6 @@ namespace PSTParse.Message_Layer
 
     public class Message: IPMItem
     {
-        public uint NID { get { return _nid; } }
         public TableContext AttachmentTable { get; private set; }
         public TableContext RecipientTable { get; private set; }
 
@@ -60,12 +59,11 @@ namespace PSTParse.Message_Layer
 
         private UInt32 MessageFlags;
 
-        public List<Recipient> To = new List<Recipient>();
-        public List<Recipient> From = new List<Recipient>();
-        public List<Recipient> CC = new List<Recipient>();
-        public List<Recipient> BCC = new List<Recipient>();
-
-        public List<Attachment> Attachments = new List<Attachment>();
+        public List<Recipient> To = new();
+        public List<Recipient> From = new();
+        public List<Recipient> CC = new();
+        public List<Recipient> BCC = new();
+        public List<Attachment> Attachments = new();
 
         public string Headers
         {
@@ -191,7 +189,7 @@ namespace PSTParse.Message_Layer
                                 SubjectPrefix = Subject.Substring(2, length-1);
                                 Subject = Subject.Substring(2 + length-1);
                                 */
-                                Subject = Subject.Substring(2);
+                                Subject = Subject[2..];
                             }
                         }
                         break;

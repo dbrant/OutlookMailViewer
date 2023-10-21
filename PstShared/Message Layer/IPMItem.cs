@@ -7,16 +7,16 @@ namespace PSTParse.Message_Layer
 {
     public class IPMItem
     {
-        protected uint _nid;
         protected bool unicode;
 
+        public uint NID { get; private set; }
         public NodeDataDTO Data { get; private set; }
         public string MessageClass { get; protected set; }
         public PropertyContext PC { get; protected set; }
 
         public IPMItem(PSTFile pst, uint nid, NodeDataDTO parentData = null)
         {
-            _nid = nid;
+            NID = nid;
             Data = parentData == null ? BlockBO.GetNodeData(nid, pst) : FindSubnodeWithKey(parentData, nid);
 
             PC = parentData == null ? new PropertyContext(nid, pst) : new PropertyContext(Data);
