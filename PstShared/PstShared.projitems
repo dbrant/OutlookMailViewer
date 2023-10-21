@@ -77,7 +77,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)PSTEnums.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PSTFile.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)PSTHeader.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)PSTParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\ArrayUtilities.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\CRC32.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Util\RtfDecompressor.cs" />
