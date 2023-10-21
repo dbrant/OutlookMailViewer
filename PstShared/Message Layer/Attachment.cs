@@ -28,7 +28,8 @@ namespace PSTParse.Message_Layer
         public bool InvisibleInRTF { get; private set; }
         public bool RenderedInBody { get; private set; }
         public byte[] Data { get; private set; }
-        
+        public byte[] Rendering { get; private set; }
+
         public Attachment(bool unicode, TCRowMatrixData row)
         {
             foreach (var prop in row)
@@ -58,6 +59,9 @@ namespace PSTParse.Message_Layer
                     break;
                 case MessageProperty.AttachmentData:
                     Data = prop.Data;
+                    break;
+                case MessageProperty.AttachmentRendering:
+                    Rendering = prop.Data;
                     break;
                 case MessageProperty.AttachmentFileName:
                     ShortFileName = unicode ? Encoding.Unicode.GetString(prop.Data) : Encoding.ASCII.GetString(prop.Data);
