@@ -39,7 +39,7 @@ namespace PSTParse.Message_Layer
                 : Encoding.ASCII.GetString(PC.Properties[MessageProperty.MessageClass].Data);
         }
 
-        private static NodeDataDTO FindSubnodeWithKey(NodeDataDTO parent, uint NID)
+        public static NodeDataDTO FindSubnodeWithKey(NodeDataDTO parent, uint NID)
         {
             if (parent == null || parent.SubNodeData == null)
                 return null;

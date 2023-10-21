@@ -282,10 +282,16 @@ namespace OutlookMailViewer
                     var msg = new PSTParse.Message_Layer.Message(attachment.RefNID, currentFile, message);
                     SaveMessageToFile(msg, saveDlg.FileName + ".msg");
                 }
+                else if (attachment.Method == AttachmentMethod.STORAGE)
+                {
+                    var dto = IPMItem.FindSubnodeWithKey(message.Data, attachment.RefNID);
+                    var data = dto.NodeData[0].Data;
+                    using var f = new FileStream(saveDlg.FileName, FileMode.Create, FileAccess.Write);
+                    f.Write(data, 0, data.Length);
+                }
                 else
                 {
-                    // by ref?
-
+                    throw new ApplicationException("Only attachments that are by-value or embedded can be saved.");
                 }
             }
             catch (Exception ex)
