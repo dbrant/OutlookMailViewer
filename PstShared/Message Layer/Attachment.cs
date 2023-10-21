@@ -28,6 +28,9 @@ namespace PSTParse.Message_Layer
         public bool InvisibleInRTF { get; private set; }
         public bool RenderedInBody { get; private set; }
         public byte[] Data { get; private set; }
+
+        // The "rendering" is usually a Windows Metafile graphic that represents an icon of
+        // the attachment as it appears in the message, e.g. a literal envelope icon.
         public byte[] Rendering { get; private set; }
 
         public Attachment(bool unicode, TCRowMatrixData row)
