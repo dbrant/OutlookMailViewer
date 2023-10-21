@@ -7,14 +7,19 @@ namespace PSTParse.Message_Layer
 {
     public class IPMItem
     {
-        private uint _nid;
-        public String MessageClass { get; protected set; }
+        protected uint _nid;
+        protected bool unicode;
+
+        public NodeDataDTO Data { get; private set; }
+        public string MessageClass { get; protected set; }
         public PropertyContext PC { get; protected set; }
 
-        public IPMItem(PSTFile pst, uint nid)
+        public IPMItem(PSTFile pst, uint nid, NodeDataDTO parentData = null)
         {
             _nid = nid;
-            PC = new PropertyContext(nid, pst);
+            Data = parentData == null ? BlockBO.GetNodeData(nid, pst) : FindSubnodeWithKey(parentData, nid);
+
+            PC = parentData == null ? new PropertyContext(nid, pst) : new PropertyContext(Data);
             GetMessageClass(pst);
         }
 
@@ -26,11 +31,31 @@ namespace PSTParse.Message_Layer
 
         private void GetMessageClass(PSTFile pst)
         {
+            unicode = pst.Header.isUnicode;
             if (!PC.Properties.ContainsKey(MessageProperty.MessageClass))
                 return;
-            MessageClass = pst.Header.isUnicode
+            MessageClass = unicode
                 ? Encoding.Unicode.GetString(PC.Properties[MessageProperty.MessageClass].Data)
                 : Encoding.ASCII.GetString(PC.Properties[MessageProperty.MessageClass].Data);
+        }
+
+        private static NodeDataDTO FindSubnodeWithKey(NodeDataDTO parent, uint NID)
+        {
+            if (parent == null || parent.SubNodeData == null)
+                return null;
+            foreach (var subNode in parent.SubNodeData)
+            {
+                if (subNode.Key == NID)
+                    return subNode.Value;
+
+                if (subNode.Value.SubNodeData != null && subNode.Value.SubNodeData.Count > 0)
+                {
+                    var ret = FindSubnodeWithKey(subNode.Value, NID);
+                    if (ret != null)
+                        return ret;
+                }
+            }
+            return null;
         }
 
         protected IPMItem() { }

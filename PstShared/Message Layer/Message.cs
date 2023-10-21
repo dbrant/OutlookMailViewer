@@ -23,8 +23,7 @@ namespace PSTParse.Message_Layer
 
     public class Message: IPMItem
     {
-        public uint NID { get; private set; }
-        public NodeDataDTO Data { get; private set; }
+        public uint NID { get { return _nid; } }
         public TableContext AttachmentTable { get; private set; }
         public TableContext RecipientTable { get; private set; }
 
@@ -62,7 +61,6 @@ namespace PSTParse.Message_Layer
         public List<string> ContentEx { get; private set; }
         
         private UInt32 MessageFlags;
-        private bool unicode;
 
         public List<Recipient> To = new List<Recipient>();
         public List<Recipient> From = new List<Recipient>();
@@ -101,14 +99,9 @@ namespace PSTParse.Message_Layer
             }
         }
 
-
-        public Message(uint NID, PSTFile pst)
-            : base(pst, NID)
+        public Message(uint NID, PSTFile pst, Message parent = null)
+            : base(pst, NID, parent?.Data)
         {
-            unicode = pst.Header.isUnicode;
-            Data = BlockBO.GetNodeData(NID, pst);
-            this.NID = NID;
-            
             ContentEx = new List<string>();
 
             //MessagePC = new PropertyContext(Data);
