@@ -256,22 +256,36 @@ namespace OutlookMailViewer
                 return;
             }
             var message = displayedMessages[listViewMessages.SelectedIndices[0]];
+
             if (listViewAttachments.SelectedIndices[0] >= message.Attachments.Count)
             {
                 return;
             }
             var attachment = message.Attachments[listViewAttachments.SelectedIndices[0]];
-            var saveDlg = new SaveFileDialog();
-            saveDlg.OverwritePrompt = true;
-            saveDlg.Title = "Save attachment...";
-            saveDlg.FileName = attachment.FileName;
+
+            var saveDlg = new SaveFileDialog
+            {
+                OverwritePrompt = true,
+                Title = "Save attachment...",
+                FileName = attachment.FileName
+            };
             if (saveDlg.ShowDialog() != DialogResult.OK) return;
             try
             {
-                using (var f = new FileStream(saveDlg.FileName, FileMode.Create, FileAccess.Write))
+                if (attachment.Method == AttachmentMethod.BY_VALUE)
                 {
-                    byte[] data = attachment.Data;
-                    f.Write(data, 0, data.Length);
+                    using var f = new FileStream(saveDlg.FileName, FileMode.Create, FileAccess.Write);
+                    f.Write(attachment.Data, 0, attachment.Data.Length);
+                }
+                else if (attachment.Method == AttachmentMethod.EMBEDDED_MESSAGE)
+                {
+                    var msg = new PSTParse.Message_Layer.Message(attachment.RefNID, currentFile, message);
+                    SaveMessageToFile(msg, saveDlg.FileName + ".msg");
+                }
+                else
+                {
+                    // by ref?
+
                 }
             }
             catch (Exception ex)
@@ -384,94 +398,115 @@ namespace OutlookMailViewer
             foreach (int index in listViewMessages.SelectedIndices)
             {
                 var message = displayedMessages[index];
-
-                var senderName = message.SentRepresentingName ?? (message.SenderName ?? "");
-                var fromEmail = message.From != null && message.From.Count > 0 ? message.From[0].EmailAddress : "";
-                var emailSender = new Sender(fromEmail, senderName);
-                var attachmentStreams = new List<Stream>();
-
+                var fileName = "Message";
                 try
                 {
-                    using (var email = new Email(emailSender, message.Subject ?? ""))
+                    DateTime dt = DateTime.Now;
+                    if (message.MessageDeliveryTime != null)
                     {
-                        if (message.HtmlBody != null)
-                        {
-                            email.BodyHtml = message.HtmlBody;
-                        }
-                        if (message.BodyPlainText != null)
-                        {
-                            email.BodyText = message.BodyPlainText;
-                        }
-                        if (message.BodyRTF != null)
-                        {
-                            email.BodyRtf = message.BodyRTF;
-                        }
-                        if (message.Attachments != null)
-                        {
-                            foreach (var att in message.Attachments)
-                            {
-                                if (att.Data == null) { continue; }
-                                var stream = new MemoryStream(att.Data);
-                                attachmentStreams.Add(stream);
-                                email.Attachments.Add(stream, att.FileName, renderingPosition: (int)att.RenderingPosition, isInline: att.RenderedInBody);
-                            }
-                        }
-                        if (message.MessageId != null)
-                        {
-                            email.InternetMessageId = message.MessageId;
-                        }
-                        if (message.ReplyToId != null)
-                        {
-                            email.InReplyToId = message.ReplyToId;
-                        }
-                        email.Importance = (MsgKit.Enums.MessageImportance)message.Imporance;
+                        dt = message.MessageDeliveryTime;
+                    }
+                    if (message.ClientSubmitTime != null)
+                    {
+                        dt = message.ClientSubmitTime;
+                    }
+                    fileName += " on " + dt.ToShortDateString() + " " + dt.ToLongTimeString();
+                    fileName = fileName.Replace(':', '-');
+                }
+                catch { }
 
+                SaveMessageToFile(displayedMessages[index], Path.Combine(selectedPath, fileName + ".msg"));
+            }
+        }
+
+        private static void SaveMessageToFile(PSTParse.Message_Layer.Message message, string destFileName)
+        {
+            var senderName = message.SentRepresentingName ?? (message.SenderName ?? "");
+            var fromEmail = message.From != null && message.From.Count > 0 ? message.From[0].EmailAddress : "";
+            var emailSender = new Sender(fromEmail, senderName);
+            var attachmentStreams = new List<Stream>();
+
+            try
+            {
+                using (var email = new Email(emailSender, message.Subject ?? ""))
+                {
+                    if (message.HtmlBody != null)
+                    {
+                        email.BodyHtml = message.HtmlBody;
+                    }
+                    if (message.BodyPlainText != null)
+                    {
+                        email.BodyText = message.BodyPlainText;
+                    }
+                    if (message.BodyRTF != null)
+                    {
+                        email.BodyRtf = message.BodyRTF;
+                    }
+                    if (message.Attachments != null)
+                    {
+                        foreach (var att in message.Attachments)
+                        {
+                            if (att.Data == null) { continue; }
+                            var stream = new MemoryStream(att.Data);
+                            attachmentStreams.Add(stream);
+                            email.Attachments.Add(stream, att.FileName, renderingPosition: (int)att.RenderingPosition, isInline: att.RenderedInBody);
+                        }
+                    }
+                    if (message.MessageId != null)
+                    {
+                        email.InternetMessageId = message.MessageId;
+                    }
+                    if (message.ReplyToId != null)
+                    {
+                        email.InReplyToId = message.ReplyToId;
+                    }
+                    email.Importance = (MsgKit.Enums.MessageImportance)message.Imporance;
+
+                    if (message.MessageDeliveryTime != null)
+                    {
+                        email.ReceivedOn = message.MessageDeliveryTime;
+                    }
+                    if (message.ClientSubmitTime != null)
+                    {
+                        email.SentOn = message.ClientSubmitTime;
+                    }
+                    foreach (var rec in message.To)
+                    {
+                        email.Recipients.AddTo(rec.EmailAddress, rec.DisplayName);
+                    }
+                    foreach (var rec in message.CC)
+                    {
+                        email.Recipients.AddCc(rec.EmailAddress, rec.DisplayName);
+                    }
+                    foreach (var rec in message.BCC)
+                    {
+                        email.Recipients.AddBcc(rec.EmailAddress, rec.DisplayName);
+                    }
+
+                    var fileName = "Message";
+                    try
+                    {
+                        DateTime dt = DateTime.Now;
                         if (message.MessageDeliveryTime != null)
                         {
-                            email.ReceivedOn = message.MessageDeliveryTime;
+                            dt = message.MessageDeliveryTime;
                         }
                         if (message.ClientSubmitTime != null)
                         {
-                            email.SentOn = message.ClientSubmitTime;
+                            dt = message.ClientSubmitTime;
                         }
-                        foreach (var rec in message.To)
-                        {
-                            email.Recipients.AddTo(rec.EmailAddress, rec.DisplayName);
-                        }
-                        foreach (var rec in message.CC)
-                        {
-                            email.Recipients.AddCc(rec.EmailAddress, rec.DisplayName);
-                        }
-                        foreach (var rec in message.BCC)
-                        {
-                            email.Recipients.AddBcc(rec.EmailAddress, rec.DisplayName);
-                        }
-
-                        var fileName = "Message";
-                        try
-                        {
-                            DateTime dt = DateTime.Now;
-                            if (message.MessageDeliveryTime != null)
-                            {
-                                dt = message.MessageDeliveryTime;
-                            }
-                            if (message.ClientSubmitTime != null)
-                            {
-                                dt = message.ClientSubmitTime;
-                            }
-                            fileName += " on " + dt.ToShortDateString() + " " + dt.ToLongTimeString();
-                            fileName = fileName.Replace(':', '-');
-                        }
-                        catch { }
-                        email.Save(Path.Combine(selectedPath, fileName + ".msg"));
+                        fileName += " on " + dt.ToShortDateString() + " " + dt.ToLongTimeString();
+                        fileName = fileName.Replace(':', '-');
                     }
+                    catch { }
+                    email.Save(destFileName);
                 }
-                finally
+            }
+            finally
+            {
+                foreach (var s in attachmentStreams)
                 {
-                    foreach (var s in attachmentStreams)
-                    {
-                        try { s.Dispose(); } catch { }
-                    }
+                    try { s.Dispose(); } catch { }
                 }
             }
         }
