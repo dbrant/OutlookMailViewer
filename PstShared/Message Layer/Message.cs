@@ -163,8 +163,8 @@ namespace PSTParse.Message_Layer
                         foreach (var nodeData in subNode.Value.NodeData)
                         {
                             ContentEx.Add(pst.Header.isUnicode
-                                ? Encoding.Unicode.GetString(subNode.Value.NodeData[0].Data)
-                                : Encoding.ASCII.GetString(subNode.Value.NodeData[0].Data));
+                                ? Encoding.Unicode.GetString(nodeData.Data)
+                                : Encoding.ASCII.GetString(nodeData.Data));
                         }
                         */
                         break;
@@ -174,8 +174,8 @@ namespace PSTParse.Message_Layer
                         foreach (var nodeData in subNode.Value.NodeData)
                         {
                             string foo = pst.Header.isUnicode
-                                ? Encoding.Unicode.GetString(subNode.Value.NodeData[0].Data)
-                                : Encoding.ASCII.GetString(subNode.Value.NodeData[0].Data);
+                                ? Encoding.Unicode.GetString(nodeData.Data)
+                                : Encoding.ASCII.GetString(nodeData.Data);
                             Console.WriteLine(foo);
                         }
                         */
@@ -420,14 +420,25 @@ namespace PSTParse.Message_Layer
         ContainerClass = 0x3613,
         AssocContentCount = 0x3617,
         AttachmentData = 0x3701,
+        AttachmentEncoding = 0x3702,
+        AttachmentExtension = 0x3703,
         AttachmentFileName = 0x3704,
         AttachmentMethod = 0x3705,
         AttachmentLongFileName = 0x3707,
+        AttachmentPathName = 0x3708,
+        AttachmentRendering = 0x3709,
+        AttachmentApplicationId = 0x370a,
         AttachmentRenderPosition = 0x370b,
+        AttachmentLongPathName = 0x370d,
         AttachmentMimeType = 0x370e,
+        AttachmentExtraEncodingInfo = 0x370f,
         AttachmentMimeSequence = 0x3710,
+        AttachmentContentBase = 0x3711,
         AttachmentContentID = 0x3712,
+        AttachmentContentLocation = 0x3713,
         AttachmentFlags = 0x3714,
+        AttachmentProviderGuid = 0x3719,
+        AttachmentProviderClass = 0x371a,
         CodePage = 0x3fDE,
         CreatorName = 0x3ff8,
         NonUnicodeCodePage = 0x3ffd,
@@ -439,6 +450,8 @@ namespace PSTParse.Message_Layer
         BodyPlainText2 = 0x6619,
         AttachmentLTPRowID = 0x67F2,
         AttachmentLTPRowVer = 0x67F3,
+        AttachmentSpecialFlags = 0x7FFD,
+        AttachmentHidden = 0x7FFE,
         BodyPlainText3 = 0x8008,
         ContentClass = 0x8009,
         PopAccountName = 0x800d,
