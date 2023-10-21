@@ -74,6 +74,7 @@ namespace PSTParse.LTP
             new ExchangeProperty{Type = PropType.MultipleTime, ByteCount = 8, MultiValue = true, Variable = false},
             new ExchangeProperty{Type = PropType.MultipleGuid, ByteCount = 8, MultiValue = true, Variable = false},
             new ExchangeProperty{Type = PropType.MultipleBinary, ByteCount = 0, MultiValue = true, Variable = true},
+            new ExchangeProperty{Type = PropType.ObjectType, ByteCount = 8, MultiValue = false, Variable = false},
         };
 
         public MessageProperty ID { get; private set; }
