@@ -12,7 +12,7 @@ using System.Windows.Forms;
 namespace OutlookMailViewer
 {
     /// <summary>
-    /// Copyright 2018-2021 Dmitry Brant.
+    /// Copyright 2018+ Dmitry Brant.
     /// </summary>
     public partial class Form1 : Form
     {
@@ -302,7 +302,7 @@ namespace OutlookMailViewer
 
         private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            MessageBox.Show(this, "Outlook PST mail database viewer.\n\nCopyright 2018-2021 Dmitry Brant.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show(this, "Outlook PST mail database viewer.\n\nCopyright 2018+ Dmitry Brant.", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void mnuFind_Click(object sender, EventArgs e)

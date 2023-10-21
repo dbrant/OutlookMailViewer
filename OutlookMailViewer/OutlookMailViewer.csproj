@@ -8,10 +8,10 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>myicon.ico</ApplicationIcon>
-    <Copyright>Copyright © Dmitry Brant 2018-2023</Copyright>
+    <Copyright>Copyright © 2018+ Dmitry Brant </Copyright>
     <PackageProjectUrl>https://dmitrybrant.com</PackageProjectUrl>
     <Authors>Dmitry Brant</Authors>
-    <Description>Utility for viewing the contents of Outlook mail archive files.</Description>
+    <Description>Utility for viewing the contents of PST (Outlook mail archive) files.</Description>
   </PropertyGroup>
   <ItemGroup>
     <Compile Update="ListViewDblBuf.cs">
