@@ -59,7 +59,7 @@ namespace PSTParse.Message_Layer
             OtherItems = new List<IPMItem>();
             foreach (var row in ContentsTC.ReverseRowIndex)
             {
-                var item = new IPMItem(_pst, row.Value);
+                //var item = new IPMItem(_pst, row.Value);
                 //if (item.MessageClass.StartsWith("IPM.Note"))
                 //{
                     Messages.Add(new Message(row.Value, _pst));
