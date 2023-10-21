@@ -69,19 +69,13 @@ namespace PSTParse.Message_Layer
                 case MessageProperty.AttachmentFileName:
                     ShortFileName = unicode ? Encoding.Unicode.GetString(prop.Data) : Encoding.ASCII.GetString(prop.Data);
                     ShortFileName = ShortFileName.Replace("\0", "");
-                    if (FileName == null)
-                    {
-                        FileName = ShortFileName;
-                    }
+                    FileName ??= ShortFileName;
                     break;
                 case MessageProperty.AttachmentLongFileName:
                 case MessageProperty.DisplayName: // in the case of EMBEDDED_MESSAGE
                     FileName = unicode ? Encoding.Unicode.GetString(prop.Data) : Encoding.ASCII.GetString(prop.Data);
                     FileName = FileName.Replace("\0", "");
-                    if (ShortFileName == null)
-                    {
-                        ShortFileName = FileName;
-                    }
+                    ShortFileName ??= FileName;
                     break;
                 case MessageProperty.AttachmentMimeType:
                     MimeType = unicode ? Encoding.Unicode.GetString(prop.Data) : Encoding.ASCII.GetString(prop.Data);
