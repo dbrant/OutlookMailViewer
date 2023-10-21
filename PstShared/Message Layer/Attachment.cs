@@ -33,6 +33,10 @@ namespace PSTParse.Message_Layer
         // the attachment as it appears in the message, e.g. a literal envelope icon.
         public byte[] Rendering { get; private set; }
 
+        // If the attachment is by-reference, then this will be the NID of the subnode that
+        // contains the actual data of the attachment.
+        public uint RefNID { get; private set; }
+
         public Attachment(bool unicode, TCRowMatrixData row)
         {
             foreach (var prop in row)
@@ -61,7 +65,14 @@ namespace PSTParse.Message_Layer
                     Size = BitConverter.ToUInt32(prop.Data, 0);
                     break;
                 case MessageProperty.AttachmentData:
-                    Data = prop.Data;
+                    if (prop.Type == ExchangeProperty.PropType.ObjectType)
+                    {
+                        RefNID = BitConverter.ToUInt32(prop.Data, 0);
+                    }
+                    else
+                    {
+                        Data = prop.Data;
+                    }
                     break;
                 case MessageProperty.AttachmentRendering:
                     Rendering = prop.Data;
