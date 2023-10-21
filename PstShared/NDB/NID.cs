@@ -24,8 +24,7 @@ namespace PSTParse.NDB
             ATTACHMENT_TABLE = 0x11,
             RECIPIENT_TABLE = 0x12,
             SEARCH_TABLE_INDEX = 0x13,
-            LTP = 0x14,
-            CONTENT_EX = 0x1F
+            LTP = 0x1F
         }
 
         public NodeType Type { get; private set; }

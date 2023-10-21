@@ -58,8 +58,6 @@ namespace PSTParse.Message_Layer
         public string MessageId { get; private set; }
         public string ReplyToId { get; private set; }
 
-        public List<string> ContentEx { get; private set; }
-        
         private UInt32 MessageFlags;
 
         public List<Recipient> To = new List<Recipient>();
@@ -102,8 +100,6 @@ namespace PSTParse.Message_Layer
         public Message(uint NID, PSTFile pst, Message parent = null)
             : base(pst, NID, parent?.Data)
         {
-            ContentEx = new List<string>();
-
             //MessagePC = new PropertyContext(Data);
             int attachmentPcIndex = 0;
 
@@ -149,17 +145,6 @@ namespace PSTParse.Message_Layer
                                     break;
                             }
                         }
-                        break;
-                    case NDB.NID.NodeType.CONTENT_EX:
-                        // TODO: investigate what this is.
-                        /*
-                        foreach (var nodeData in subNode.Value.NodeData)
-                        {
-                            ContentEx.Add(pst.Header.isUnicode
-                                ? Encoding.Unicode.GetString(nodeData.Data)
-                                : Encoding.ASCII.GetString(nodeData.Data));
-                        }
-                        */
                         break;
                     default:
                         // TODO: investigate what this is.
