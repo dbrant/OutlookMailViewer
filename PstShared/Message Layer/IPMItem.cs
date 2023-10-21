@@ -34,9 +34,7 @@ namespace PSTParse.Message_Layer
             unicode = pst.Header.isUnicode;
             if (!PC.Properties.ContainsKey(MessageProperty.MessageClass))
                 return;
-            MessageClass = unicode
-                ? Encoding.Unicode.GetString(PC.Properties[MessageProperty.MessageClass].Data)
-                : Encoding.ASCII.GetString(PC.Properties[MessageProperty.MessageClass].Data);
+            MessageClass = pst.GetString(PC.Properties[MessageProperty.MessageClass].Data);
         }
 
         public static NodeDataDTO FindSubnodeWithKey(NodeDataDTO parent, uint NID)

@@ -78,18 +78,18 @@ namespace PSTParse.Message_Layer
                     Rendering = prop.Data;
                     break;
                 case MessageProperty.AttachmentFileName:
-                    ShortFileName = unicode ? Encoding.Unicode.GetString(prop.Data) : Encoding.ASCII.GetString(prop.Data);
+                    ShortFileName = PSTFile.GetString(unicode, prop.Data);
                     ShortFileName = ShortFileName.Replace("\0", "");
                     FileName ??= ShortFileName;
                     break;
                 case MessageProperty.AttachmentLongFileName:
                 case MessageProperty.DisplayName: // in the case of EMBEDDED_MESSAGE
-                    FileName = unicode ? Encoding.Unicode.GetString(prop.Data) : Encoding.ASCII.GetString(prop.Data);
+                    FileName = PSTFile.GetString(unicode, prop.Data);
                     FileName = FileName.Replace("\0", "");
                     ShortFileName ??= FileName;
                     break;
                 case MessageProperty.AttachmentMimeType:
-                    MimeType = unicode ? Encoding.Unicode.GetString(prop.Data) : Encoding.ASCII.GetString(prop.Data);
+                    MimeType = PSTFile.GetString(unicode, prop.Data);
                     break;
                 case MessageProperty.AttachmentMethod:
                     Method = (AttachmentMethod)BitConverter.ToUInt32(prop.Data, 0);

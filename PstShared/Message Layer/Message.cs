@@ -172,9 +172,7 @@ namespace PSTParse.Message_Layer
                         Sensitivity = (Sensitivity) BitConverter.ToInt16(prop.Value.Data, 0);
                         break;
                     case MessageProperty.Subject:
-                        Subject = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
+                        Subject = pst.GetString(prop.Value.Data);
                         if (Subject.Length > 0)
                         {
                             var chars = Subject.ToCharArray();
@@ -197,24 +195,16 @@ namespace PSTParse.Message_Layer
                         ClientSubmitTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
                         break;
                     case MessageProperty.SentRepresentingName:
-                        SentRepresentingName = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
+                        SentRepresentingName = pst.GetString(prop.Value.Data);
                         break;
                     case MessageProperty.ConversationTopic:
-                        ConversationTopic = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
+                        ConversationTopic = pst.GetString(prop.Value.Data);
                         break;
                     case MessageProperty.MessageClass:
-                        MessageClass = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
+                        MessageClass = pst.GetString(prop.Value.Data);
                         break;
                     case MessageProperty.SenderName:
-                        SenderName = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
+                        SenderName = pst.GetString(prop.Value.Data);
                         break;
                     case MessageProperty.MessageDeliveryTime:
                         MessageDeliveryTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
@@ -257,14 +247,10 @@ namespace PSTParse.Message_Layer
                         NonUnicodeCodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
                         break;
                     case MessageProperty.MessageID:
-                        MessageId = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
+                        MessageId = pst.GetString(prop.Value.Data);
                         break;
                     case MessageProperty.ReplyToMessageID:
-                        ReplyToId = pst.Header.isUnicode
-                            ? Encoding.Unicode.GetString(prop.Value.Data)
-                            : Encoding.ASCII.GetString(prop.Value.Data);
+                        ReplyToId = pst.GetString(prop.Value.Data);
                         break;
                     default:
                         break;
@@ -539,7 +525,7 @@ namespace PSTParse.Message_Layer
                     // screw it, just render the first string, up until the end of the data.
                     return unicode
                         ? Encoding.Unicode.GetString(prop.Data, 8, Math.Min(maxStringBytes, prop.Data.Length - 8))
-                        : Encoding.UTF8.GetString(prop.Data, 8, Math.Min(maxStringBytes, prop.Data.Length - 8));
+                        : Encoding.Latin1.GetString(prop.Data, 8, Math.Min(maxStringBytes, prop.Data.Length - 8));
                 }
                 else if (prop.Type == ExchangeProperty.PropType.MultipleString8)
                 {
@@ -560,7 +546,7 @@ namespace PSTParse.Message_Layer
                 {
                     return unicode
                         ? Encoding.Unicode.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length))
-                        : Encoding.UTF8.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
+                        : Encoding.Latin1.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length));
                 }
                 else if (prop.Type == ExchangeProperty.PropType.String8 && prop.Data != null)
                 {

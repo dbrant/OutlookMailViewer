@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.MemoryMappedFiles;
+using System.Text;
 using PSTParse.Message_Layer;
 using PSTParse.NDB;
 
@@ -72,6 +73,16 @@ namespace PSTParse
         public BBTENTRY GetBlockBBTEntry(ulong item1)
         {
             return Header.BlockBT.Root.GetBIDBBTEntry(item1);
+        }
+
+        public string GetString(byte[] data)
+        {
+            return GetString(Header.isUnicode, data);
+        }
+
+        public static string GetString(bool unicode, byte[] data)
+        {
+            return unicode ? Encoding.Unicode.GetString(data) : Encoding.Latin1.GetString(data);
         }
     }
 }

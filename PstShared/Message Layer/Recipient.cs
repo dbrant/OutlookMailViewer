@@ -45,13 +45,13 @@ namespace PSTParse.Message_Layer
                         EntryID = exProp.Data != null && (exProp.Data.Length >= EntryID.Size) ? new EntryID(exProp.Data) : null;
                         break;
                     case MessageProperty.DisplayName:
-                        DisplayName = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
+                        DisplayName = PSTFile.GetString(unicode, exProp.Data);
                         break;
                     case MessageProperty.AddressType:
-                        EmailAddressType = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
+                        EmailAddressType = PSTFile.GetString(unicode, exProp.Data);
                         break;
                     case MessageProperty.AddressName:
-                        EmailAddress = unicode ? Encoding.Unicode.GetString(exProp.Data) : Encoding.ASCII.GetString(exProp.Data);
+                        EmailAddress = PSTFile.GetString(unicode, exProp.Data);
                         break;
                     default:
                         break;
