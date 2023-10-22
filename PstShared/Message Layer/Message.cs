@@ -26,8 +26,8 @@ namespace PSTParse.Message_Layer
         public TableContext AttachmentTable { get; private set; }
         public TableContext RecipientTable { get; private set; }
 
-        public String Subject { get; private set; }
-        public String SubjectPrefix { get; private set; }
+        public string Subject { get; private set; }
+        public string SubjectPrefix { get; private set; }
         public Importance Imporance { get; private set; }
         public Sensitivity Sensitivity { get; private set; }
         public DateTime LastSaved { get; private set; }
@@ -37,27 +37,27 @@ namespace PSTParse.Message_Layer
         public string ConversationTopic { get; private set; }
         public string SenderName { get; private set; }
         public DateTime MessageDeliveryTime { get; private set; }
-        public Boolean Read { get; private set; }
-        public Boolean Unsent { get; private set; }
-        public Boolean Unmodified { get; private set; }
-        public Boolean HasAttachments { get; private set; }
-        public Boolean FromMe { get; private set; }
-        public Boolean IsFAI { get; private set; }
-        public Boolean NotifyReadRequested { get; private set; }
-        public Boolean NotifyUnreadRequested { get; private set; }
-        public Boolean EverRead { get; private set; }
-        public UInt32 MessageSize { get; private set; }
-        public UInt32 InternetArticleNumber { get; private set; }
+        public bool Read { get; private set; }
+        public bool Unsent { get; private set; }
+        public bool Unmodified { get; private set; }
+        public bool HasAttachments { get; private set; }
+        public bool FromMe { get; private set; }
+        public bool IsFAI { get; private set; }
+        public bool NotifyReadRequested { get; private set; }
+        public bool NotifyUnreadRequested { get; private set; }
+        public bool EverRead { get; private set; }
+        public uint MessageSize { get; private set; }
+        public uint InternetArticleNumber { get; private set; }
         public bool AttributeHidden { get; private set; }
         public bool ReadOnly { get; private set; }
         public DateTime CreationTime { get; private set; }
         public DateTime LastModificationTime { get; private set; }
-        public UInt32 CodePage { get; private set; }
-        public UInt32 NonUnicodeCodePage { get; private set; }
+        public uint CodePage { get; private set; }
+        public uint NonUnicodeCodePage { get; private set; }
         public string MessageId { get; private set; }
         public string ReplyToId { get; private set; }
 
-        private UInt32 MessageFlags;
+        private uint MessageFlags;
 
         public List<Recipient> To = new();
         public List<Recipient> From = new();
@@ -98,7 +98,6 @@ namespace PSTParse.Message_Layer
         public Message(uint NID, PSTFile pst, Message parent = null)
             : base(pst, NID, parent?.Data)
         {
-            //MessagePC = new PropertyContext(Data);
             int attachmentPcIndex = 0;
 
             foreach(var subNode in Data.SubNodeData)
