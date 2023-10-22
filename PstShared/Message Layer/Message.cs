@@ -386,6 +386,7 @@ namespace PSTParse.Message_Layer
         FolderHasChildren = 0x360a,
         ContainerClass = 0x3613,
         AssocContentCount = 0x3617,
+        AdditionalRenEntryIds = 0x36d8,
         ExtendedFolderFlags = 0x36da,
         AttachmentData = 0x3701,
         AttachmentEncoding = 0x3702,
@@ -542,7 +543,7 @@ namespace PSTParse.Message_Layer
                 else if (prop.Type == ExchangeProperty.PropType.ServerId)
                 {
                 }
-                else if (prop.Type == ExchangeProperty.PropType.String)
+                else if (prop.Type == ExchangeProperty.PropType.String && prop.Data != null)
                 {
                     return unicode
                         ? Encoding.Unicode.GetString(prop.Data, 0, Math.Min(maxStringBytes, prop.Data.Length))

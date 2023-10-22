@@ -44,7 +44,8 @@ namespace PSTParse.LTP
             MultipleBinary = 0x1102,
         }
 
-        public static List<ExchangeProperty> PropertyLookupByType = new List<ExchangeProperty> {
+        public static List<ExchangeProperty> PropertyLookupByType = new()
+        {
             new ExchangeProperty{Type = PropType.Integer16, ByteCount = 2, MultiValue = false, Variable = false},
             new ExchangeProperty{Type = PropType.Integer32, ByteCount = 4, MultiValue = false, Variable = false},
             new ExchangeProperty{Type = PropType.Floating32, ByteCount = 4, MultiValue = false, Variable = false},
