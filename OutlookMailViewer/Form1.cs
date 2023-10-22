@@ -18,7 +18,7 @@ namespace OutlookMailViewer
     {
         private PSTFile currentFile;
         private MailFolder currentFolder;
-        private List<PSTParse.Message_Layer.Message> displayedMessages = new List<PSTParse.Message_Layer.Message>();
+        private List<PSTParse.Message_Layer.Message> displayedMessages = new();
 
         private bool allowNextWebViewLink;
         private SortOrder sortOrder = SortOrder.Date;
@@ -160,9 +160,9 @@ namespace OutlookMailViewer
             string headers = message.Headers;
             string html = message.HtmlBody;
             string plainText = message.BodyPlainText;
-            webBrowser1.DocumentText = html != null ? html : (plainText != null ? plainText.Replace("\n", "<br />") : "");
-            textBoxPlainText.Text = plainText != null ? plainText : "";
-            textBoxHeaders.Text = headers != null ? headers : "";
+            webBrowser1.DocumentText = html ?? (plainText != null ? plainText.Replace("\n", "<br />") : "");
+            textBoxPlainText.Text = plainText ?? "";
+            textBoxHeaders.Text = headers ?? "";
 
             UpdatePropertyList(message.PC);
 
@@ -206,14 +206,7 @@ namespace OutlookMailViewer
         private void listViewMessages_ColumnClick(object sender, ColumnClickEventArgs e)
         {
             var newSortOrder = (SortOrder)e.Column;
-            if (newSortOrder == sortOrder)
-            {
-                sortAscending = !sortAscending;
-            }
-            else
-            {
-                sortAscending = true;
-            }
+            sortAscending = newSortOrder != sortOrder || !sortAscending;
             sortOrder = newSortOrder;
             UpdateSort();
             listViewMessages.Invalidate();
@@ -226,7 +219,7 @@ namespace OutlookMailViewer
             e.Item.Tag = message;
             e.Item.SubItems.Add(message.ClientSubmitTime.ToString());
 
-            string fromStr = message.SentRepresentingName != null ? message.SentRepresentingName : message.SenderName;
+            string fromStr = message.SentRepresentingName ?? message.SenderName;
             e.Item.SubItems.Add(fromStr);
             e.Item.SubItems.Add(String.Join("; ", message.To.Select(r => r.EmailAddress)));
 
