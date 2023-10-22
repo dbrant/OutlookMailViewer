@@ -17,7 +17,7 @@ namespace PSTParse.Message_Layer
         public IPMItem(PSTFile pst, uint nid, NodeDataDTO parentData = null)
         {
             NID = nid;
-            Data = parentData == null ? BlockBO.GetNodeData(nid, pst) : FindSubnodeWithKey(parentData, nid);
+            Data = parentData == null ? BlockBO.GetNodeData(nid, pst) : FindSubnodeWithKey(parentData, nid, 0);
 
             PC = parentData == null ? new PropertyContext(nid, pst) : new PropertyContext(Data);
             GetMessageClass(pst);
@@ -37,9 +37,9 @@ namespace PSTParse.Message_Layer
             MessageClass = pst.GetString(PC.Properties[MessageProperty.MessageClass].Data);
         }
 
-        public static NodeDataDTO FindSubnodeWithKey(NodeDataDTO parent, uint NID)
+        public static NodeDataDTO FindSubnodeWithKey(NodeDataDTO parent, uint NID, int level)
         {
-            if (parent == null || parent.SubNodeData == null)
+            if (parent == null || parent.SubNodeData == null || level > 32)
                 return null;
             foreach (var subNode in parent.SubNodeData)
             {
@@ -48,7 +48,7 @@ namespace PSTParse.Message_Layer
 
                 if (subNode.Value.SubNodeData != null && subNode.Value.SubNodeData.Count > 0)
                 {
-                    var ret = FindSubnodeWithKey(subNode.Value, NID);
+                    var ret = FindSubnodeWithKey(subNode.Value, NID, level + 1);
                     if (ret != null)
                         return ret;
                 }

@@ -284,7 +284,7 @@ namespace OutlookMailViewer
                 }
                 else if (attachment.Method == AttachmentMethod.STORAGE)
                 {
-                    var dto = IPMItem.FindSubnodeWithKey(message.Data, attachment.RefNID);
+                    var dto = IPMItem.FindSubnodeWithKey(message.Data, attachment.RefNID, 0);
                     var data = dto.NodeData[0].Data;
                     using var f = new FileStream(saveDlg.FileName, FileMode.Create, FileAccess.Write);
                     f.Write(data, 0, data.Length);
