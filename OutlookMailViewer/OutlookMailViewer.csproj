@@ -22,7 +22,7 @@
     <Content Include="myicon.ico" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="MsgKit" Version="2.5.1" />
+    <PackageReference Include="MsgKit" Version="3.0.2" />
   </ItemGroup>
   <Import Project="..\PstShared\PstShared.projitems" Label="Shared" />
 </Project>
