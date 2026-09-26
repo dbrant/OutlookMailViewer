@@ -49,6 +49,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)NDB\BBTENTRY.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NDB\BID.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NDB\BlockBO.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)NDB\BlockScanner.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NDB\BlockDataDTO.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NDB\BlockFactory.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)NDB\BlockTrailer.cs" />

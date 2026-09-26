@@ -100,159 +100,173 @@ namespace PSTParse.Message_Layer
         {
             int attachmentPcIndex = 0;
 
-            foreach(var subNode in Data.SubNodeData)
+            foreach(var subNode in Data.SubNodeData ?? new Dictionary<ulong, NodeDataDTO>())
             {
-                var temp = new NID(subNode.Key);
-                switch(temp.Type)
+                try
                 {
-                    case NDB.NID.NodeType.ATTACHMENT_TABLE:
-                        AttachmentTable = new TableContext(subNode.Value);
-                        foreach (var row in AttachmentTable.RowMatrix.Rows)
-                        {
-                            Attachments.Add(new Attachment(pst.Header.isUnicode, row));
-                        }
-                        break;
-                    case NDB.NID.NodeType.ATTACHMENT_PC:
-                        var AttachmentPC = new PropertyContext(subNode.Value);
-                        if (Attachments.Count > attachmentPcIndex)
-                        {
-                            Attachments[attachmentPcIndex].AddProperties(unicode, AttachmentPC);
-                        }
-                        attachmentPcIndex++;
-                        break;
-                    case NDB.NID.NodeType.RECIPIENT_TABLE:
-                        RecipientTable = new TableContext(subNode.Value);
-                        
-                        foreach(var row in RecipientTable.RowMatrix.Rows)
-                        {
-                            var recipient = new Recipient(pst.Header.isUnicode, row);
-                            switch(recipient.Type)
+                    var temp = new NID(subNode.Key);
+                    switch(temp.Type)
+                    {
+                        case NDB.NID.NodeType.ATTACHMENT_TABLE:
+                            AttachmentTable = new TableContext(subNode.Value);
+                            foreach (var row in AttachmentTable.RowMatrix.Rows)
                             {
-                                case Recipient.RecipientType.TO:
-                                    To.Add(recipient);
-                                    break;
-                                case Recipient.RecipientType.FROM:
-                                    From.Add(recipient);
-                                    break;
-                                case Recipient.RecipientType.CC:
-                                    CC.Add(recipient);
-                                    break;
-                                case Recipient.RecipientType.BCC:
-                                    BCC.Add(recipient);
-                                    break;
+                                Attachments.Add(new Attachment(pst.Header.isUnicode, row));
                             }
-                        }
-                        break;
-                    default:
-                        // TODO: investigate what this is.
-                        /*
-                        foreach (var nodeData in subNode.Value.NodeData)
-                        {
-                            string foo = pst.Header.isUnicode
-                                ? Encoding.Unicode.GetString(nodeData.Data)
-                                : Encoding.ASCII.GetString(nodeData.Data);
-                            Console.WriteLine(foo);
-                        }
-                        */
-                        break;
+                            break;
+                        case NDB.NID.NodeType.ATTACHMENT_PC:
+                            var pcIndex = attachmentPcIndex++;
+                            var AttachmentPC = new PropertyContext(subNode.Value);
+                            if (Attachments.Count > pcIndex)
+                            {
+                                Attachments[pcIndex].AddProperties(unicode, AttachmentPC);
+                            }
+                            break;
+                        case NDB.NID.NodeType.RECIPIENT_TABLE:
+                            RecipientTable = new TableContext(subNode.Value);
+                        
+                            foreach(var row in RecipientTable.RowMatrix.Rows)
+                            {
+                                var recipient = new Recipient(pst.Header.isUnicode, row);
+                                switch(recipient.Type)
+                                {
+                                    case Recipient.RecipientType.TO:
+                                        To.Add(recipient);
+                                        break;
+                                    case Recipient.RecipientType.FROM:
+                                        From.Add(recipient);
+                                        break;
+                                    case Recipient.RecipientType.CC:
+                                        CC.Add(recipient);
+                                        break;
+                                    case Recipient.RecipientType.BCC:
+                                        BCC.Add(recipient);
+                                        break;
+                                }
+                            }
+                            break;
+                        default:
+                            // TODO: investigate what this is.
+                            /*
+                            foreach (var nodeData in subNode.Value.NodeData)
+                            {
+                                string foo = pst.Header.isUnicode
+                                    ? Encoding.Unicode.GetString(nodeData.Data)
+                                    : Encoding.ASCII.GetString(nodeData.Data);
+                                Console.WriteLine(foo);
+                            }
+                            */
+                            break;
+                    }
+                }
+                catch (Exception)
+                {
+                    // skip a damaged attachment or recipient table, and keep the rest of the message.
                 }
             }
             foreach(var prop in PC.Properties)
             {
                 if (prop.Value.Data == null || prop.Value.Data.Length == 0)
                     continue;
-                
-                switch (prop.Key)
+                try
                 {
-                    case MessageProperty.Importance:
-                        Imporance = (Importance) BitConverter.ToInt16(prop.Value.Data, 0);
-                        break;
-                    case MessageProperty.Sensitivity:
-                        Sensitivity = (Sensitivity) BitConverter.ToInt16(prop.Value.Data, 0);
-                        break;
-                    case MessageProperty.Subject:
-                        Subject = pst.GetString(prop.Value.Data);
-                        if (Subject.Length > 0)
-                        {
-                            var chars = Subject.ToCharArray();
-                            if (chars[0] == 0x1)
+                
+                    switch (prop.Key)
+                    {
+                        case MessageProperty.Importance:
+                            Imporance = (Importance) BitConverter.ToInt16(prop.Value.Data, 0);
+                            break;
+                        case MessageProperty.Sensitivity:
+                            Sensitivity = (Sensitivity) BitConverter.ToInt16(prop.Value.Data, 0);
+                            break;
+                        case MessageProperty.Subject:
+                            Subject = pst.GetString(prop.Value.Data);
+                            if (Subject.Length > 0)
                             {
-                                /*
-                                // for skipping past "Re:", "Fwd:", etc.
-                                var length = (int)chars[1];
-                                int i = 0;
-                                if (length > 1)
-                                    i++;
-                                SubjectPrefix = Subject.Substring(2, length-1);
-                                Subject = Subject.Substring(2 + length-1);
-                                */
-                                Subject = Subject[2..];
+                                var chars = Subject.ToCharArray();
+                                if (chars[0] == 0x1)
+                                {
+                                    /*
+                                    // for skipping past "Re:", "Fwd:", etc.
+                                    var length = (int)chars[1];
+                                    int i = 0;
+                                    if (length > 1)
+                                        i++;
+                                    SubjectPrefix = Subject.Substring(2, length-1);
+                                    Subject = Subject.Substring(2 + length-1);
+                                    */
+                                    Subject = Subject[2..];
+                                }
                             }
-                        }
-                        break;
-                    case MessageProperty.ClientSubmitTime:
-                        ClientSubmitTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
-                        break;
-                    case MessageProperty.SentRepresentingName:
-                        SentRepresentingName = pst.GetString(prop.Value.Data);
-                        break;
-                    case MessageProperty.ConversationTopic:
-                        ConversationTopic = pst.GetString(prop.Value.Data);
-                        break;
-                    case MessageProperty.MessageClass:
-                        MessageClass = pst.GetString(prop.Value.Data);
-                        break;
-                    case MessageProperty.SenderName:
-                        SenderName = pst.GetString(prop.Value.Data);
-                        break;
-                    case MessageProperty.MessageDeliveryTime:
-                        MessageDeliveryTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
-                        break;
-                    case MessageProperty.MessageFlags:
-                        MessageFlags = BitConverter.ToUInt32(prop.Value.Data, 0);
+                            break;
+                        case MessageProperty.ClientSubmitTime:
+                            ClientSubmitTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
+                            break;
+                        case MessageProperty.SentRepresentingName:
+                            SentRepresentingName = pst.GetString(prop.Value.Data);
+                            break;
+                        case MessageProperty.ConversationTopic:
+                            ConversationTopic = pst.GetString(prop.Value.Data);
+                            break;
+                        case MessageProperty.MessageClass:
+                            MessageClass = pst.GetString(prop.Value.Data);
+                            break;
+                        case MessageProperty.SenderName:
+                            SenderName = pst.GetString(prop.Value.Data);
+                            break;
+                        case MessageProperty.MessageDeliveryTime:
+                            MessageDeliveryTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
+                            break;
+                        case MessageProperty.MessageFlags:
+                            MessageFlags = BitConverter.ToUInt32(prop.Value.Data, 0);
 
-                        Read = (MessageFlags & 0x1) != 0;
-                        Unsent = (MessageFlags & 0x8) != 0;
-                        Unmodified = (MessageFlags & 0x2) != 0;
-                        HasAttachments = (MessageFlags & 0x10) != 0;
-                        FromMe = (MessageFlags & 0x20) != 0;
-                        IsFAI = (MessageFlags & 0x40) != 0;
-                        NotifyReadRequested = (MessageFlags & 0x100) != 0;
-                        NotifyUnreadRequested = (MessageFlags & 0x200) != 0;
-                        EverRead = (MessageFlags & 0x400) != 0;
-                        break;
-                    case MessageProperty.MessageSize:
-                        MessageSize = BitConverter.ToUInt32(prop.Value.Data, 0);
-                        break;
-                    case MessageProperty.InternetArticleNumber:
-                        InternetArticleNumber = BitConverter.ToUInt32(prop.Value.Data, 0);
-                        break;
-                    case MessageProperty.AttributeHidden:
-                        AttributeHidden = prop.Value.Data[0] == 0x01;
-                        break;
-                    case MessageProperty.ReadOnly:
-                        ReadOnly = prop.Value.Data[0] == 0x01;
-                        break;
-                    case MessageProperty.CreationTime:
-                        CreationTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
-                        break;
-                    case MessageProperty.LastModificationTime:
-                        LastModificationTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
-                        break;
-                    case MessageProperty.CodePage:
-                        CodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
-                        break;
-                    case MessageProperty.NonUnicodeCodePage:
-                        NonUnicodeCodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
-                        break;
-                    case MessageProperty.MessageID:
-                        MessageId = pst.GetString(prop.Value.Data);
-                        break;
-                    case MessageProperty.ReplyToMessageID:
-                        ReplyToId = pst.GetString(prop.Value.Data);
-                        break;
-                    default:
-                        break;
+                            Read = (MessageFlags & 0x1) != 0;
+                            Unsent = (MessageFlags & 0x8) != 0;
+                            Unmodified = (MessageFlags & 0x2) != 0;
+                            HasAttachments = (MessageFlags & 0x10) != 0;
+                            FromMe = (MessageFlags & 0x20) != 0;
+                            IsFAI = (MessageFlags & 0x40) != 0;
+                            NotifyReadRequested = (MessageFlags & 0x100) != 0;
+                            NotifyUnreadRequested = (MessageFlags & 0x200) != 0;
+                            EverRead = (MessageFlags & 0x400) != 0;
+                            break;
+                        case MessageProperty.MessageSize:
+                            MessageSize = BitConverter.ToUInt32(prop.Value.Data, 0);
+                            break;
+                        case MessageProperty.InternetArticleNumber:
+                            InternetArticleNumber = BitConverter.ToUInt32(prop.Value.Data, 0);
+                            break;
+                        case MessageProperty.AttributeHidden:
+                            AttributeHidden = prop.Value.Data[0] == 0x01;
+                            break;
+                        case MessageProperty.ReadOnly:
+                            ReadOnly = prop.Value.Data[0] == 0x01;
+                            break;
+                        case MessageProperty.CreationTime:
+                            CreationTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
+                            break;
+                        case MessageProperty.LastModificationTime:
+                            LastModificationTime = DateTime.FromFileTimeUtc(BitConverter.ToInt64(prop.Value.Data, 0));
+                            break;
+                        case MessageProperty.CodePage:
+                            CodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
+                            break;
+                        case MessageProperty.NonUnicodeCodePage:
+                            NonUnicodeCodePage = BitConverter.ToUInt32(prop.Value.Data, 0);
+                            break;
+                        case MessageProperty.MessageID:
+                            MessageId = pst.GetString(prop.Value.Data);
+                            break;
+                        case MessageProperty.ReplyToMessageID:
+                            ReplyToId = pst.GetString(prop.Value.Data);
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                catch (Exception)
+                {
+                    // skip a property with malformed data.
                 }
             }
         }

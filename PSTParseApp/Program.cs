@@ -15,7 +15,7 @@ namespace PSTParseApp
         {
             var sw = new Stopwatch();
             sw.Start();
-            var pstPath = "/Users/dbrant/Downloads/outlook1.pst";
+            var pstPath = args.Length > 0 ? args[0] : "/Users/dbrant/Downloads/outlook1.pst";
             var logPath = "log.txt";
             using (var file = new PSTFile(pstPath))
             {
@@ -36,7 +36,7 @@ namespace PSTParseApp
 
                         foreach (var child in curFolder.SubFolders)
                             stack.Push(child);
-                        var count = curFolder.ContentsTC.RowIndexBTH.Properties.Count;
+                        var count = curFolder.Messages.Count;
                         totalCount += count;
                         Console.WriteLine(String.Join(" -> ", curFolder.Path) + " ({0} messages)", count);
 

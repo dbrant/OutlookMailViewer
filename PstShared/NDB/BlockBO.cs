@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using MiscParseUtilities;
 
 namespace PSTParse.NDB
 {
@@ -24,11 +25,16 @@ namespace PSTParse.NDB
         private static Dictionary<ulong, NodeDataDTO> GetSubNodeData(BBTENTRY entry, PSTFile pst)
         {
             var allData = BlockBO.GetBBTEntryData(entry, pst);
+            if (allData == null || allData.Count == 0)
+                return new Dictionary<ulong, NodeDataDTO>();
+
             var dataBlock = allData[0];
             if (entry.Internal)
             {
                 var type = dataBlock.Data[0];
                 var cLevel = dataBlock.Data[1];
+                if (type != 2)
+                    return new Dictionary<ulong, NodeDataDTO>();
                 if (cLevel == 0) //SLBlock, no intermediate
                 {
                     return BlockBO.GetSLBlockData(new SLBLOCK(pst.Header.isUnicode, dataBlock), pst);
@@ -36,10 +42,8 @@ namespace PSTParse.NDB
                 {
                     return BlockBO.GetSIBlockData(new SIBLOCK(pst.Header.isUnicode, dataBlock), pst);
                 }
-            } else
-            {
-                throw new Exception("Whoops");
             }
+            return new Dictionary<ulong, NodeDataDTO>();
         }
 
         private static Dictionary<ulong, NodeDataDTO> GetSIBlockData(SIBLOCK siblock, PSTFile pst)
@@ -49,10 +53,13 @@ namespace PSTParse.NDB
             foreach(var entry in siblock.Entries)
             {
                 var curSLBlockBBT = pst.GetBlockBBTEntry(entry.SLBlockBID);
-                var slblock = new SLBLOCK(pst.Header.isUnicode, BlockBO.GetBBTEntryData(curSLBlockBBT, pst)[0]);
+                var slBlockData = BlockBO.GetBBTEntryData(curSLBlockBBT, pst);
+                if (slBlockData.Count == 0)
+                    continue;
+                var slblock = new SLBLOCK(pst.Header.isUnicode, slBlockData[0]);
                 var data = BlockBO.GetSLBlockData(slblock, pst);
                 foreach(var item in data)
-                    ret.Add(item.Key, item.Value);
+                    ret[item.Key] = item.Value;
             }
             
             return ret;
@@ -66,7 +73,7 @@ namespace PSTParse.NDB
                 //this data should represent the main data part of the subnode
                 var data = BlockBO.GetBBTEntryData(pst.GetBlockBBTEntry(entry.SubNodeBID), pst);
                 var cur = new NodeDataDTO {NodeData = data};
-                ret.Add(entry.SubNodeNID, cur);
+                ret[entry.SubNodeNID] = cur;
 
                 //see if there are sub nodes of this current sub node
                 if (entry.SubSubNodeBID != 0)
@@ -105,96 +112,95 @@ namespace PSTParse.NDB
         //this includes retrieving data trees via xblocks
         public static List<BlockDataDTO> GetBBTEntryData(BBTENTRY entry, PSTFile pst)
         {
-            int blockTrailerLen = pst.Header.isUnicode ? 16 : 12;
+            if (entry == null)
+                return new List<BlockDataDTO>();
 
-            var dataSize = entry.BlockByteCount;
-            var blockSize = entry.BlockByteCount + blockTrailerLen;
-            if (blockSize % 64 != 0)
-                blockSize += 64 - (blockSize % 64);
-            List<BlockDataDTO> dataBlocks;
-
-            /*if (isSubNode)
+            var block = ReadBlock(entry, pst, out bool valid);
+            if (!valid)
             {
-                using (var viewer = PSTFile.PSTMMF.CreateViewAccessor((long)entry.BREF.IB, blockSize))
+                // The block at the location given by the BBT is damaged; see if an intact copy
+                // of it can be found elsewhere in the file.
+                var scanned = pst.GetScannedBlockEntry(entry.Key);
+                if (scanned != null && scanned.BREF.IB != entry.BREF.IB)
                 {
-                    var blockBytes = new byte[dataSize];
-                    viewer.ReadArray(0, blockBytes, 0, dataSize);
-                    dataBlocks = new List<BlockDataDTO>
-                                     {new BlockDataDTO {Data = blockBytes, PstOffset = entry.BREF.IB, BBTEntry = entry}};
-                    return dataBlocks;
+                    entry = scanned;
+                    block = ReadBlock(entry, pst, out valid);
+                    pst.ReportBlockRecovered(entry.Key);
                 }
-            } else */
+                else
+                {
+                    pst.ReportBlockDamaged(entry.Key);
+                }
+            }
+            if (block == null)
+                return new List<BlockDataDTO>();
+
             if (entry.Internal)
             {
-                using(var viewer = pst.PSTMMF.CreateViewAccessor((long)entry.BREF.IB,blockSize))
+                if (block.Data.Length < 8)
+                    return new List<BlockDataDTO>();
+                var type = block.Data[0];
+                var level = block.Data[1];
+
+                if (type == 2) //si or sl entry
                 {
-                    var blockBytes = new byte[dataSize];
-                    viewer.ReadArray(0, blockBytes, 0, dataSize);
-
-                    var trailerBytes = new byte[blockTrailerLen];
-                    viewer.ReadArray(blockSize - blockTrailerLen, trailerBytes, 0, blockTrailerLen);
-                    var trailer = new BlockTrailer(pst.Header.isUnicode, trailerBytes, 0);
-                    
-                    var dataBlockDTO = new BlockDataDTO
-                                           {
-                                               Data = blockBytes,
-                                               PstOffset = entry.BREF.IB,
-                                               CRCOffset = (uint)((long)entry.BREF.IB + (blockSize - (pst.Header.isUnicode ? 12 : 4))),
-                                               BBTEntry = entry
-                                           };
-                    var type = blockBytes[0];
-                    var level = blockBytes[1];
-
-                    if (type == 2) //si or sl entry
+                    return new List<BlockDataDTO> {block};
+                } else if (type == 1)
+                {
+                    if (level == 0x01) //XBLOCK
                     {
-                        return new List<BlockDataDTO> {dataBlockDTO};
-                    } else if (type == 1)
+                        var xblock = new XBLOCK(pst.Header.isUnicode, block);
+                        return BlockBO.GetXBlockData(xblock, pst);
+                    } else //XXBLOCK
                     {
-                        if (blockBytes[1] == 0x01) //XBLOCK
-                        {
-                            var xblock = new XBLOCK(pst.Header.isUnicode, dataBlockDTO);
-                            return BlockBO.GetXBlockData(xblock, pst);
-                        
-                        } else //XXBLOCK
-                        {
-                            var xxblock = new XXBLOCK(pst.Header.isUnicode, dataBlockDTO);
-                            return BlockBO.GetXXBlockData(xxblock, pst);
-                        }
-                    } else
-                    {
-                        throw new NotImplementedException();
+                        var xxblock = new XXBLOCK(pst.Header.isUnicode, block);
+                        return BlockBO.GetXXBlockData(xxblock, pst);
                     }
-                }
-            } else
-            {
-                using(var viewer = pst.PSTMMF.CreateViewAccessor((long)entry.BREF.IB,blockSize))
+                } else
                 {
-                    var dataBytes = new byte[dataSize];
-                    viewer.ReadArray(0, dataBytes, 0, dataSize);
-                    
-                    var trailerBytes = new byte[blockTrailerLen];
-                    viewer.ReadArray(blockSize - blockTrailerLen, trailerBytes, 0, blockTrailerLen);
-                    var trailer = new BlockTrailer(pst.Header.isUnicode, trailerBytes, 0);
-                    dataBlocks = new List<BlockDataDTO>
-                                     {
-                                         new BlockDataDTO
-                                             {
-                                                 Data = dataBytes,
-                                                 PstOffset = entry.BREF.IB,
-                                                 CRC32 = trailer.CRC,
-                                                 CRCOffset = (uint) (blockSize - (pst.Header.isUnicode ? 12 : 4)),
-                                                 BBTEntry = entry
-                                             }
-                                     };
+                    return new List<BlockDataDTO>();
                 }
             }
 
-            for (int i = 0; i < dataBlocks.Count; i++)
+            DataEncoder.CryptPermute(block.Data, block.Data.Length, false, pst);
+            return new List<BlockDataDTO> {block};
+        }
+
+        // Reads the raw (still encoded) data of a single block, and checks it against the block trailer.
+        private static BlockDataDTO ReadBlock(BBTENTRY entry, PSTFile pst, out bool valid)
+        {
+            valid = false;
+            bool unicode = pst.Header.isUnicode;
+            int blockTrailerLen = unicode ? 16 : 12;
+            int dataSize = entry.BlockByteCount;
+            int blockSize = dataSize + blockTrailerLen;
+            if (blockSize % 64 != 0)
+                blockSize += 64 - (blockSize % 64);
+            if ((long)entry.BREF.IB + blockSize > pst.FileSize)
+                return null;
+
+            using (var viewer = pst.PSTMMF.CreateViewAccessor((long)entry.BREF.IB, blockSize))
             {
-                var temp = dataBlocks[i].Data;   
-                DataEncoder.CryptPermute(temp, temp.Length, false, pst);
+                var dataBytes = new byte[dataSize];
+                viewer.ReadArray(0, dataBytes, 0, dataSize);
+
+                var trailerBytes = new byte[blockTrailerLen];
+                viewer.ReadArray(blockSize - blockTrailerLen, trailerBytes, 0, blockTrailerLen);
+                var trailer = new BlockTrailer(unicode, trailerBytes, 0);
+
+                valid = trailer.DataSize == dataSize
+                        && (trailer.BID_raw & 0xfffffffffffffffe) == entry.Key
+                        && trailer.CRC == new CRC32().ComputeCRC(0, dataBytes, (uint)dataSize);
+
+                return new BlockDataDTO
+                           {
+                               Data = dataBytes,
+                               PstOffset = entry.BREF.IB,
+                               CRC32 = trailer.CRC,
+                               CRCOffset = (uint) (blockSize - (unicode ? 12 : 4)),
+                               BBTEntry = entry
+                           };
             }
-            return dataBlocks;
         }
 
         private static List<BlockDataDTO> GetXBlockData(XBLOCK xblock, PSTFile pst)
@@ -203,7 +209,12 @@ namespace PSTParse.NDB
             foreach(var bid in xblock.BIDEntries)
             {
                 var bbtEntry = pst.GetBlockBBTEntry(bid);
-                ret.AddRange(BlockBO.GetBBTEntryData(bbtEntry,pst));
+                var data = BlockBO.GetBBTEntryData(bbtEntry, pst);
+                if (data.Count > 0)
+                    ret.AddRange(data);
+                else
+                    // keep a placeholder for a missing block, so that the indices of subsequent blocks are preserved.
+                    ret.Add(new BlockDataDTO { Data = new byte[0] });
             }
             return ret;
         }

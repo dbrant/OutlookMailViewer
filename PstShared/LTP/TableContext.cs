@@ -31,7 +31,7 @@ namespace PSTParse.LTP
             foreach (var prop in RowIndexBTH.Properties)
             {
                 uint temp = RowIndexBTH.GetDataValue(prop.Value.Data);
-                ReverseRowIndex.Add(temp, BitConverter.ToUInt32(prop.Key, 0));
+                ReverseRowIndex[temp] = BitConverter.ToUInt32(prop.Key, 0);
             }
             RowMatrix = new TCRowMatrix(this, RowIndexBTH);
         }

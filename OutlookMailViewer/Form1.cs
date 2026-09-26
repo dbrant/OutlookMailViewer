@@ -92,6 +92,15 @@ namespace OutlookMailViewer
 
                 treeViewFolders.Nodes.Clear();
                 LayoutFolders(null, currentFile.TopOfPST);
+
+                if (currentFile.RecoveredBlockCount > 0 || currentFile.DamagedBlockCount > 0 || currentFile.OrphanedItemCount > 0)
+                {
+                    MessageBox.Show(this, "This file appears to be damaged. Some of its contents may be missing or incomplete.\n\n"
+                        + "Blocks recovered from alternate locations: " + currentFile.RecoveredBlockCount + "\n"
+                        + "Damaged blocks that could not be recovered: " + currentFile.DamagedBlockCount + "\n"
+                        + "Items recovered from outside the folder hierarchy: " + currentFile.OrphanedItemCount,
+                        Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
             }
             catch (Exception ex)
             {

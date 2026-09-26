@@ -11,8 +11,7 @@ namespace PSTParse.LTP
 
         public static HNDataDTO GetHNHIDBytes(HN heapNode, HID hid)
         {
-            var hnblock = heapNode.HeapNodes[(int)hid.hidBlockIndex];
-            return hnblock.GetAllocation(hid);
+            return heapNode.GetHIDBytes(hid);
         }
     }
 }

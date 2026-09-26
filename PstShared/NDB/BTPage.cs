@@ -43,6 +43,14 @@ namespace PSTParse.NDB
             }
 
             Entries = new List<BTPAGEENTRY>();
+
+            // A damaged (e.g. zeroed) page is treated as having no entries.
+            if (_trailer.PageType != PageType.NBT && _trailer.PageType != PageType.BBT)
+                return;
+            int entryAreaSize = unicode ? 488 : 496;
+            if (_cbEnt == 0 || _numEntries * _cbEnt > entryAreaSize)
+                return;
+
             for (var i = 0; i < _numEntries; i++)
             {
                 var curEntryBytes = pageData.RangeSubset(i*_cbEnt, _cbEnt);
@@ -58,12 +66,17 @@ namespace PSTParse.NDB
                     //btentries
                     var entry = new BTENTRY(unicode, curEntryBytes);
                     Entries.Add(entry);
-                    using (var view = pst.PSTMMF.CreateViewAccessor((long)entry.BREF.IB,512))
+                    var bytes = new byte[512];
+                    if ((long)entry.BREF.IB + 512 <= pst.FileSize)
                     {
-                        var bytes = new byte[512];
-                        view.ReadArray(0, bytes, 0, 512);
-                        InternalChildren.Add(new BTPage(unicode, bytes, entry.BREF, pst));
+                        using (var view = pst.PSTMMF.CreateViewAccessor((long)entry.BREF.IB, 512))
+                            view.ReadArray(0, bytes, 0, 512);
                     }
+                    var child = new BTPage(unicode, bytes, entry.BREF, pst);
+                    // Discard a child page that doesn't belong to this tree, which also guards against cycles.
+                    if (child._trailer.PageType != _trailer.PageType || child._cLevel != _cLevel - 1)
+                        child = new BTPage(unicode, new byte[512], entry.BREF, pst);
+                    InternalChildren.Add(child);
                 }
             }
         }
@@ -113,6 +126,8 @@ namespace PSTParse.NDB
 
         public Tuple<ulong,ulong> GetNIDBID(ulong NID)
         {
+            if (Entries.Count == 0)
+                return new Tuple<ulong, ulong>(0, 0);
             var isBTEntry = Entries[0] is BTENTRY;
             for (int i = 0; i < Entries.Count; i++)
             {
@@ -121,7 +136,9 @@ namespace PSTParse.NDB
                     if (isBTEntry)
                         return InternalChildren[i].GetNIDBID(NID);
                     var cur = Entries[i] as NBTENTRY;
-                    return new Tuple<ulong, ulong>(cur.BID_Data,cur.BID_SUB);
+                    if (NID == cur.NID)
+                        return new Tuple<ulong, ulong>(cur.BID_Data,cur.BID_SUB);
+                    break;
                 }
 
                 var curEntry = Entries[i];
@@ -143,8 +160,21 @@ namespace PSTParse.NDB
             return new Tuple<ulong, ulong>(0, 0);
         }
 
+        public void GetAllNBTEntries(List<NBTENTRY> list)
+        {
+            for (int i = 0; i < Entries.Count; i++)
+            {
+                if (Entries[i] is BTENTRY)
+                    InternalChildren[i].GetAllNBTEntries(list);
+                else if (Entries[i] is NBTENTRY entry)
+                    list.Add(entry);
+            }
+        }
+
         public void GetAllNIDBIDs(List<Tuple<ulong, ulong>> list)
         {
+            if (Entries.Count == 0)
+                return;
             var isBTEntry = Entries[0] is BTENTRY;
             for (int i = 0; i < Entries.Count; i++)
             {

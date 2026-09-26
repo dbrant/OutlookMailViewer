@@ -37,27 +37,39 @@ namespace PSTParse.LTP
                 {
                     var tempSubNodes = new Dictionary<ulong, NodeDataDTO>();
                     foreach(var nod in TableContext.HeapNode.HeapSubNode)
-                        tempSubNodes.Add(nod.Key & 0xffffffff, nod.Value);
-                    TCRMData = tempSubNodes[rowMatrixHNID].NodeData;
+                        tempSubNodes[nod.Key & 0xffffffff] = nod.Value;
+                    TCRMData = tempSubNodes.TryGetValue(rowMatrixHNID, out var node) ? node.NodeData : new List<BlockDataDTO>();
                 }
             }
             //TCRMSubNodeData = TableContext.HeapNode.HeapSubNode[];
             var rowSize = TableContext.TCHeader.EndOffsetCEB;
-            //var rowPerBlock = (8192 - 16)/rowSize;
-            
+            if (rowSize == 0 || TCRMData.Count == 0)
+                return;
+
+            // Each block of the row matrix holds as many whole rows as will fit. Every block except the last
+            // is full, so the first block tells us how many rows each block holds. (This avoids assuming the
+            // size of the block trailer, which differs between ANSI and Unicode files.)
+            var recordsPerBlock = TCRMData.Count > 1 && TCRMData[0].Data.Length >= rowSize
+                ? TCRMData[0].Data.Length / rowSize
+                : (8192 - 12) / rowSize;
+
             foreach(var row in TableContext.RowIndexBTH.Properties)
             {
-                var rowIndex = TableContext.RowIndexBTH.GetDataValue(row.Value.Data);
-
-                var blockTrailerSize = 16;
-                var maxBlockSize = 8192 - blockTrailerSize;
-                var recordsPerBlock = maxBlockSize/rowSize;
-
-                var blockIndex = (int)rowIndex / recordsPerBlock;
-                var indexInBlock = rowIndex % recordsPerBlock;
-                var curRow = new TCRowMatrixData(TCRMData[blockIndex].Data, TableContext, heap, (int) indexInBlock*rowSize);
-                RowXREF.Add(TableContext.RowIndexBTH.GetKeyValue(row.Key), curRow);
-                Rows.Add(curRow);
+                try
+                {
+                    var rowIndex = TableContext.RowIndexBTH.GetDataValue(row.Value.Data);
+                    var blockIndex = (int)rowIndex / recordsPerBlock;
+                    var indexInBlock = rowIndex % recordsPerBlock;
+                    if (blockIndex >= TCRMData.Count)
+                        continue;
+                    var curRow = new TCRowMatrixData(TCRMData[blockIndex].Data, TableContext, heap, (int) indexInBlock*rowSize);
+                    RowXREF[TableContext.RowIndexBTH.GetKeyValue(row.Key)] = curRow;
+                    Rows.Add(curRow);
+                }
+                catch (Exception)
+                {
+                    // skip a damaged row, and keep the rest.
+                }
             }
             /*
             uint curIndex = 0;

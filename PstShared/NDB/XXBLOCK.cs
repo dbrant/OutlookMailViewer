@@ -17,7 +17,7 @@ namespace PSTParse.NDB
             Block = block;
             Type = block.Data[0];
             CLevel = block.Data[1];
-            TotalChildren = BitConverter.ToUInt16(block.Data, 2);
+            TotalChildren = (UInt16)Math.Min(BitConverter.ToUInt16(block.Data, 2), (block.Data.Length - 8) / (unicode ? 8 : 4));
             TotalBytes = BitConverter.ToUInt32(block.Data, 4);
             XBlockBIDs = new ulong[this.TotalChildren];
             for (var i = 0; i < TotalChildren; i++)

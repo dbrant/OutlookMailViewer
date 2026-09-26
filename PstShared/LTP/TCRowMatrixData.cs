@@ -27,7 +27,19 @@ namespace PSTParse.LTP
         public IEnumerator<ExchangeProperty> GetEnumerator()
         {
             foreach(var col in ColumnXREF)
-                yield return new ExchangeProperty((UInt16) (col.Key >> 16), (UInt16) (col.Key & 0xFFFF), _heap, col.Value);
+            {
+                ExchangeProperty prop;
+                try
+                {
+                    prop = new ExchangeProperty((UInt16) (col.Key >> 16), (UInt16) (col.Key & 0xFFFF), _heap, col.Value);
+                }
+                catch (Exception)
+                {
+                    // skip a property whose data is damaged.
+                    continue;
+                }
+                yield return prop;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

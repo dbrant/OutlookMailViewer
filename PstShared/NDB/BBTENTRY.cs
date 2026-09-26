@@ -17,6 +17,14 @@ namespace PSTParse.NDB
             RefCount = unicode ? BitConverter.ToUInt16(bytes, 18) : BitConverter.ToUInt16(bytes, 10);
         }
 
+        // Constructs an entry for a block located by scanning the file, rather than through the BBT.
+        public BBTENTRY(ulong bid, ulong ib, UInt16 byteCount)
+        {
+            BREF = new BREF(bid, ib);
+            Internal = BREF.IsInternal;
+            BlockByteCount = byteCount;
+        }
+
         public ulong Key
         {
             get { return BREF.BID; }

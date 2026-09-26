@@ -21,7 +21,7 @@ namespace PSTParse.LTP
             var bytes = tree.GetHIDBytes(hid);
             this._data = bytes;
             this.DataEntries = new List<BTHDataEntry>();
-            for(int i= 0;i < bytes.Data.Length;i+= (int)(tree.Header.KeySize+tree.Header.DataSize))
+            for(int i= 0;i + (int)(tree.Header.KeySize+tree.Header.DataSize) <= bytes.Data.Length;i+= (int)(tree.Header.KeySize+tree.Header.DataSize))
                 this.DataEntries.Add(new BTHDataEntry(bytes, i, tree));
         }
 

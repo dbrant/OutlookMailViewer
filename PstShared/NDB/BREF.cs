@@ -18,5 +18,11 @@ namespace PSTParse.NDB
             IB = unicode ? BitConverter.ToUInt64(bref, offset + 8) : BitConverter.ToUInt32(bref, offset + 4);
             BID = BID & 0xfffffffffffffffe;
         }
+
+        public BREF(UInt64 bid, UInt64 ib)
+        {
+            BID = bid & 0xfffffffffffffffe;
+            IB = ib;
+        }
     }
 }

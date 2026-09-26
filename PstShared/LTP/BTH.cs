@@ -31,7 +31,7 @@ namespace PSTParse.LTP
 
                 if (cur.Data != null)
                     foreach (var entry in cur.Data.DataEntries)
-                        Properties.Add(entry.Key, entry);
+                        Properties[entry.Key] = entry;
 
                 if (cur.Children != null)
                     foreach (var child in cur.Children)
@@ -85,10 +85,14 @@ namespace PSTParse.LTP
                     foreach (var entry in cur.Data.DataEntries)
                     {
                         var curKey = BitConverter.ToUInt16(entry.Key, 0);
-                        int i = 0;
-                        if (curKey == 0x02)
-                            i++;
-                        ret.Add((MessageProperty)curKey, new ExchangeProperty(entry, this));
+                        try
+                        {
+                            ret[(MessageProperty)curKey] = new ExchangeProperty(entry, this);
+                        }
+                        catch (Exception)
+                        {
+                            // skip a property whose data is damaged, and keep the rest.
+                        }
                     }
 
                 if (cur.Children != null)

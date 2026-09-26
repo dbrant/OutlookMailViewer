@@ -159,7 +159,7 @@ namespace PSTParse.LTP
                     {
                         var tempSubNodeXREF = new Dictionary<ulong, NodeDataDTO>();
                         foreach (var heapSubNode in heap.HeapNode.HeapSubNode)
-                            tempSubNodeXREF.Add(heapSubNode.Key & 0xFFFFFFFF, heapSubNode.Value);
+                            tempSubNodeXREF[heapSubNode.Key & 0xFFFFFFFF] = heapSubNode.Value;
                         dataBlocks = tempSubNodeXREF[curID].NodeData;
                         //dataBlocks = entry.ParentTree.HeapNode.HeapSubNode[curID].NodeData;
                     }

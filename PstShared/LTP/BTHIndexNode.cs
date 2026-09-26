@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace PSTParse.LTP
 {
@@ -32,11 +33,20 @@ namespace PSTParse.LTP
             } else
             {
                 var bytes = tree.GetHIDBytes(hid);
-                for (int i = 0; i < bytes.Data.Length; i += (int)tree.Header.KeySize + 4)
+                for (int i = 0; i + (int)tree.Header.KeySize + 4 <= bytes.Data.Length; i += (int)tree.Header.KeySize + 4)
                     Entries.Add(new BTHIndexEntry(bytes.Data, i, tree.Header));
                 Children = new List<BTHIndexNode>();
-                foreach(var entry in Entries)
-                    Children.Add(new BTHIndexNode(entry.HID, tree, level - 1));
+                foreach (var entry in Entries)
+                {
+                    try
+                    {
+                        Children.Add(new BTHIndexNode(entry.HID, tree, level - 1));
+                    }
+                    catch (Exception)
+                    {
+                        // skip a damaged subtree, and keep whatever else can be read.
+                    }
+                }
             }
 
         }

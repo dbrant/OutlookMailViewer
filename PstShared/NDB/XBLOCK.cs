@@ -17,7 +17,7 @@ namespace PSTParse.NDB
             Block = block;
             BlockType = block.Data[0];
             HeaderLevel = block.Data[1];
-            BIDEntryCount = BitConverter.ToUInt16(block.Data, 2);
+            BIDEntryCount = Math.Min(BitConverter.ToUInt16(block.Data, 2), (uint)(block.Data.Length - 8) / (unicode ? 8u : 4u));
             TotalBytes = BitConverter.ToUInt32(block.Data, 4);
             BIDEntries = new ulong[BIDEntryCount];
             for (int i = 0; i < BIDEntryCount; i++)

@@ -1,4 +1,5 @@
-﻿using MiscParseUtilities;
+﻿using System.IO;
+using MiscParseUtilities;
 
 namespace PSTParse.LTP
 {
@@ -15,11 +16,15 @@ namespace PSTParse.LTP
         public BTHHEADER(HNDataDTO block)
         {
             var bytes = block.Data;
+            if (bytes.Length < 8)
+                throw new InvalidDataException("BTH header is too short.");
             BType = bytes[0];
             KeySize = bytes[1];
             DataSize = bytes[2];
             NumLevels = bytes[3];
             BTreeRoot = new HID(bytes.RangeSubset(4, 4));
+            if (BType != 0xB5 || KeySize == 0 || KeySize > 16 || DataSize == 0 || DataSize > 32)
+                throw new InvalidDataException("BTH header is invalid.");
         }
     }
 }

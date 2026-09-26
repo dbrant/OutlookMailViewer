@@ -296,12 +296,17 @@ namespace MiscParseUtilities
 
         public uint ComputeCRC(uint dwCRC, byte[] pv, uint cbLength)
         {
+            return ComputeCRC(dwCRC, pv, 0, cbLength);
+        }
+
+        public uint ComputeCRC(uint dwCRC, byte[] pv, int offset, uint cbLength)
+        {
             uint i;
             uint dw2nd32;
 
             var cbRunningLength = ((cbLength < 4) ? 0 : ((cbLength) / 8) * 8);
             var cbEndUnalignedBytes = cbLength - cbRunningLength;
-            var index = 0;
+            var index = offset;
             for (i = 0; i < cbRunningLength / 8; ++i)
             {
                 dwCRC ^= BitConverter.ToUInt32(pv, index);

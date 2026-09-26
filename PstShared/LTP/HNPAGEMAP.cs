@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace PSTParse.LTP
@@ -11,12 +11,19 @@ namespace PSTParse.LTP
 
         public HNPAGEMAP(byte[] bytes, int offset)
         {
+            AllocationTable = new List<UInt16>();
+            if (offset < 0 || offset + 4 > bytes.Length)
+                return;
+
             AllocationsCount = BitConverter.ToUInt16(bytes, offset);
             FreeItemsCount = BitConverter.ToUInt16(bytes, offset+2);
-            AllocationTable = new List<UInt16>();
 
-            for(int i= 0;i < AllocationsCount+1;i++)
-                AllocationTable.Add(BitConverter.ToUInt16(bytes,offset+4+i*2));
+            // If the page map is damaged, treat the heap block as having no allocations.
+            if (offset + 4 + (AllocationsCount + 1) * 2 > bytes.Length)
+                return;
+
+            for (int i = 0; i < AllocationsCount + 1; i++)
+                AllocationTable.Add(BitConverter.ToUInt16(bytes, offset + 4 + i * 2));
         }
     }
 }

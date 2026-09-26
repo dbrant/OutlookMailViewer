@@ -12,6 +12,9 @@ namespace PSTParse
         public NDB.PSTBTree NodeBT { get; private set; }
         public NDB.PSTBTree BlockBT { get; private set; }
 
+        // The next BID to be allocated; all existing blocks have BIDs lower than this.
+        public ulong NextBID { get; private set; }
+
         public BlockEncoding EncodingAlgotihm { get; private set; }
         public enum BlockEncoding
         {
@@ -36,6 +39,8 @@ namespace PSTParse
                 //root.PSTSize = ByteReverse.ReverseULong(root.PSTSize);
                 var sentinel = tempBytes[isUnicode ? 512 : 460];
                 EncodingAlgotihm = (BlockEncoding) tempBytes[isUnicode ? 513 : 461];
+
+                NextBID = isUnicode ? BitConverter.ToUInt64(tempBytes, 516) : BitConverter.ToUInt32(tempBytes, 24);
 
                 var nbt_bref = new BREF(isUnicode, tempBytes, isUnicode ? 216 : 184);
                 var bbt_bref = new BREF(isUnicode, tempBytes, isUnicode ? 232 : 192);

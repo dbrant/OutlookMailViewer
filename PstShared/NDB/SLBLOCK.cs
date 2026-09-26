@@ -15,7 +15,7 @@ namespace PSTParse.NDB
             BlockData = blockData;
             var type = blockData.Data[0];
             var clevel = blockData.Data[1];
-            EntryCount = BitConverter.ToUInt16(blockData.Data, 2);
+            EntryCount = (UInt16)Math.Min(BitConverter.ToUInt16(blockData.Data, 2), unicode ? (blockData.Data.Length - 8) / 24 : (blockData.Data.Length - 4) / 12);
             Entries = new List<SLENTRY>();
             for (int i = 0; i < EntryCount; i++)
                 Entries.Add(unicode

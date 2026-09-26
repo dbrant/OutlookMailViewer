@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.IO;
 using PSTParse.NDB;
 
 namespace PSTParse.LTP
@@ -19,11 +20,18 @@ namespace PSTParse.LTP
                 HeapNodes.Add(curBlock);
             }
 
-            HeapSubNode = nodeData.SubNodeData;
+            HeapSubNode = nodeData.SubNodeData ?? new Dictionary<ulong, NodeDataDTO>();
+
+            if (HeapNodes.Count == 0 || HeapNodes[0].Header == null)
+                throw new InvalidDataException("Heap node data is missing.");
+            if (HeapNodes[0].Header.bSig != 0xEC)
+                throw new InvalidDataException("Heap node signature is invalid.");
         }
 
         public HNDataDTO GetHIDBytes(HID hid)
         {
+            if ((int)hid.hidBlockIndex >= HeapNodes.Count)
+                throw new InvalidDataException("Heap block " + hid.hidBlockIndex + " not found.");
             return HeapNodes[(int)hid.hidBlockIndex].GetAllocation(hid);
         }
     }

@@ -7,12 +7,13 @@ namespace PSTParse.NDB
 
         public PSTBTree(bool unicode, BREF bref, PSTFile pst)
         {
-            using (var viewer = pst.PSTMMF.CreateViewAccessor((long)bref.IB, 512))
+            var data = new byte[512];
+            if ((long)bref.IB + 512 <= pst.FileSize)
             {
-                var data = new byte[512];
-                viewer.ReadArray(0, data, 0, 512);
-                Root = new BTPage(unicode, data, bref, pst);
+                using (var viewer = pst.PSTMMF.CreateViewAccessor((long)bref.IB, 512))
+                    viewer.ReadArray(0, data, 0, 512);
             }
+            Root = new BTPage(unicode, data, bref, pst);
         }
     }
 }

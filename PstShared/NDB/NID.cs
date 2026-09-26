@@ -10,6 +10,7 @@ namespace PSTParse.NDB
             NORMAL_FOLDER = 0x02,
             SEARCH_FOLDER = 0x03,
             NORMAL_MESSAGE_PC = 0x03,
+            NORMAL_MESSAGE = 0x04,
             ATTACHMENT_PC = 0x05,
             SEARCH_UPDATE_QUEUE = 0x06,
             SEARCH_CRITERIA_OBJECT = 0x07,
