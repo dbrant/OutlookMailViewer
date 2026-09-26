@@ -2,8 +2,7 @@
 
 A library for reading the [PST](https://learn.microsoft.com/en-us/openspecs/office_file_formats/ms-pst/141923d5-15ab-4ef1-a524-6dce75aae546) mailstore file format, used by legacy versions of Outlook, Exchange, etc. The focus is on maximal compatibility with various versions of the PST format, dating as far back as possible. In addition, the library attempts to be tolerant of corruption in PST files, allowing messages to be recovered from mailstores that are otherwise unreadable.
 
-Dmitry Brant, 2017+
-
+Dmitry Brant, 2017+  
 Daniel Cash, 2013-2017
 
 License: MIT
