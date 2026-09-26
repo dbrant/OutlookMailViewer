@@ -6,8 +6,8 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="MimeKit" Version="4.15.1" />
-    <PackageReference Include="MsgKit" Version="3.0.3" />
+    <PackageReference Include="MimeKit" Version="4.18.1" />
+    <PackageReference Include="MsgKit" Version="3.0.5" />
   </ItemGroup>
   <Import Project="..\PstShared\PstShared.projitems" Label="Shared" />
 </Project>
